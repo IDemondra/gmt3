@@ -32,7 +32,7 @@ export function ToursSection() {
 					<h2 class="font-h2 text-h2 text-on-background font-bold mb-2">PROCHAINES EVENNEMENTS</h2>
 					<div class="h-1 w-24 bg-primary-container"></div>
 				</div>
-				<a class="hidden md:flex items-center gap-2 text-primary font-button text-button hover:text-[#C62828]" href="#">
+				<a class="hidden md:flex items-center gap-2 text-primary font-button text-button hover:text-[#C62828]" href="/events">
 					VOIR TOUT <span class="material-symbols-outlined">arrow_forward</span>
 				</a>
 			</div>
@@ -41,9 +41,9 @@ export function ToursSection() {
 					<TourCard key={i} {...tour} />
 				))}
 			</div>
-			<button class="w-full md:hidden mt-8 font-button text-button bg-primary-container text-on-primary px-4 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
+			<a class="w-full md:hidden mt-8 font-button text-button bg-primary-container text-on-primary px-4 py-3 rounded-lg hover:shadow-lg transition-all duration-300 text-center block" href="/events">
 				VOIR TOUT
-			</button>
+			</a>
 		</section>
 	);
 }

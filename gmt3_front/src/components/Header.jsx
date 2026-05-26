@@ -14,7 +14,7 @@ export function Header() {
 	return (
 		<header class="bg-primary z-50 sticky top-0 w-full">
 			<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-				<a class="flex items-center gap-4 group" href="#">
+					<a class="flex items-center gap-4 group" href="/">
 					<img
 						alt="Madagascar Tour Operator Logo"
 						class="h-12 w-12 object-contain bg-on-secondary-fixed rounded-lg"
@@ -30,7 +30,7 @@ export function Header() {
 						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="#expeditions">EXPEDITIONS</a></li>
 						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="#destinations">DESTINATIONS</a></li>
 						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="#guides">GUIDES</a></li>
-						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="#offers">OFFERS</a></li>
+						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="/events">OFFERS</a></li>
 						<li><a class="font-button text-button text-on-primary/80 hover:text-on-primary-container hover:bg-primary-container transition-colors duration-200 py-2 px-3 rounded-lg" href="#gallery">GALLERY</a></li>
 					</ul>
 				</nav>
@@ -48,7 +48,7 @@ export function Header() {
 						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="#expeditions" onClick={toggleMenu}>EXPEDITIONS</a></li>
 						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="#destinations" onClick={toggleMenu}>DESTINATIONS</a></li>
 						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="#guides" onClick={toggleMenu}>GUIDES</a></li>
-						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="#offers" onClick={toggleMenu}>OFFERS</a></li>
+						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="/events" onClick={toggleMenu}>OFFERS</a></li>
 						<li><a class="block font-button text-button text-on-primary/80 hover:text-on-primary hover:bg-primary-container/30 transition-colors duration-200 py-3 px-4 rounded-lg" href="#gallery" onClick={toggleMenu}>GALLERY</a></li>
 						<li class="pt-2">
 							<button class="w-full font-button text-button bg-on-primary text-primary px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300">BOOK NOW</button>

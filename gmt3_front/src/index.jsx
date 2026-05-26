@@ -2,6 +2,7 @@ import { LocationProvider, Router, Route, hydrate, prerender as ssr } from 'prea
 
 import { Header } from './components/Header.jsx';
 import { Home } from './pages/Home/index.jsx';
+import { Events } from './pages/Events/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import './index.css';
 
@@ -11,6 +12,7 @@ export function App() {
 			<Header />
 			<Router>
 				<Route path="/" component={Home} />
+                <Route path="/events" component={Events} />
 				<Route default component={NotFound} />
 			</Router>
 		</LocationProvider>

@@ -8,6 +8,7 @@ import { OffersSection } from './components/OffersSection';
 import { GallerySection } from './components/GallerySection';
 import { BannerSection } from './components/BannerSection';
 import { Footer } from '../../components/Footer.jsx';
+// NOTE: No changes needed here for the new page.
 
 export function Home() {
 	return (
