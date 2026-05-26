@@ -29,7 +29,7 @@ export function ToursSection() {
 		<section class="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto" id="expeditions">
 			<div class="flex justify-between items-end mb-12">
 				<div>
-					<h2 class="font-h2 text-h2 text-on-background font-bold mb-2">PROCHAINES EXPÉDITIONS</h2>
+					<h2 class="font-h2 text-h2 text-on-background font-bold mb-2">PROCHAINES EVENNEMENTS</h2>
 					<div class="h-1 w-24 bg-primary-container"></div>
 				</div>
 				<a class="hidden md:flex items-center gap-2 text-primary font-button text-button hover:text-[#C62828]" href="#">
