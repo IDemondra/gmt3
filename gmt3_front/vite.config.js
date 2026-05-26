@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
+		tailwindcss(),
 		preact({
 			prerender: {
 				enabled: true,
@@ -14,4 +16,16 @@ export default defineConfig({
 			},
 		}),
 	],
+	server: {
+		proxy: {
+			'/google-img/': {
+				target: 'https://lh3.googleusercontent.com/',
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/google-img\//, ''),
+				headers: {
+					'Referer': 'https://lh3.googleusercontent.com/',
+				},
+			},
+		},
+	},
 });
