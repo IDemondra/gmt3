@@ -14,14 +14,14 @@ export function Home() {
 	return (
 		<div class="home">
 			<HeroSection />
-			<Reveal animation="fadeUp" duration={1050}><ActivitiesSection /></Reveal>
-			<Reveal animation="driftLeft" duration={1150}><DestinationsSection /></Reveal>
-			<Reveal animation="fadeUp" duration={1050}><ToursSection /></Reveal>
-			<Reveal animation="driftRight" duration={1150}><AboutSection /></Reveal>
-			<Reveal animation="arc" duration={1200}><OffersSection /></Reveal>
-			<Reveal animation="scaleUp" duration={1250}><GallerySection /></Reveal>
-			<Reveal animation="fadeUp" duration={1050}><BannerSection /></Reveal>
-			<Reveal animation="fadeUp" duration={1050}><ContactSection /></Reveal>
+			<Reveal animation="fadeUp" duration={720}><ActivitiesSection /></Reveal>
+			<Reveal animation="driftLeft" duration={760}><DestinationsSection /></Reveal>
+			<Reveal animation="fadeUp" duration={720}><ToursSection /></Reveal>
+			<Reveal animation="driftRight" duration={760}><AboutSection /></Reveal>
+			<Reveal animation="arc" duration={800}><OffersSection /></Reveal>
+			<Reveal animation="scaleUp" duration={820}><GallerySection /></Reveal>
+			<Reveal animation="fadeUp" duration={720}><BannerSection /></Reveal>
+			<Reveal animation="fadeUp" duration={720}><ContactSection /></Reveal>
 			<Footer />
 		</div>
 	);

@@ -12,23 +12,23 @@ export function HeroSection() {
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent" />
 			<div class="relative z-20 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
 				<div class="max-w-2xl">
-					<Reveal animation="fadeUp" duration={1100}>
+					<Reveal animation="fadeUp" duration={760}>
 						<span class="inline-block bg-primary-container text-on-primary px-4 py-2 font-label-caps text-label-caps mb-6 uppercase rounded-lg shadow-lg shadow-primary/30">
 							MADAGASCAR 2024
 						</span>
 					</Reveal>
-					<Reveal animation="arc" delay={120} duration={1200}>
+					<Reveal animation="arc" delay={70} duration={820}>
 						<h1 class="font-h1-mobile text-h1-mobile md:font-h1 md:text-h1 mb-6 text-on-primary font-black leading-[1.05] tracking-tighter">
 							EXPLOREZ<br />
 							<span class="text-gradient inline-block">L'ÎLE ROUGE</span>
 						</h1>
 					</Reveal>
-					<Reveal animation="fadeUp" delay={220} duration={1100}>
+					<Reveal animation="fadeUp" delay={120} duration={760}>
 						<p class="font-body-lg text-body-lg mb-10 text-on-primary/85 max-w-xl leading-relaxed">
 							Découvrez les paysages sauvages, la faune unique et la culture vibrante de Madagascar avec nos guides experts. L'aventure d'une vie vous attend.
 						</p>
 					</Reveal>
-					<Reveal animation="driftRight" delay={320} duration={1200}>
+					<Reveal animation="driftRight" delay={180} duration={820}>
 						<div class="flex flex-col sm:flex-row items-start gap-4">
 						<a
 							href="#expeditions"

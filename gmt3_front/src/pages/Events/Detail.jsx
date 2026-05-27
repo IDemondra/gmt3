@@ -52,7 +52,7 @@ export function EventDetail({ params }) {
 					<div class="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full py-20 md:py-24">
 						<div class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
 							<div class="max-w-3xl">
-								<Reveal animation="fadeUp" duration={1100}>
+								<Reveal animation="fadeUp" duration={760}>
 									<div class="flex flex-wrap items-center gap-3">
 										<a href="/events" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md transition-colors hover:bg-white/15">
 											<span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -66,17 +66,17 @@ export function EventDetail({ params }) {
 										</span>
 									</div>
 								</Reveal>
-								<Reveal animation="arc" delay={100} duration={1250}>
+								<Reveal animation="arc" delay={60} duration={840}>
 									<h1 class="mt-6 font-h1-mobile text-h1-mobile md:font-h1 md:text-h1 font-black uppercase tracking-tighter leading-[1.02] text-on-primary">
 										{event.title}
 									</h1>
 								</Reveal>
-								<Reveal animation="fadeUp" delay={220} duration={1100}>
+								<Reveal animation="fadeUp" delay={120} duration={760}>
 									<p class="mt-6 max-w-2xl font-body-lg text-body-lg leading-relaxed text-on-primary/80">
 										{event.description}
 									</p>
 								</Reveal>
-								<Reveal animation="driftRight" delay={320} duration={1200}>
+								<Reveal animation="driftRight" delay={180} duration={820}>
 									<div class="mt-8 flex flex-col sm:flex-row items-start gap-4">
 										<a
 											href="#details"
@@ -95,7 +95,7 @@ export function EventDetail({ params }) {
 								</Reveal>
 							</div>
 
-							<Reveal animation="fadeUp" delay={180} duration={1200} className="lg:justify-self-end">
+							<Reveal animation="fadeUp" delay={120} duration={820} className="lg:justify-self-end">
 								<aside class="w-full rounded-[1.75rem] border border-white/15 bg-white/10 p-6 text-on-primary shadow-2xl shadow-black/20 backdrop-blur-xl">
 									<div class="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
 										<div>
@@ -145,7 +145,7 @@ export function EventDetail({ params }) {
 
 				<section id="details" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full -mt-10">
 					<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-						<Reveal animation="fadeUp" duration={1150}>
+						<Reveal animation="fadeUp" duration={760}>
 							<article class="rounded-[1.75rem] border border-outline-variant/70 bg-white/85 p-6 shadow-xl shadow-black/5 backdrop-blur-sm md:p-8">
 								<div class="flex items-center justify-between gap-4">
 									<div>
@@ -185,7 +185,7 @@ export function EventDetail({ params }) {
 							</article>
 						</Reveal>
 
-						<Reveal animation="driftRight" delay={120} duration={1200}>
+						<Reveal animation="driftRight" delay={80} duration={820}>
 							<aside class="space-y-6 lg:sticky lg:top-24">
 								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-inverse-surface p-6 text-on-primary shadow-xl shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Trip rhythm</p>
@@ -227,7 +227,7 @@ export function EventDetail({ params }) {
 				</section>
 
 				<section id="related" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-20">
-					<Reveal animation="fadeUp" duration={1100}>
+					<Reveal animation="fadeUp" duration={760}>
 						<div class="flex items-end justify-between gap-4 mb-8">
 							<div>
 								<p class="font-label-caps text-label-caps text-secondary">Continue exploring</p>
@@ -241,7 +241,7 @@ export function EventDetail({ params }) {
 					</Reveal>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter xl:gap-8">
 						{relatedEvents.map((related, index) => (
-							<Reveal key={related.slug} animation={index % 2 === 0 ? 'fadeLeft' : 'fadeRight'} delay={index * 120} duration={1200}>
+							<Reveal key={related.slug} animation={index % 2 === 0 ? 'fadeLeft' : 'fadeRight'} delay={index * 80} duration={820}>
 								<TourCard {...related} href={`/events/${related.slug}`} />
 							</Reveal>
 						))}

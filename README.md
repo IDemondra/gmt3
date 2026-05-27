@@ -23,6 +23,7 @@
 - La build de production passe avec le prerendering activé.
 - Le système de scroll reveal est plus cinématique, plus immersif et appliqué aux principales sections.
 - Le hero d’accueil utilise maintenant la même logique d’animation scroll que le reste du site.
+- Le rythme des animations a été raccourci pour un rendu plus fluide et plus réactif.
 
 ## Remaining Bugs
 - Aucun bug fonctionnel identifié sur cette passe.

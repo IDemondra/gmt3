@@ -1,17 +1,17 @@
 import { useScrollReveal } from '../../hooks/useScrollReveal.js';
 
 const presets = {
-	fadeUp: { x: 0, y: 34, scale: 0.98, rotate: 0, blur: 10 },
-	fadeDown: { x: 0, y: -26, scale: 0.98, rotate: 0, blur: 8 },
-	fadeLeft: { x: -34, y: 18, scale: 0.975, rotate: 0.6, blur: 9 },
-	fadeRight: { x: 34, y: 18, scale: 0.975, rotate: -0.6, blur: 9 },
-	fadeIn: { x: 0, y: 0, scale: 0.985, rotate: 0, blur: 12 },
-	scaleUp: { x: 0, y: 24, scale: 0.9, rotate: 0, blur: 12 },
-	scaleDown: { x: 0, y: -18, scale: 1.06, rotate: 0, blur: 8 },
-	arc: { x: 0, y: 42, scale: 0.94, rotate: -1.4, blur: 14 },
-	driftLeft: { x: -46, y: 24, scale: 0.965, rotate: 1.2, blur: 12 },
-	driftRight: { x: 46, y: 24, scale: 0.965, rotate: -1.2, blur: 12 },
-	pulse: { x: 0, y: 20, scale: 0.92, rotate: 0, blur: 16 },
+	fadeUp: { x: 0, y: 20, scale: 0.985, rotate: 0, blur: 4 },
+	fadeDown: { x: 0, y: -16, scale: 0.985, rotate: 0, blur: 4 },
+	fadeLeft: { x: -20, y: 10, scale: 0.99, rotate: 0.25, blur: 4 },
+	fadeRight: { x: 20, y: 10, scale: 0.99, rotate: -0.25, blur: 4 },
+	fadeIn: { x: 0, y: 0, scale: 0.992, rotate: 0, blur: 2 },
+	scaleUp: { x: 0, y: 14, scale: 0.955, rotate: 0, blur: 4 },
+	scaleDown: { x: 0, y: -10, scale: 1.03, rotate: 0, blur: 3 },
+	arc: { x: 0, y: 24, scale: 0.97, rotate: -0.6, blur: 5 },
+	driftLeft: { x: -26, y: 14, scale: 0.98, rotate: 0.45, blur: 4 },
+	driftRight: { x: 26, y: 14, scale: 0.98, rotate: -0.45, blur: 4 },
+	pulse: { x: 0, y: 12, scale: 0.965, rotate: 0, blur: 5 },
 };
 
 const baseStyle = {
@@ -19,7 +19,7 @@ const baseStyle = {
 	transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
 };
 
-export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 900, className = '' }) {
+export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 680, className = '' }) {
 	const { ref, isVisible } = useScrollReveal();
 	const preset = presets[animation] || presets.fadeUp;
 	const style = {
