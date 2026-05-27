@@ -7,8 +7,8 @@ import { AboutSection } from './components/AboutSection';
 import { OffersSection } from './components/OffersSection';
 import { GallerySection } from './components/GallerySection';
 import { BannerSection } from './components/BannerSection';
+import { ContactSection } from './components/ContactSection';
 import { Footer } from '../../components/Footer.jsx';
-// NOTE: No changes needed here for the new page.
 
 export function Home() {
 	return (
@@ -21,6 +21,7 @@ export function Home() {
 			<Reveal animation="fadeUp"><OffersSection /></Reveal>
 			<Reveal animation="scaleUp"><GallerySection /></Reveal>
 			<Reveal animation="fadeUp"><BannerSection /></Reveal>
+			<Reveal animation="fadeUp"><ContactSection /></Reveal>
 			<Footer />
 		</div>
 	);

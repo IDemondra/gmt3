@@ -30,24 +30,24 @@ export function GallerySection() {
 	];
 
 	return (
-		<section class="py-section-gap bg-inverse-surface px-margin-mobile md:px-margin-desktop w-full border-t border-on-secondary-fixed" id="gallery">
+		<section class="py-section-gap bg-inverse-surface px-margin-mobile md:px-margin-desktop w-full" id="gallery">
 			<div class="max-w-container-max mx-auto">
-				<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+				<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
 					<div>
-						<h2 class="font-h2 text-h2 text-on-primary font-bold mb-2 uppercase">Expéditions Passées</h2>
-						<div class="h-1 w-24 bg-primary-container"></div>
-						<p class="font-body-md text-on-primary/70 mt-4 max-w-xl">Plongez dans les souvenirs de nos voyageurs à travers les paysages grandioses et les rencontres authentiques de Madagascar.</p>
+						<h2 class="font-h2 text-h2 text-on-primary font-bold mb-2 uppercase">Expeditions Passees</h2>
+						<div class="section-divider w-24" />
+						<p class="font-body-md text-on-primary/70 mt-5 max-w-xl leading-relaxed">Plongez dans les souvenirs de nos voyageurs a travers les paysages grandioses et les rencontres authentiques de Madagascar.</p>
 					</div>
-					<button class="flex items-center gap-2 text-on-primary font-button text-button hover:text-primary-container transition-colors shrink-0 border border-on-primary/30 px-4 py-2 rounded-lg">
+					<button class="flex items-center gap-2 text-on-primary font-button text-button hover:text-primary-container hover:bg-white/10 transition-all duration-300 shrink-0 border border-white/20 px-5 py-3 rounded-xl">
 						VOIR TOUTE LA GALERIE <span class="material-symbols-outlined">collections</span>
 					</button>
 				</div>
 				<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
 					{images.map((img, i) => (
-						<div key={i} class="break-inside-avoid rounded-lg overflow-hidden group relative">
-							<img alt={img.alt} class="w-full object-cover group-hover:scale-105 transition-transform duration-500" src={img.src} />
-							<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-								<span class="text-on-primary font-button tracking-wider uppercase">{img.label}</span>
+						<div key={i} class="break-inside-avoid rounded-xl overflow-hidden group relative shadow-xl shadow-black/20">
+							<img alt={img.alt} class="w-full object-cover group-hover:scale-110 transition-transform duration-700" src={img.src} loading="lazy" />
+							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end p-6">
+								<span class="text-on-primary font-button tracking-wider uppercase text-xs font-semibold bg-primary px-3 py-1.5 rounded-md">{img.label}</span>
 							</div>
 						</div>
 					))}
