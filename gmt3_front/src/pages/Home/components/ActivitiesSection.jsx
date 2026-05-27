@@ -1,28 +1,80 @@
 export function ActivitiesSection() {
 	const activities = [
-		{ icon: 'hiking', title: 'Randonnée' },
-		{ icon: 'camping', title: 'Camping' },
-		{ icon: 'restaurant', title: 'Pique-nique' },
-		{ icon: 'explore', title: 'Voyage' },
-		{ icon: 'map', title: 'Sur Mesure' },
+		{
+			icon: 'hiking',
+			title: 'Randonnée',
+			description: 'Sentiers de crêtes, vallées et dénivelés maîtrisés.',
+		},
+		{
+			icon: 'camping',
+			title: 'Camping',
+			description: 'Nuits en bivouac avec installation optimisée.',
+		},
+		{
+			icon: 'restaurant',
+			title: 'Pique-nique',
+			description: 'Pauses conviviales avec logistique légère.',
+		},
+		{
+			icon: 'explore',
+			title: 'Voyage',
+			description: 'Itinéraires fluides, pensés pour la découverte.',
+		},
+		{
+			icon: 'map',
+			title: 'Sur Mesure',
+			description: 'Parcours calibrés selon rythme, budget et saison.',
+		},
 	];
 
 	return (
-		<section class="bg-surface-variant py-section-gap border-y-2 border-outline-variant">
-			<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-				<div class="text-center mb-16">
-					<h2 class="font-h2 text-h2 text-on-background font-bold mb-4 uppercase">Nos Spécialités</h2>
-					<div class="section-divider w-24 mx-auto mb-4" />
-					<p class="font-body-lg text-body-lg text-secondary max-w-2xl mx-auto">Conçu pour l'aventure, exécuté avec précision.</p>
+		<section class="relative overflow-hidden border-y-2 border-outline-variant bg-surface-variant py-section-gap">
+			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+			<div class="absolute bottom-[-6rem] left-[-4rem] h-72 w-72 rounded-full bg-white/70 blur-3xl pointer-events-none" />
+			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
+				<div class="mx-auto mb-14 max-w-3xl text-center">
+					<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/70 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
+						<span class="h-2 w-2 rounded-full bg-primary-container" />
+						EXPERTISES CLÉS
+					</span>
+					<h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.5rem)] text-on-background font-black uppercase tracking-tighter leading-[1.05]">
+						Nos Spécialités
+					</h2>
+					<div class="section-divider mx-auto mt-4 w-24" />
+					<p class="mx-auto mt-5 max-w-2xl font-body-lg text-body-lg text-secondary leading-relaxed">
+						Conçu pour l'aventure, orchestré avec précision. Chaque spécialité s'appuie sur une logique terrain claire, rapide à comprendre et simple à réserver.
+					</p>
 				</div>
-				<div class="grid grid-cols-2 md:grid-cols-5 gap-8">
-					{activities.map((a, i) => (
-						<div key={i} class="flex flex-col items-center group cursor-pointer">
-							<div class="w-24 h-24 rounded-2xl bg-on-secondary-fixed flex items-center justify-center shadow-lg shadow-primary/10 group-hover:bg-primary group-hover:shadow-xl group-hover:shadow-primary/30 transition-all duration-300 group-hover:-translate-y-1">
-								<span class="material-symbols-outlined text-4xl text-primary group-hover:text-on-primary transition-colors duration-300">{a.icon}</span>
+				<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+					{activities.map((activity, index) => (
+						<article
+							key={index}
+							class="group relative h-full overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/75 p-6 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
+						>
+							<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/0 via-primary-container to-primary/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+							<div class="flex h-full flex-col">
+								<div class="flex items-start justify-between gap-3">
+									<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-on-secondary-fixed text-primary shadow-lg shadow-primary/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-primary/25">
+										<span class="material-symbols-outlined text-[2rem]">
+											{activity.icon}
+										</span>
+									</div>
+									<span class="rounded-full border border-outline-variant bg-white/80 px-3 py-1.5 font-label-caps text-label-caps text-on-background/55">
+										0{index + 1}
+									</span>
+								</div>
+								<h3 class="mt-6 font-h3 text-h3 text-on-background font-black uppercase tracking-tight transition-colors duration-300 group-hover:text-primary">
+									{activity.title}
+								</h3>
+								<p class="mt-3 font-body-md text-body-md text-secondary leading-relaxed">
+									{activity.description}
+								</p>
+								<div class="mt-auto inline-flex items-center gap-2 self-start pt-6 leading-none text-primary opacity-80 transition-all duration-300 group-hover:gap-3 group-hover:opacity-100">
+									<span class="font-button text-button leading-none whitespace-nowrap">Voir le détail</span>
+									<span class="material-symbols-outlined text-[18px] leading-none">arrow_forward</span>
+								</div>
 							</div>
-							<h4 class="mt-6 font-h3 text-h3 text-on-background text-base uppercase text-center group-hover:text-primary transition-colors duration-300 font-bold">{a.title}</h4>
-						</div>
+						</article>
 					))}
 				</div>
 			</div>
