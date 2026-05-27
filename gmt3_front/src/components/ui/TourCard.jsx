@@ -1,7 +1,7 @@
 import { Card } from './Card.jsx';
 import { img } from '../../utils/images.js';
 
-export function TourCard({ image, badge, date, title, description }) {
+export function TourCard({ image, badge, date, title, description, href }) {
   return (
     <Card className="group h-full min-h-[36rem] overflow-hidden border border-outline-variant/70 bg-white/85 backdrop-blur-sm">
       <div class="relative aspect-[4/5] min-h-[24rem] w-full overflow-hidden sm:aspect-[16/11] lg:min-h-[28rem]">
@@ -36,10 +36,20 @@ export function TourCard({ image, badge, date, title, description }) {
       </div>
       <div class="flex flex-grow flex-col p-4 sm:p-5 lg:p-6">
         <div class="mt-auto flex flex-col items-start gap-4 sm:items-start">
-          <button class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95">
-            EN SAVOIR PLUS
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </button>
+          {href ? (
+            <a
+              class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+              href={href}
+            >
+              EN SAVOIR PLUS
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          ) : (
+            <button type="button" class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95">
+              EN SAVOIR PLUS
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          )}
         </div>
       </div>
     </Card>
