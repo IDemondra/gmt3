@@ -1,3 +1,5 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
+
 export function ActivitiesSection() {
 	const activities = [
 		{
@@ -47,34 +49,35 @@ export function ActivitiesSection() {
 				</div>
 				<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
 					{activities.map((activity, index) => (
-						<article
-							key={index}
-							class="group relative h-full overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8"
-						>
-							<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/0 via-primary-container to-primary/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-							<div class="flex h-full flex-col">
-								<div class="flex items-start justify-between gap-3">
-									<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-on-secondary-fixed text-primary shadow-md shadow-primary/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-primary/15">
-										<span class="material-symbols-outlined text-[2rem]">
-											{activity.icon}
+						<Reveal key={index} animation="fadeUp" delay={index * 70} duration={650}>
+							<article
+								class="group relative h-full overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8"
+							>
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/0 via-primary-container to-primary/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+								<div class="flex h-full flex-col">
+									<div class="flex items-start justify-between gap-3">
+										<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-on-secondary-fixed text-primary shadow-md shadow-primary/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-primary/15">
+											<span class="material-symbols-outlined text-[2rem]">
+												{activity.icon}
+											</span>
+										</div>
+										<span class="rounded-full border border-outline-variant bg-white/80 px-3 py-1.5 font-label-caps text-label-caps text-on-background/55">
+											0{index + 1}
 										</span>
 									</div>
-									<span class="rounded-full border border-outline-variant bg-white/80 px-3 py-1.5 font-label-caps text-label-caps text-on-background/55">
-										0{index + 1}
-									</span>
+									<h3 class="mt-6 font-h3 text-h3 text-on-background font-black uppercase tracking-tight transition-colors duration-300 group-hover:text-primary">
+										{activity.title}
+									</h3>
+									<p class="mt-3 font-body-md text-body-md text-secondary leading-relaxed">
+										{activity.description}
+									</p>
+									<div class="mt-auto inline-flex items-center gap-2 self-start pt-6 leading-none text-primary opacity-80 transition-all duration-300 group-hover:gap-3 group-hover:opacity-100">
+										<span class="font-button text-button leading-none whitespace-nowrap">Voir le détail</span>
+										<span class="material-symbols-outlined text-[18px] leading-none">arrow_forward</span>
+									</div>
 								</div>
-								<h3 class="mt-6 font-h3 text-h3 text-on-background font-black uppercase tracking-tight transition-colors duration-300 group-hover:text-primary">
-									{activity.title}
-								</h3>
-								<p class="mt-3 font-body-md text-body-md text-secondary leading-relaxed">
-									{activity.description}
-								</p>
-								<div class="mt-auto inline-flex items-center gap-2 self-start pt-6 leading-none text-primary opacity-80 transition-all duration-300 group-hover:gap-3 group-hover:opacity-100">
-									<span class="font-button text-button leading-none whitespace-nowrap">Voir le détail</span>
-									<span class="material-symbols-outlined text-[18px] leading-none">arrow_forward</span>
-								</div>
-							</div>
-						</article>
+							</article>
+						</Reveal>
 					))}
 				</div>
 			</div>

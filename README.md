@@ -32,6 +32,9 @@
 - Le rythme des animations a été raccourci pour un rendu plus fluide et plus réactif.
 - Les animations de scroll ont été allégées pour supprimer l’effet lourd et améliorer la fluidité au scroll.
 - Les plus gros coûts de rendu viennent désormais des surfaces blur/shadow, qui ont été réduites sur les composants principaux.
+- Les animations sont maintenant appliquées surtout aux cartes et aux tuiles, pas aux sections entières.
+- Les durées d’animation des cartes ont été rallongées.
+- Le bloc `Destinations Phares` a été restauré sans wrapper d’animation de section.
 
 ## Remaining Bugs
 - Aucun bug fonctionnel identifié sur cette passe.

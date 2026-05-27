@@ -1,3 +1,4 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function GallerySection() {
@@ -74,38 +75,40 @@ export function GallerySection() {
 					</div>
 				</div>
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12 xl:auto-rows-[220px]">
-					{images.map((image) => (
-						<article
-							class={`group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/8 shadow-lg shadow-black/20 ring-1 ring-white/5 ${image.span}`}
-						>
-							<img
-								alt={image.alt}
-								class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-								loading="lazy"
-								src={image.src}
-							/>
-							<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
-							<div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-								<div class="flex flex-wrap items-center gap-2">
-									<span class="rounded-full bg-primary px-3 py-1.5 font-label-caps text-label-caps text-on-primary shadow-lg shadow-primary/25">
-										{image.label}
-									</span>
-									<span class="rounded-full border border-white/15 bg-white/12 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85">
-										{image.meta}
-									</span>
-								</div>
-								<div class="mt-4 flex items-end justify-between gap-4">
-									<div>
-										<p class="font-body-md text-body-md text-on-primary/78 max-w-sm leading-relaxed">
-											{image.alt}
-										</p>
+					{images.map((image, index) => (
+						<Reveal key={image.alt} animation={index % 2 === 0 ? 'fadeUp' : 'driftRight'} delay={index * 60} duration={650}>
+							<article
+								class={`group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/8 shadow-lg shadow-black/20 ring-1 ring-white/5 ${image.span}`}
+							>
+								<img
+									alt={image.alt}
+									class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+									loading="lazy"
+									src={image.src}
+								/>
+								<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
+								<div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+									<div class="flex flex-wrap items-center gap-2">
+										<span class="rounded-full bg-primary px-3 py-1.5 font-label-caps text-label-caps text-on-primary shadow-md shadow-primary/20">
+											{image.label}
+										</span>
+										<span class="rounded-full border border-white/15 bg-white/12 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85">
+											{image.meta}
+										</span>
 									</div>
-									<span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/12 text-on-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-										<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
-									</span>
+									<div class="mt-4 flex items-end justify-between gap-4">
+										<div>
+											<p class="font-body-md text-body-md text-on-primary/78 max-w-sm leading-relaxed">
+												{image.alt}
+											</p>
+										</div>
+										<span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/12 text-on-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+											<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+										</span>
+									</div>
 								</div>
-							</div>
-						</article>
+							</article>
+						</Reveal>
 					))}
 				</div>
 				<div class="mt-8 flex justify-end">

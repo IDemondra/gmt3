@@ -1,3 +1,4 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function AboutSection() {
@@ -41,22 +42,24 @@ export function AboutSection() {
 						</p>
 
 						<div class="mt-10 grid gap-4 sm:grid-cols-2">
-							{expertise.map((item) => (
-								<article class="group rounded-2xl border border-outline-variant/70 bg-white/80 p-5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8">
-									<div class="flex items-start gap-4">
-										<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-container/15 text-primary transition-all duration-300 group-hover:bg-primary-container group-hover:text-on-primary">
-											<span class="material-symbols-outlined">{item.icon}</span>
+							{expertise.map((item, index) => (
+								<Reveal key={item.title} animation={index % 2 === 0 ? 'fadeUp' : 'fadeRight'} delay={index * 70} duration={650}>
+									<article class="group rounded-2xl border border-outline-variant/70 bg-white/80 p-5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8">
+										<div class="flex items-start gap-4">
+											<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-container/15 text-primary transition-all duration-300 group-hover:bg-primary-container group-hover:text-on-primary">
+												<span class="material-symbols-outlined">{item.icon}</span>
+											</div>
+											<div>
+												<h3 class="font-body-md text-body-md font-semibold text-on-background leading-snug">
+													{item.title}
+												</h3>
+												<p class="mt-1 font-body-md text-body-md text-secondary text-sm">
+													{item.detail}
+												</p>
+											</div>
 										</div>
-										<div>
-											<h3 class="font-body-md text-body-md font-semibold text-on-background leading-snug">
-												{item.title}
-											</h3>
-											<p class="mt-1 font-body-md text-body-md text-secondary text-sm">
-												{item.detail}
-											</p>
-										</div>
-									</div>
-								</article>
+									</article>
+								</Reveal>
 							))}
 						</div>
 
@@ -84,39 +87,44 @@ export function AboutSection() {
 						</div>
 
 						<div class="grid gap-4 sm:grid-cols-2">
-							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10 sm:row-span-2">
-								<img
-									alt="Portrait de guide local"
-									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-									src={img('https://lh3.googleusercontent.com/aida-public/AB6AXuAbuDeIPLsY83l0VH8H0y92_P8QpKqSP8rE3nKmm3kDbjmZgcvhUcWwO2iiqNLPnl67NACEORlOuY1MGvTy1DEoocLXX0Pvc33eMsOykpFGJR7BQXeaz7_fiEpApi2bYlGWGIFbSbiOFdys5G9jUbLC8GBBI6BjWFehAl3bISOSDPYHelPt7ZdHT0nlW8XGUxnUkcUULbbyz4I7wtrDxAtXYFtyKDqmxsj8iQntZi3uZpfXktCP23bYcIvnnTWiVG8RNGM7KzwMcsA')}
-								/>
-								<div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-								<div class="absolute inset-x-0 bottom-0 p-5">
-									<span class="inline-flex rounded-full bg-primary px-3 py-1.5 font-label-caps text-label-caps text-on-primary shadow-lg shadow-primary/20">
-										Guide de proximité
-									</span>
-									<p class="mt-3 max-w-xs font-body-md text-body-md text-on-primary/85 leading-relaxed">
-										Des repères concrets pour lire le terrain et anticiper chaque séquence du voyage.
-									</p>
+							<Reveal animation="fadeUp" duration={650}>
+								<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10 sm:row-span-2">
+									<img
+										alt="Portrait de guide local"
+										class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+										src={img('https://lh3.googleusercontent.com/aida-public/AB6AXuAbuDeIPLsY83l0VH8H0y92_P8QpKqSP8rE3nKmm3kDbjmZgcvhUcWwO2iiqNLPnl67NACEORlOuY1MGvTy1DEoocLXX0Pvc33eMsOykpFGJR7BQXeaz7_fiEpApi2bYlGWGIFbSbiOFdys5G9jUbLC8GBBI6BjWFehAl3bISOSDPYHelPt7ZdHT0nlW8XGUxnUkcUULbbyz4I7wtrDxAtXYFtyKDqmxsj8iQntZi3uZpfXktCP23bYcIvnnTWiVG8RNGM7KzwMcsA')}
+									/>
+									<div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+									<div class="absolute inset-x-0 bottom-0 p-5">
+										<span class="inline-flex rounded-full bg-primary px-3 py-1.5 font-label-caps text-label-caps text-on-primary shadow-md shadow-primary/15">
+											Guide de proximité
+										</span>
+										<p class="mt-3 max-w-xs font-body-md text-body-md text-on-primary/85 leading-relaxed">
+											Des repères concrets pour lire le terrain et anticiper chaque séquence du voyage.
+										</p>
+									</div>
 								</div>
-							</div>
+							</Reveal>
 
-							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10">
-								<img
-									alt="Guide en action"
-									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-									src={img('https://lh3.googleusercontent.com/aida-public/AB6AXuDFObZ3NzvjwCbetXzl_ONZPxuiEgjfXRWCsEkZD1-cV7rExx4dFnd72HvbllO9v6Q19Ej5gPbGvfmlA2U3AE3FyiUK3ehKtEJjSkAy6ORj2xYfvTPAi6_IBkP5yp0Jl4L_qdaakA1xd0S1znDNGX9ndrh-e0rtXOl8Ut8ikFEmiY2V2ZidBPyT1D07PEFHhhEfgnIA9RStddtqqDB82zbtgzI5zL_o5ysVI5plnLzrzyAOULPtrhl85B1a_oxIQ6IIZaTINMSnzfI')}
-								/>
-								<div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-								<div class="absolute inset-x-0 bottom-0 p-5">
-									<p class="font-label-caps text-label-caps text-on-primary/70">Terrain vivant</p>
-									<p class="mt-2 font-body-md text-body-md text-on-primary leading-relaxed">
-										Des échanges directs avec les communautés et les reliefs du pays.
-									</p>
+							<Reveal animation="fadeRight" delay={80} duration={650}>
+								<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10">
+									<img
+										alt="Guide en action"
+										class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+										src={img('https://lh3.googleusercontent.com/aida-public/AB6AXuDFObZ3NzvjwCbetXzl_ONZPxuiEgjfXRWCsEkZD1-cV7rExx4dFnd72HvbllO9v6Q19Ej5gPbGvfmlA2U3AE3FyiUK3ehKtEJjSkAy6ORj2xYfvTPAi6_IBkP5yp0Jl4L_qdaakA1xd0S1znDNGX9ndrh-e0rtXOl8Ut8ikFEmiY2V2ZidBPyT1D07PEFHhhEfgnIA9RStddtqqDB82zbtgzI5zL_o5ysVI5plnLzrzyAOULPtrhl85B1a_oxIQ6IIZaTINMSnzfI')}
+									/>
+									<div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+									<div class="absolute inset-x-0 bottom-0 p-5">
+										<p class="font-label-caps text-label-caps text-on-primary/70">Terrain vivant</p>
+										<p class="mt-2 font-body-md text-body-md text-on-primary leading-relaxed">
+											Des échanges directs avec les communautés et les reliefs du pays.
+										</p>
+									</div>
 								</div>
-							</div>
+							</Reveal>
 
-							<div class="relative overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5">
+							<Reveal animation="fadeUp" delay={120} duration={650}>
+								<div class="relative overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5">
 								<p class="font-label-caps text-label-caps text-on-background/50">Approche</p>
 								<p class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
 									Immersion utile
@@ -124,7 +132,8 @@ export function AboutSection() {
 								<p class="mt-3 font-body-md text-body-md text-secondary leading-relaxed">
 									Chaque guide combine lecture du relief, codes locaux et rythme de voyage maîtrisé.
 								</p>
-							</div>
+								</div>
+							</Reveal>
 						</div>
 					</div>
 				</div>

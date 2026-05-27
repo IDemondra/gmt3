@@ -19,7 +19,7 @@ const baseStyle = {
 	transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
 };
 
-export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 420, className = '' }) {
+export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 650, className = '' }) {
 	const { ref, isVisible } = useScrollReveal();
 	const preset = presets[animation] || presets.fadeUp;
 	const style = {

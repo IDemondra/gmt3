@@ -1,3 +1,4 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { TourCard } from '../../../components/ui/TourCard.jsx';
 
 export function ToursSection() {
@@ -38,7 +39,9 @@ export function ToursSection() {
 			</div>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter xl:gap-8">
 				{tours.map((tour, i) => (
-					<TourCard key={i} {...tour} />
+					<Reveal key={i} animation={i % 2 === 0 ? 'fadeUp' : 'driftRight'} delay={i * 80} duration={680}>
+						<TourCard {...tour} />
+					</Reveal>
 				))}
 			</div>
 			<a class="w-full md:hidden mt-8 font-button text-button bg-primary-container text-on-primary px-4 py-3 rounded-lg hover:shadow-lg transition-all duration-300 text-center block" href="/events">
