@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 
 const defaultOptions = {
-	threshold: 0.1,
-	rootMargin: '0px 0px -50px 0px',
+	threshold: 0.15,
+	rootMargin: '0px 0px -12% 0px',
 	once: true,
 };
 
