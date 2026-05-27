@@ -29,8 +29,8 @@ export function ActivitiesSection() {
 
 	return (
 		<section class="relative overflow-hidden border-y-2 border-outline-variant bg-surface-variant py-section-gap">
-			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
-			<div class="absolute bottom-[-6rem] left-[-4rem] h-72 w-72 rounded-full bg-white/70 blur-3xl pointer-events-none" />
+			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
+			<div class="absolute bottom-[-6rem] left-[-4rem] h-72 w-72 rounded-full bg-white/50 blur-2xl pointer-events-none" />
 			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
 				<div class="mx-auto mb-14 max-w-3xl text-center">
 					<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/70 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
@@ -49,12 +49,12 @@ export function ActivitiesSection() {
 					{activities.map((activity, index) => (
 						<article
 							key={index}
-							class="group relative h-full overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/75 p-6 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
+							class="group relative h-full overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8"
 						>
 							<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/0 via-primary-container to-primary/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 							<div class="flex h-full flex-col">
 								<div class="flex items-start justify-between gap-3">
-									<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-on-secondary-fixed text-primary shadow-lg shadow-primary/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-primary/25">
+									<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-on-secondary-fixed text-primary shadow-md shadow-primary/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-primary/15">
 										<span class="material-symbols-outlined text-[2rem]">
 											{activity.icon}
 										</span>

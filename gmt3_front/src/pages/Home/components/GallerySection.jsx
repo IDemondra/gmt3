@@ -41,8 +41,8 @@ export function GallerySection() {
 
 	return (
 		<section class="relative py-section-gap bg-inverse-surface px-margin-mobile md:px-margin-desktop w-full overflow-hidden" id="gallery">
-			<div class="absolute -top-24 right-[-8rem] h-72 w-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
-			<div class="absolute bottom-[-6rem] left-[-5rem] h-80 w-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+			<div class="absolute -top-24 right-[-8rem] h-72 w-72 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
+			<div class="absolute bottom-[-6rem] left-[-5rem] h-80 w-80 rounded-full bg-white/8 blur-2xl pointer-events-none" />
 			<div class="relative max-w-container-max mx-auto">
 				<div class="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between mb-12 xl:mb-14">
 					<div class="max-w-2xl">
@@ -59,15 +59,15 @@ export function GallerySection() {
 						</p>
 					</div>
 					<div class="flex flex-col sm:flex-row gap-3">
-						<div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-md">
+						<div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3">
 							<p class="font-label-caps text-label-caps text-on-primary/50">Visuels</p>
 							<p class="mt-1 font-button text-button text-on-primary">Mosaïque immersive</p>
 						</div>
-						<div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-md">
+						<div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3">
 							<p class="font-label-caps text-label-caps text-on-primary/50">Rythme</p>
 							<p class="mt-1 font-button text-button text-on-primary">Défilement fluide</p>
 						</div>
-						<div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-md">
+						<div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3">
 							<p class="font-label-caps text-label-caps text-on-primary/50">Accès</p>
 							<p class="mt-1 font-button text-button text-on-primary">Voir toute la galerie</p>
 						</div>
@@ -76,7 +76,7 @@ export function GallerySection() {
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12 xl:auto-rows-[220px]">
 					{images.map((image) => (
 						<article
-							class={`group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 ring-1 ring-white/5 ${image.span}`}
+							class={`group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/8 shadow-lg shadow-black/20 ring-1 ring-white/5 ${image.span}`}
 						>
 							<img
 								alt={image.alt}
@@ -90,7 +90,7 @@ export function GallerySection() {
 									<span class="rounded-full bg-primary px-3 py-1.5 font-label-caps text-label-caps text-on-primary shadow-lg shadow-primary/25">
 										{image.label}
 									</span>
-									<span class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md">
+									<span class="rounded-full border border-white/15 bg-white/12 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85">
 										{image.meta}
 									</span>
 								</div>
@@ -100,7 +100,7 @@ export function GallerySection() {
 											{image.alt}
 										</p>
 									</div>
-									<span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-on-primary backdrop-blur-md transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+									<span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/12 text-on-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
 										<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
 									</span>
 								</div>
@@ -110,7 +110,7 @@ export function GallerySection() {
 				</div>
 				<div class="mt-8 flex justify-end">
 					<button
-						class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-3 font-button text-button text-on-primary backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:shadow-lg hover:shadow-black/20"
+						class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/8 px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:border-white/25 hover:bg-white/12 hover:shadow-lg hover:shadow-black/12"
 						type="button"
 					>
 						VOIR TOUTE LA GALERIE

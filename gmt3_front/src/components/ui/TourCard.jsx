@@ -3,23 +3,23 @@ import { img } from '../../utils/images.js';
 
 export function TourCard({ image, badge, date, title, description, href }) {
   return (
-    <Card className="group h-full min-h-[36rem] overflow-hidden border border-outline-variant/70 bg-white/85 backdrop-blur-sm">
+    <Card className="group h-full min-h-[36rem] overflow-hidden border border-outline-variant/70 bg-white/90">
       <div class="relative aspect-[4/5] min-h-[24rem] w-full overflow-hidden sm:aspect-[16/11] lg:min-h-[28rem]">
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.06]" style={`background-image: url('${img(image)}')`} />
         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
         <div class="absolute inset-x-0 top-0 p-4 sm:p-5">
           <div class="flex max-w-full flex-wrap items-center gap-2">
-            <span class="max-w-full truncate rounded-full bg-white/15 px-3 py-1.5 font-label-caps text-label-caps text-on-primary backdrop-blur-md border border-white/15 shadow-lg shadow-black/10">
+            <span class="max-w-full truncate rounded-full bg-white/18 px-3 py-1.5 font-label-caps text-label-caps text-on-primary border border-white/15 shadow-md shadow-black/10">
               {badge}
             </span>
-            <span class="max-w-full truncate rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md">
+            <span class="max-w-full truncate rounded-full border border-white/15 bg-white/12 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85">
               {date}
             </span>
           </div>
         </div>
         <div class="absolute inset-x-0 bottom-0 p-4 sm:p-5 lg:p-6">
           <div class="space-y-4">
-            <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md">
+            <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/12 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/85">
               <span class="material-symbols-outlined text-[18px] text-primary-container shrink-0">calendar_month</span>
               <span class="truncate">{date}</span>
             </div>

@@ -81,7 +81,7 @@ export function Header() {
 			</div>
 
 			{mobileMenuOpen.value && (
-				<nav class="md:hidden bg-primary/98 backdrop-blur-md border-t border-white/10" aria-label="Navigation mobile">
+				<nav class="md:hidden bg-primary/98 border-t border-white/10" aria-label="Navigation mobile">
 					<ul class="flex flex-col p-4 gap-1">
 						{navLinks.map((link) => (
 							<li key={link.href}>

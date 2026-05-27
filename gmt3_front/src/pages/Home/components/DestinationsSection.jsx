@@ -12,9 +12,9 @@ export function DestinationsSection() {
 				<div class="section-divider w-24 mx-auto" />
 			</div>
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-				<div class="relative h-[400px] lg:h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-xl shadow-black/10">
+				<div class="relative h-[400px] lg:h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
 					<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg1}`}></div>
-					<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/95 via-on-secondary-fixed/30 to-transparent transition-opacity duration-300 group-hover:opacity-90"></div>
+					<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/95 via-on-secondary-fixed/35 to-transparent transition-opacity duration-300 group-hover:opacity-90"></div>
 					<div class="absolute bottom-0 left-0 right-0 p-8 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
 						<span class="inline-block bg-primary-container text-on-primary px-3 py-1.5 font-label-caps text-label-caps mb-3 uppercase rounded-md shadow-md">RÉGION CENTRE-SUD</span>
 						<h3 class="font-h1-mobile text-h1-mobile font-black mb-2 uppercase tracking-tight">Fianarantsoa</h3>
@@ -24,7 +24,7 @@ export function DestinationsSection() {
 				<div class="grid grid-rows-2 gap-8 h-[500px]">
 					<div class="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
 						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg2}`}></div>
-						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/20 to-transparent"></div>
+						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
 						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
 							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Tsingy de Bemaraha</h3>
 							<p class="font-body-md text-on-primary/80">Labyrinthe de pierre spectaculaire classé à l'UNESCO.</p>
@@ -32,7 +32,7 @@ export function DestinationsSection() {
 					</div>
 					<div class="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
 						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg3}`}></div>
-						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/20 to-transparent"></div>
+						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
 						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
 							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Allée des Baobabs</h3>
 							<p class="font-body-md text-on-primary/80">Paysages grandioses au coucher du soleil.</p>

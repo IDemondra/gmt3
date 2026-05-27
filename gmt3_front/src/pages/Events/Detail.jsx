@@ -54,14 +54,14 @@ export function EventDetail({ params }) {
 							<div class="max-w-3xl">
 								<Reveal animation="fadeUp" duration={760}>
 									<div class="flex flex-wrap items-center gap-3">
-										<a href="/events" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md transition-colors hover:bg-white/15">
+										<a href="/events" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 py-2 font-label-caps text-label-caps text-on-primary/85 transition-colors hover:bg-white/16">
 											<span class="material-symbols-outlined text-[18px]">arrow_back</span>
 											ALL EVENTS
 										</a>
 										<span class="rounded-full bg-primary-container px-4 py-2 font-label-caps text-label-caps text-on-primary shadow-lg shadow-primary/20">
 											{event.badge}
 										</span>
-										<span class="rounded-full border border-white/15 bg-white/10 px-4 py-2 font-label-caps text-label-caps text-on-primary/85 backdrop-blur-md">
+										<span class="rounded-full border border-white/15 bg-white/12 px-4 py-2 font-label-caps text-label-caps text-on-primary/85">
 											{event.date}
 										</span>
 									</div>
@@ -87,7 +87,7 @@ export function EventDetail({ params }) {
 										</a>
 										<a
 											href="#related"
-											class="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-6 py-4 font-button text-button text-on-primary backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:shadow-black/20 active:scale-95"
+											class="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/8 px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:bg-white/12 hover:shadow-lg hover:shadow-black/15 active:scale-95"
 										>
 											RELATED EVENTS
 										</a>
@@ -96,7 +96,7 @@ export function EventDetail({ params }) {
 							</div>
 
 							<Reveal animation="fadeUp" delay={120} duration={820} className="lg:justify-self-end">
-								<aside class="w-full rounded-[1.75rem] border border-white/15 bg-white/10 p-6 text-on-primary shadow-2xl shadow-black/20 backdrop-blur-xl">
+								<aside class="w-full rounded-[1.75rem] border border-white/15 bg-white/12 p-6 text-on-primary shadow-lg shadow-black/15">
 									<div class="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
 										<div>
 											<p class="font-label-caps text-label-caps text-on-primary/70">Starting from</p>
@@ -146,7 +146,7 @@ export function EventDetail({ params }) {
 				<section id="details" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full -mt-10">
 					<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
 						<Reveal animation="fadeUp" duration={760}>
-							<article class="rounded-[1.75rem] border border-outline-variant/70 bg-white/85 p-6 shadow-xl shadow-black/5 backdrop-blur-sm md:p-8">
+							<article class="rounded-[1.75rem] border border-outline-variant/70 bg-white/92 p-6 shadow-md shadow-black/5 md:p-8">
 								<div class="flex items-center justify-between gap-4">
 									<div>
 										<p class="font-label-caps text-label-caps text-secondary">Experience overview</p>
@@ -169,7 +169,7 @@ export function EventDetail({ params }) {
 										</div>
 									))}
 								</div>
-								<div class="mt-8 rounded-[1.5rem] bg-gradient-to-br from-primary/8 via-primary/5 to-transparent p-5">
+								<div class="mt-8 rounded-[1.5rem] bg-gradient-to-br from-primary/8 via-primary/4 to-transparent p-5">
 									<p class="font-label-caps text-label-caps text-primary">What you will experience</p>
 									<ul class="mt-4 space-y-4">
 										{event.highlights.map((highlight, index) => (
@@ -187,7 +187,7 @@ export function EventDetail({ params }) {
 
 						<Reveal animation="driftRight" delay={80} duration={820}>
 							<aside class="space-y-6 lg:sticky lg:top-24">
-								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-inverse-surface p-6 text-on-primary shadow-xl shadow-black/10">
+								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-inverse-surface p-6 text-on-primary shadow-md shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Trip rhythm</p>
 									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Day by day flow</h2>
 									<div class="mt-6 space-y-4">
@@ -202,7 +202,7 @@ export function EventDetail({ params }) {
 									</div>
 								</div>
 
-								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-white/85 p-6 shadow-xl shadow-black/5 backdrop-blur-sm">
+								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-white/92 p-6 shadow-md shadow-black/5">
 									<p class="font-label-caps text-label-caps text-secondary">Quick actions</p>
 									<div class="mt-5 grid gap-3">
 										<a

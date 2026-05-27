@@ -23,12 +23,12 @@ export function AboutSection() {
 
 	return (
 		<section class="relative overflow-hidden border-y-2 border-outline-variant bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="guides">
-			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
-			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/30 blur-3xl pointer-events-none" />
+			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-2xl pointer-events-none" />
 			<div class="relative mx-auto max-w-container-max">
 				<div class="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
 					<div class="max-w-2xl">
-						<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/65 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
+						<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/75 px-4 py-2 font-label-caps text-label-caps text-on-background/70">
 							<span class="h-2 w-2 rounded-full bg-primary-container" />
 							ACCOMPAGNEMENT TERRAIN
 						</span>
@@ -42,7 +42,7 @@ export function AboutSection() {
 
 						<div class="mt-10 grid gap-4 sm:grid-cols-2">
 							{expertise.map((item) => (
-								<article class="group rounded-2xl border border-outline-variant/70 bg-white/60 p-5 shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10">
+								<article class="group rounded-2xl border border-outline-variant/70 bg-white/80 p-5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/8">
 									<div class="flex items-start gap-4">
 										<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-container/15 text-primary transition-all duration-300 group-hover:bg-primary-container group-hover:text-on-primary">
 											<span class="material-symbols-outlined">{item.icon}</span>
@@ -61,7 +61,7 @@ export function AboutSection() {
 						</div>
 
 						<div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
-							<button class="group inline-flex items-center gap-2 rounded-2xl bg-primary-container px-8 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20 active:scale-95">
+							<button class="group inline-flex items-center gap-2 rounded-2xl bg-primary-container px-8 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/15 active:scale-95">
 								RENCONTRER L'ÉQUIPE
 								<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
 							</button>
@@ -76,7 +76,7 @@ export function AboutSection() {
 					</div>
 
 					<div class="relative">
-						<div class="absolute -left-4 top-8 hidden h-28 w-28 rounded-[1.75rem] border border-white/60 bg-white/75 p-4 shadow-xl shadow-black/10 backdrop-blur-md lg:block">
+						<div class="absolute -left-4 top-8 hidden h-28 w-28 rounded-[1.75rem] border border-white/60 bg-white/85 p-4 shadow-lg shadow-black/10 lg:block">
 							<p class="font-label-caps text-label-caps text-on-background/50">Focus terrain</p>
 							<p class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
 								Sécurité et récit
@@ -84,7 +84,7 @@ export function AboutSection() {
 						</div>
 
 						<div class="grid gap-4 sm:grid-cols-2">
-							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-2xl shadow-black/10 sm:row-span-2">
+							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10 sm:row-span-2">
 								<img
 									alt="Portrait de guide local"
 									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -101,7 +101,7 @@ export function AboutSection() {
 								</div>
 							</div>
 
-							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-xl shadow-black/10">
+							<div class="group relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white shadow-lg shadow-black/10">
 								<img
 									alt="Guide en action"
 									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -116,7 +116,7 @@ export function AboutSection() {
 								</div>
 							</div>
 
-							<div class="relative overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/80 p-6 shadow-xl shadow-black/5 backdrop-blur-sm">
+							<div class="relative overflow-hidden rounded-[1.75rem] border border-outline-variant/70 bg-white/88 p-6 shadow-md shadow-black/5">
 								<p class="font-label-caps text-label-caps text-on-background/50">Approche</p>
 								<p class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
 									Immersion utile

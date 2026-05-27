@@ -1,12 +1,18 @@
 # Contexte
 
 ## Created / Modified Files
-- `gmt3_front/src/components/ui/Reveal.jsx`
+- `gmt3_front/src/components/Header.jsx`
+- `gmt3_front/src/components/ui/Card.jsx`
 - `gmt3_front/src/components/ui/TourCard.jsx`
+- `gmt3_front/src/components/ui/Reveal.jsx`
 - `gmt3_front/src/data/upcomingEvents.js`
 - `gmt3_front/src/hooks/useScrollReveal.js`
 - `gmt3_front/src/index.css`
 - `gmt3_front/src/pages/Home/components/HeroSection.jsx`
+- `gmt3_front/src/pages/Home/components/ActivitiesSection.jsx`
+- `gmt3_front/src/pages/Home/components/AboutSection.jsx`
+- `gmt3_front/src/pages/Home/components/DestinationsSection.jsx`
+- `gmt3_front/src/pages/Home/components/GallerySection.jsx`
 - `gmt3_front/src/pages/Home/index.jsx`
 - `gmt3_front/src/pages/Events/Detail.jsx`
 - `gmt3_front/src/pages/Events/index.jsx`
@@ -24,6 +30,8 @@
 - Le système de scroll reveal est plus cinématique, plus immersif et appliqué aux principales sections.
 - Le hero d’accueil utilise maintenant la même logique d’animation scroll que le reste du site.
 - Le rythme des animations a été raccourci pour un rendu plus fluide et plus réactif.
+- Les animations de scroll ont été allégées pour supprimer l’effet lourd et améliorer la fluidité au scroll.
+- Les plus gros coûts de rendu viennent désormais des surfaces blur/shadow, qui ont été réduites sur les composants principaux.
 
 ## Remaining Bugs
 - Aucun bug fonctionnel identifié sur cette passe.
