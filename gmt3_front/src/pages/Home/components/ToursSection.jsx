@@ -36,7 +36,7 @@ export function ToursSection() {
 					VOIR TOUT <span class="material-symbols-outlined">arrow_forward</span>
 				</a>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter xl:gap-8">
 				{tours.map((tour, i) => (
 					<TourCard key={i} {...tour} />
 				))}
