@@ -19,6 +19,7 @@
 - `gmt3_front/src/index.jsx`
 - `gmt3_front/src/utils/images.js`
 - `README.md`
+- `gmt3_front/src/pages/Home/components/GallerySection.jsx` — gallery refaite en grandes model cards inspirées de la section guides
 
 ## What Works
 - Le titre `UPCOMING EVENTS` a été remplacé par `PROCHAINES EVENNEMENTS`.
@@ -35,6 +36,7 @@
 - Les animations sont maintenant appliquées surtout aux cartes et aux tuiles, pas aux sections entières.
 - Les durées d’animation des cartes ont été rallongées.
 - Le bloc `Destinations Phares` a été restauré sans wrapper d’animation de section.
+- La galerie Home utilise désormais des cartes larges et hautes, inspirées du layout des model cards, pour mettre l’image au premier plan.
 
 ## Remaining Bugs
 - Aucun bug fonctionnel identifié sur cette passe.

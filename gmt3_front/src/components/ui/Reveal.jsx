@@ -31,9 +31,10 @@ export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 6
 		'--reveal-scale': isVisible ? 1 : preset.scale,
 	};
 
+// Dans ton composant Reveal
 	return (
-		<div ref={ref} class={`motion-reveal ${isVisible ? 'is-visible' : ''} ${className}`} style={style}>
-			{children}
-		</div>
+	    <div ref={ref} class={`motion-reveal ${isVisible ? 'is-visible' : ''} ${className}`} style={style}>
+	        {children}
+	    </div>
 	);
 }
