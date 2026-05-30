@@ -22,6 +22,7 @@
 - `gmt3_front/src/pages/Home/components/GallerySection.jsx` — gallery refaite en grandes model cards inspirées de la section guides
 
 ## What Works
+- Les 3 cartes "Destinations Phares" présentent désormais uniquement des sites touristiques de la région de Fianarantsoa (Fianarantsoa ville, Parc National de Ranomafana, Ambalavao & Réserve d'Anja).
 - Le titre `UPCOMING EVENTS` a été remplacé par `PROCHAINES EVENNEMENTS`.
 - La page utilise désormais la carte premium réutilisable du site pour les événements.
 - Chaque carte `EN SAVOIR PLUS` ouvre une page détail dédiée par événement.

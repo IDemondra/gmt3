@@ -26,16 +26,16 @@ export function DestinationsSection() {
 						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg2}`}></div>
 						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
 						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Tsingy de Bemaraha</h3>
-							<p class="font-body-md text-on-primary/80">Labyrinthe de pierre spectaculaire classé à l'UNESCO.</p>
+							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Parc National de Ranomafana</h3>
+							<p class="font-body-md text-on-primary/80">Forêt tropicale, lémuriens et sources chaudes naturelles.</p>
 						</div>
 					</div>
 					<div class="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
 						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg3}`}></div>
 						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
 						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Allée des Baobabs</h3>
-							<p class="font-body-md text-on-primary/80">Paysages grandioses au coucher du soleil.</p>
+							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Ambalavao &amp; Réserve d'Anja</h3>
+							<p class="font-body-md text-on-primary/80">Lémuriens catta et artisanat traditionnel Antaimoro.</p>
 						</div>
 					</div>
 				</div>

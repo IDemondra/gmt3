@@ -58,14 +58,7 @@ export function Header() {
 							</li>
 						))}
 					</ul>
-					<div class="ml-4 pl-4 border-l border-white/20">
-						<a
-							href="#contact"
-							class="font-button text-button bg-on-primary text-primary px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 inline-block"
-						>
-							BOOK NOW
-						</a>
-					</div>
+
 				</nav>
 
 				<button
@@ -94,15 +87,7 @@ export function Header() {
 								</a>
 							</li>
 						))}
-						<li class="pt-3 border-t border-white/10 mt-3">
-							<a
-								href="#contact"
-								class="block w-full font-button text-button bg-on-primary text-primary px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300 text-center"
-								onClick={toggleMenu}
-							>
-								BOOK NOW
-							</a>
-						</li>
+
 					</ul>
 				</nav>
 			)}

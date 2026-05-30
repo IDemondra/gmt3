@@ -14,7 +14,7 @@ export function OffersSection() {
 							<span class="material-symbols-outlined text-3xl">event_available</span>
 						</div>
 						<div class="text-center md:text-left">
-							<h3 class="font-h3 text-h3 text-on-background mb-2 uppercase font-bold">Saison Seche 2024</h3>
+							<h3 class="font-h3 text-h3 text-on-background mb-2 uppercase font-bold">Saison Seche 2026</h3>
 							<p class="font-body-md text-secondary mb-4">-15% sur les circuits "Decouverte" reserves 3 mois a l'avance.</p>
 							<button class="font-button text-button text-primary hover:text-primary-container transition-colors flex items-center gap-1 justify-center md:justify-start w-full font-semibold">
 								EN PROFITER <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>

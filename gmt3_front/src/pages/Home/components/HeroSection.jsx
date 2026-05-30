@@ -14,7 +14,7 @@ export function HeroSection() {
 				<div class="max-w-2xl">
 					<Reveal animation="fadeUp" duration={760}>
 						<span class="inline-block bg-primary-container text-on-primary px-4 py-2 font-label-caps text-label-caps mb-6 uppercase rounded-lg shadow-lg shadow-primary/30">
-							MADAGASCAR 2024
+							MADAGASCAR 2026
 						</span>
 					</Reveal>
 					<Reveal animation="arc" delay={70} duration={820}>
