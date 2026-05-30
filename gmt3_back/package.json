@@ -1,6 +1,6 @@
 {
   "name": "gmt3_back",
-  "module": "src/index.ts",
+  "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {

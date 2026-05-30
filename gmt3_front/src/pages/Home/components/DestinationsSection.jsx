@@ -1,3 +1,4 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function DestinationsSection() {
@@ -7,37 +8,45 @@ export function DestinationsSection() {
 
 	return (
 		<section class="py-section-gap bg-background px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto" id="destinations">
-			<div class="text-center mb-12">
-				<h2 class="font-h2 text-h2 text-on-background font-bold mb-2 uppercase">Destinations Phares</h2>
-				<div class="section-divider w-24 mx-auto" />
-			</div>
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-				<div class="relative h-[400px] lg:h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-					<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg1}`}></div>
-					<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/95 via-on-secondary-fixed/35 to-transparent transition-opacity duration-300 group-hover:opacity-90"></div>
-					<div class="absolute bottom-0 left-0 right-0 p-8 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-						<span class="inline-block bg-primary-container text-on-primary px-3 py-1.5 font-label-caps text-label-caps mb-3 uppercase rounded-md shadow-md">RÉGION CENTRE-SUD</span>
-						<h3 class="font-h1-mobile text-h1-mobile font-black mb-2 uppercase tracking-tight">Fianarantsoa</h3>
-						<p class="font-body-lg text-on-primary/80 max-w-md">Plongez au coeur de la capitale du Betsileo, entre vignobles en terrasses, architecture historique et artisanat traditionnel.</p>
-					</div>
+			<Reveal animation="fadeUp">
+				<div class="text-center mb-12">
+					<h2 class="font-h2 text-h2 text-on-background font-bold mb-2 uppercase">Destinations Phares</h2>
+					<div class="section-divider w-24 mx-auto" />
 				</div>
-				<div class="grid grid-rows-2 gap-8 h-[500px]">
-					<div class="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg2}`}></div>
-						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
-						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Parc National de Ranomafana</h3>
-							<p class="font-body-md text-on-primary/80">Forêt tropicale, lémuriens et sources chaudes naturelles.</p>
+			</Reveal>
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+				<Reveal animation="fadeLeft" duration={700}>
+					<div class="relative h-[400px] lg:h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
+						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg1}`}></div>
+						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/95 via-on-secondary-fixed/35 to-transparent transition-opacity duration-300 group-hover:opacity-90"></div>
+						<div class="absolute bottom-0 left-0 right-0 p-8 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
+							<span class="inline-block bg-primary-container text-on-primary px-3 py-1.5 font-label-caps text-label-caps mb-3 uppercase rounded-md shadow-md">RÉGION CENTRE-SUD</span>
+							<h3 class="font-h1-mobile text-h1-mobile font-black mb-2 uppercase tracking-tight">Fianarantsoa</h3>
+							<p class="font-body-lg text-on-primary/80 max-w-md">Plongez au coeur de la capitale du Betsileo, entre vignobles en terrasses, architecture historique et artisanat traditionnel.</p>
 						</div>
 					</div>
-					<div class="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg3}`}></div>
-						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
-						<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-							<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Ambalavao &amp; Réserve d'Anja</h3>
-							<p class="font-body-md text-on-primary/80">Lémuriens catta et artisanat traditionnel Antaimoro.</p>
+				</Reveal>
+				<div class="grid grid-rows-2 gap-8 min-h-[500px]">
+					<Reveal animation="fadeRight" delay={80} duration={700}>
+						<div class="relative h-full min-h-[200px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
+							<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg2}`}></div>
+							<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
+							<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
+								<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Parc National de Ranomafana</h3>
+								<p class="font-body-md text-on-primary/80">Forêt tropicale, lémuriens et sources chaudes naturelles.</p>
+							</div>
 						</div>
-					</div>
+					</Reveal>
+					<Reveal animation="fadeRight" delay={140} duration={700}>
+						<div class="relative h-full rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
+							<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg3}`}></div>
+							<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
+							<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary transform transition-transform duration-300 group-hover:translate-y-[-4px]">
+								<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Ambalavao &amp; Réserve d'Anja</h3>
+								<p class="font-body-md text-on-primary/80">Lémuriens catta et artisanat traditionnel Antaimoro.</p>
+							</div>
+						</div>
+					</Reveal>
 				</div>
 			</div>
 		</section>

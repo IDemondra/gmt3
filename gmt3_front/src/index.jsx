@@ -1,23 +1,35 @@
-import { LocationProvider, Router, Route, hydrate, prerender as ssr } from 'preact-iso';
+import { LocationProvider, Router, Route, hydrate, prerender as ssr, useLocation } from 'preact-iso';
 
 import { Header } from './components/Header.jsx';
 import { Home } from './pages/Home/index.jsx';
 import { Events } from './pages/Events/index.jsx';
 import { EventDetail } from './pages/Events/Detail.jsx';
+import { AdminLogin } from './pages/Admin/Login.jsx';
 import { NotFound } from './pages/_404.jsx';
 import './index.css';
 
 export function App() {
 	return (
 		<LocationProvider>
-			<Header />
+			<Route path="/(.*)" component={AppShell} />
+		</LocationProvider>
+	);
+}
+
+function AppShell() {
+	const { url } = useLocation();
+	const isAdmin = url.startsWith('/admin');
+	return (
+		<>
+			{!isAdmin && <Header />}
 			<Router>
 				<Route path="/" component={Home} />
 				<Route path="/events/:slug" component={EventDetail} />
 				<Route path="/events" component={Events} />
+				<Route path="/admin" component={AdminLogin} />
 				<Route default component={NotFound} />
 			</Router>
-		</LocationProvider>
+		</>
 	);
 }
 

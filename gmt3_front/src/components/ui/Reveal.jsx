@@ -24,17 +24,15 @@ export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 6
 	const preset = presets[animation] || presets.fadeUp;
 	const style = {
 		...baseStyle,
-		'--reveal-delay': `${delay}ms`,
-		'--reveal-duration': `${duration}ms`,
-		'--reveal-x': `${isVisible ? 0 : preset.x}px`,
-		'--reveal-y': `${isVisible ? 0 : preset.y}px`,
-		'--reveal-scale': isVisible ? 1 : preset.scale,
+		transitionDelay: `${delay}ms`,
+		transitionDuration: `${duration}ms`,
+		transform: `translate(${isVisible ? 0 : preset.x}px, ${isVisible ? 0 : preset.y}px) scale(${isVisible ? 1 : preset.scale})`,
+		opacity: isVisible ? 1 : 0,
 	};
 
-// Dans ton composant Reveal
 	return (
-	    <div ref={ref} class={`motion-reveal ${isVisible ? 'is-visible' : ''} ${className}`} style={style}>
-	        {children}
-	    </div>
+		<div ref={ref} class={`motion-reveal ${isVisible ? 'is-visible' : ''} ${className}`} style={style}>
+			{children}
+		</div>
 	);
 }
