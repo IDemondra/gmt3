@@ -4,6 +4,8 @@ import { UserRepository } from '../repositories/UserRepository.js';
 
 const userService = new UserService(new UserRepository());
 
+const SET_COOKIE_OPTS = 'HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=604800';
+
 export const UserController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const users = await userService.getAll();
@@ -85,10 +87,40 @@ export const UserController = {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
 		}
 		try {
-			const { user, token } = await userService.authenticate(body.nomUtilisateur, body.motDePasse);
-			return Response.json({ message: 'OK', user, token });
+			const { user, accessToken, refreshToken } = await userService.authenticate(body.nomUtilisateur, body.motDePasse);
+			return new Response(JSON.stringify({ message: 'OK', user, accessToken }), {
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json',
+					'Set-Cookie': `refreshToken=${refreshToken}; ${SET_COOKIE_OPTS}`,
+				},
+			});
 		} catch (e) {
 			return Response.json({ error: 'IDENTIFIANTS_INVALIDES' }, { status: 401 });
 		}
+	},
+
+	async refresh(req: BunRequest): Promise<Response> {
+		const cookie = req.headers.get('Cookie') || '';
+		const match = cookie.match(/refreshToken=([^;]+)/);
+		const token = match ? decodeURIComponent(match[1]) : null;
+		if (!token) {
+			return Response.json({ error: 'NON_AUTORISE' }, { status: 401 });
+		}
+		const result = await userService.refreshToken(token);
+		if (!result) {
+			return Response.json({ error: 'TOKEN_INVALIDE_OU_EXPIRE' }, { status: 401 });
+		}
+		return Response.json({ message: 'OK', user: result.user, accessToken: result.accessToken });
+	},
+
+	async logout(_req: BunRequest): Promise<Response> {
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				'Set-Cookie': 'refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0',
+			},
+		});
 	},
 };

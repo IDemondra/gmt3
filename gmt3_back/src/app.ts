@@ -56,23 +56,26 @@ function matchRoute(
 export async function handleRequest(req: BunRequest): Promise<Response> {
 	const url = new URL(req.url);
 	const pathname = url.pathname;
+	const origin = req.headers.get('Origin') || '*';
 
-	// ── CORS ──
+	const corsHeaders = {
+		'Access-Control-Allow-Origin': origin,
+		'Access-Control-Allow-Credentials': 'true',
+		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+		'Vary': 'Origin',
+	};
+
+	// ── CORS preflight ──
 	if (req.method === 'OPTIONS') {
-		return new Response(null, {
-			headers: {
-				'Access-Control-Allow-Origin': '*',
-				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-			},
-		});
+		return new Response(null, { headers: corsHeaders });
 	}
 
 	// ── Route matching ──
 	const matched = matchRoute(req.method, pathname, allRoutes);
 
 	if (!matched) {
-		return Response.json({ error: 'NOT_FOUND' }, { status: 404 });
+		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
 	}
 
 	// ── Auth guard ──
@@ -84,10 +87,12 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	try {
 		const result = await matched.handler(req, matched.params);
 		const response = result instanceof Response ? result : Response.json(result);
-		response.headers.set('Access-Control-Allow-Origin', '*');
+		for (const [key, value] of Object.entries(corsHeaders)) {
+			response.headers.set(key, value);
+		}
 		return response;
 	} catch (err) {
 		console.error('[ERREUR]', err);
-		return Response.json({ error: 'ERREUR_INTERNE' }, { status: 500 });
+		return Response.json({ error: 'ERREUR_INTERNE' }, { status: 500, headers: corsHeaders });
 	}
 }

@@ -12,6 +12,12 @@ export const userRoutes: RouteMap = {
 	'/api/utilisateurs/login': {
 		POST: UserController.login,
 	},
+	'/api/utilisateurs/refresh': {
+		POST: UserController.refresh,
+	},
+	'/api/utilisateurs/logout': {
+		POST: UserController.logout,
+	},
 	'/api/utilisateurs/:id': {
 		GET: withId(UserController.getById),
 		PUT: withId(UserController.update),

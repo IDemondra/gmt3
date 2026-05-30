@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals';
 
-export const formState = signal('login'); // 'login' | 'loading' | 'error'
+export const formState = signal('login');
 export const errorMsg = signal('');
 
 export function useLogin(route) {
@@ -20,10 +20,8 @@ export function useLogin(route) {
 		errorMsg.value = '';
 
 		try {
-			const { loginApi } = await import('../api/auth.js');
-			const data = await loginApi(nomUtilisateur, motDePasse);
-			localStorage.setItem('admin_token', data.token);
-			localStorage.setItem('admin_user', JSON.stringify(data.user));
+			const { login } = await import('../stores/auth.js');
+			await login(nomUtilisateur, motDePasse);
 			formState.value = 'login';
 			route('/admin/dashboard', true);
 		} catch (err) {

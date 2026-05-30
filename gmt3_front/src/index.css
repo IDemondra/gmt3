@@ -209,6 +209,15 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s ease-out;
+}
+
 /* ===== Focus Styles ===== */
 *:focus-visible {
   outline: 2px solid var(--color-primary-container);

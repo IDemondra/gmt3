@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useScrollReveal } from '../../hooks/useScrollReveal.js';
 
 const presets = {
