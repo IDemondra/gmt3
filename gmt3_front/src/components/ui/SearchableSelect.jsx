@@ -132,7 +132,7 @@ export function SearchableSelect({ options, value, onChange, placeholder = '', l
 				<ul
 					id={`${inputId}-listbox`}
 					role="listbox"
-					class="absolute z-50 mt-1 w-full bg-surface border border-outline-variant/30 rounded-xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar"
+					class="absolute z-[60] mt-1 w-full bg-surface border border-outline-variant/30 rounded-xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar"
 				>
 					{filtered.map((opt, idx) => (
 						<li
@@ -155,9 +155,9 @@ export function SearchableSelect({ options, value, onChange, placeholder = '', l
 					))}
 				</ul>
 			)}
-			{open && filtered.length === 0 && query && (
-				<div class="absolute z-50 mt-1 w-full bg-surface border border-outline-variant/30 rounded-xl shadow-xl px-4 py-3 text-sm text-secondary">
-					Aucun resultat.
+			{open && filtered.length === 0 && (
+				<div class="absolute z-[60] mt-1 w-full bg-surface border border-outline-variant/30 rounded-xl shadow-xl px-4 py-3 text-sm text-secondary">
+					{options.length === 0 ? 'Aucune donnee disponible.' : 'Aucun resultat.'}
 				</div>
 			)}
 		</div>

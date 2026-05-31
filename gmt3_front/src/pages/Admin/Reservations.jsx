@@ -201,7 +201,7 @@ export function AdminReservations() {
 
 			{showForm && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditing(null); }}>
-					<div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-2xl w-full max-w-md mx-4 p-6 md:p-8" onClick={(e) => e.stopPropagation()}>
+					<div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-2xl w-full max-w-md mx-4 p-6 md:p-8 overflow-visible" onClick={(e) => e.stopPropagation()}>
 						<div class="flex items-center justify-between mb-6">
 							<h3 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight">{editing ? "Modifier la reservation" : "Nouvelle reservation"}</h3>
 							<button onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all"><span class="material-symbols-outlined">close</span></button>
