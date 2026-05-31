@@ -34,8 +34,7 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick }) {
 								src={resolveUrl(event.imagePrincipale)}
 								alt=""
 								class="w-full h-full object-cover"
-								crossorigin="anonymous"
-								referrerpolicy="no-referrer"
+								referrerPolicy="no-referrer"
 								loading="lazy"
 							/>
 						</button>

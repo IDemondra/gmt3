@@ -10,6 +10,13 @@ import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 
+const toDateInputValue = (date = new Date()) => {
+	const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+	return offsetDate.toISOString().slice(0, 10);
+};
+
+const toTimeInputValue = (date = new Date()) => date.toTimeString().slice(0, 5);
+
 export function AdminDashboard() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
@@ -23,6 +30,8 @@ export function AdminDashboard() {
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
 	const [previewImage, setPreviewImage] = useState(/** @type {{ url: string; title: string } | null} */ (null));
+	const todayStr = toDateInputValue();
+	const currentTimeStr = toTimeInputValue();
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
@@ -56,11 +65,11 @@ export function AdminDashboard() {
 			const fd = new FormData();
 			fd.set('titre', data.get('titre'));
 			fd.set('description', data.get('description') || '');
-			fd.set('dateEvenement', data.get('dateEvenement'));
+			fd.set('dateEvenement', data.get('dateEvenement') || data.get('dateDepart') || todayStr);
 			fd.set('lieu', data.get('lieu') || '');
-			fd.set('heureDepart', data.get('heureDepart') || '');
+			fd.set('heureDepart', data.get('heureDepart') || currentTimeStr);
 			fd.set('dateDepart', data.get('dateDepart') || '');
-			fd.set('heureRetour', data.get('heureRetour') || '');
+			fd.set('heureRetour', data.get('heureRetour') || currentTimeStr);
 			fd.set('dateRetour', data.get('dateRetour') || '');
 			fd.set('estPublie', data.get('estPublie') === 'on' ? 'on' : '');
 
@@ -258,27 +267,27 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
-						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
+						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" min={todayStr} defaultValue={editingEvent?.
 // @ts-ignore
-						dateDepart || ''} />
+						dateDepart || todayStr} />
 					</div>
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
 						<input id="heureDepart" name="heureDepart" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
 // @ts-ignore
-						heureDepart || ''} />
+						heureDepart || currentTimeStr} />
 					</div>
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateRetour">Date retour</label>
-						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
+						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" min={todayStr} defaultValue={editingEvent?.
 // @ts-ignore
-						dateRetour || ''} />
+						dateRetour || todayStr} />
 					</div>
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureRetour">Heure retour</label>
 						<input id="heureRetour" name="heureRetour" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
 // @ts-ignore
-						heureRetour || ''} />
+						heureRetour || currentTimeStr} />
 					</div>
 				</div>
 				<div>
