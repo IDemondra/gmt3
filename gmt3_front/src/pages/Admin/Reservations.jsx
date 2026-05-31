@@ -4,6 +4,7 @@ import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { SearchableSelect } from '../../components/ui/SearchableSelect.jsx';
 import { reservationsApi, createReservationApi, updateReservationApi, deleteReservationApi } from '../../api/reservations.js';
 import { clientsApi } from '../../api/clients.js';
 import { evenementsApi } from '../../api/evenements.js';
@@ -207,36 +208,26 @@ export function AdminReservations() {
 						</div>
 						<form onSubmit={handleSubmit} class="space-y-5">
 							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="clientId">Client</label>
-								<select
+								<SearchableSelect
 									id="clientId"
-									name="clientId"
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl"
+									label="Client"
+									placeholder="Rechercher un client..."
 									required
+									options={clients.map((c) => ({ value: c.id, label: `${c.nom} — ${c.contact}` }))}
 									value={formClientId}
-									onChange={(e) => setFormClientId(e.currentTarget.value)}
-								>
-									<option value="">Selectionner un client</option>
-									{clients.map((c) => (
-										<option key={c.id} value={c.id}>{c.nom} — {c.contact}</option>
-									))}
-								</select>
+									onChange={(val) => setFormClientId(val)}
+								/>
 							</div>
 							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="evenementId">Evenement</label>
-								<select
+								<SearchableSelect
 									id="evenementId"
-									name="evenementId"
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl"
+									label="Evenement"
+									placeholder="Rechercher un evenement..."
 									required
+									options={evenements.map((e) => ({ value: e.id, label: `${e.titre} — ${e.dateEvenement?.slice(0, 10) || ''}` }))}
 									value={formEvenementId}
-									onChange={(e) => setFormEvenementId(e.currentTarget.value)}
-								>
-									<option value="">Selectionner un evenement</option>
-									{evenements.map((e) => (
-										<option key={e.id} value={e.id}>{e.titre} — {e.dateEvenement?.slice(0, 10) || ''}</option>
-									))}
-								</select>
+									onChange={(val) => setFormEvenementId(val)}
+								/>
 							</div>
 							<div>
 								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de places</label>
