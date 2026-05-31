@@ -6,20 +6,23 @@ import { KpiCards } from '../../components/admin/KpiCards.jsx';
 import { EventRow } from '../../components/admin/EventRow.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 
 export function AdminDashboard() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
 	const [showForm, setShowForm] = useState(false);
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
 	const [uploading, setUploading] = useState(false);
-	const [confirm, setConfirm] = useState(null); // { type: 'logout' | 'delete-event', eventId?: number }
+	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
+	const [previewImage, setPreviewImage] = useState(/** @type {{ url: string; title: string } | null} */ (null));
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
@@ -55,6 +58,10 @@ export function AdminDashboard() {
 			fd.set('description', data.get('description') || '');
 			fd.set('dateEvenement', data.get('dateEvenement'));
 			fd.set('lieu', data.get('lieu') || '');
+			fd.set('heureDepart', data.get('heureDepart') || '');
+			fd.set('dateDepart', data.get('dateDepart') || '');
+			fd.set('heureRetour', data.get('heureRetour') || '');
+			fd.set('dateRetour', data.get('dateRetour') || '');
 			fd.set('estPublie', data.get('estPublie') === 'on' ? 'on' : '');
 
 			const imageFile = data.get('imagePrincipale');
@@ -108,10 +115,11 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 		: events;
 
 	return (
-		<div class="h-screen flex flex-col bg-background text-on-background font-body-md antialiased overflow-hidden">
+		<>
+			<div class="h-screen flex flex-col bg-background text-on-background font-body-md antialiased overflow-hidden">
 			<Navbar 
 // @ts-ignore
-			user={currentUser.value} onLogout={handleLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+			user={currentUser.value} onLogout={promptLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
 			<div class="flex flex-1 w-full overflow-hidden">
 				<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -167,7 +175,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 									<tr class="border-b border-outline-variant/20 bg-surface-container/30">
 										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Réf</th>
 										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Titre</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Dates</th>
+										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Départ — Retour</th>
 										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Statut</th>
 										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest text-right">Actions</th>
 									</tr>
@@ -175,7 +183,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 								<tbody>
 									{filtered.map((event, i) => (
 										// @ts-ignore
-										<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} />
+										<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} />
 									))}
 								</tbody>
 							</table>
@@ -247,11 +255,31 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 // @ts-ignore
 					rows="3" placeholder="Description courte..." defaultValue={editingEvent?.description || ''} />
 				</div>
-				<div>
-					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateEvenement">Date</label>
-					<input id="dateEvenement" name="dateEvenement" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" required defaultValue={editingEvent?.
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
+						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
 // @ts-ignore
-					dateEvenement || ''} />
+						dateDepart || ''} />
+					</div>
+					<div>
+						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
+						<input id="heureDepart" name="heureDepart" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
+// @ts-ignore
+						heureDepart || ''} />
+					</div>
+					<div>
+						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateRetour">Date retour</label>
+						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
+// @ts-ignore
+						dateRetour || ''} />
+					</div>
+					<div>
+						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureRetour">Heure retour</label>
+						<input id="heureRetour" name="heureRetour" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
+// @ts-ignore
+						heureRetour || ''} />
+					</div>
 				</div>
 				<div>
 					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
@@ -294,6 +322,10 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					</label>
 				</div>
 			</FormModal>
-		</div>
+			</div>
+
+			{/* ── Image preview modal ── */}
+			<ImagePreview image={previewImage} onClose={() => setPreviewImage(null)} />
+		</>
 	);
 }

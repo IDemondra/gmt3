@@ -1,8 +1,5 @@
 import { EvenementController } from '../controllers/EvenementController.js';
-import type { RouteMap, RouteHandler } from '../types/http.js';
-
-const withId = (fn: (req: import('../types/http.js').BunRequest, params: { id: string }) => Promise<Response>): RouteHandler =>
-	(req, params) => fn(req, params as { id: string });
+import type { RouteMap } from '../types/http.js';
 
 export const evenementRoutes: RouteMap = {
 	'/api/evenements': {
@@ -10,8 +7,8 @@ export const evenementRoutes: RouteMap = {
 		POST: EvenementController.create,
 	},
 	'/api/evenements/:id': {
-		GET: withId(EvenementController.getById),
-		PUT: withId(EvenementController.update),
-		DELETE: withId(EvenementController.delete),
+		GET: EvenementController.getById as import('../types/http.js').RouteHandler,
+		PUT: EvenementController.update as import('../types/http.js').RouteHandler,
+		DELETE: EvenementController.delete as import('../types/http.js').RouteHandler,
 	},
 };

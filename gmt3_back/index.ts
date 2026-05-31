@@ -1,9 +1,20 @@
 import { handleRequest } from './src/app.js';
 import { resolve } from 'path';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
-const UPLOADS_DIR = resolve(import.meta.dir, 'uploads');
+const DATA_DIR = resolve(import.meta.dir, 'data');
+const DB_PATH = resolve(DATA_DIR, 'gmt3.db');
 const PORT = Number(Bun.env.PORT) || 3000;
+
+// Ensure data directory and database file exist
+if (!existsSync(DATA_DIR)) {
+	mkdirSync(DATA_DIR, { recursive: true });
+	console.log('[DB] Created data directory');
+}
+if (!existsSync(DB_PATH)) {
+	writeFileSync(DB_PATH, '');
+	console.log('[DB] Created database file');
+}
 
 Bun.serve({
 	port: PORT,

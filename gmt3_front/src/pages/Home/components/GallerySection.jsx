@@ -1,7 +1,9 @@
+import { useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function GallerySection() {
+	const [lightbox, setLightbox] = useState(null);
     const cards = [
         {
             src: img('https://lh3.googleusercontent.com/aida/ADBb0ujA9SRMLGsiuZCtrzX3cyE7ym9wpTc-_ElN0ZNTlEeY_PmicE0Ce9iKMzqWYqGGEMld3ZL5cohZVSWl4v5o9CRlNkPcZXacBo5l8UhXMVL6ARGPP_SStBLShAgjUXVhjP8MS_26Tb457HFE6B86ST5qAt5BOlNo7ZH7YIrjWdlVTXpZbQL7S5XAKlRPyZfSnd-fYKBicBdrcMcffG0P9JNy4M3uCYX0dVndNr4ZhMMfGI8uPK11GumjT4Y'),
@@ -88,57 +90,38 @@ export function GallerySection() {
                     </div>
                 </div>
 				
-				<div class="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-12 xl:gap-6">
-                    {cards.map((card, index) => (
-                        <div key={card.alt} class={`h-full ${card.span}`}>
-                            <Reveal
-                                className="h-full w-full overflow-visible"
-                                animation={card.priority ? 'fadeUp' : index % 2 === 0 ? 'fadeUp' : 'driftRight'}
-                                delay={index * 70}
-                                duration={700}
-                            >
-                                <article class="group relative overflow-visible h-full w-full">
-                                    
-                                    {/* FIX 2 : Ajout de 'overflow-hidden', 'isolate' et 'transform-gpu' pour forcer le navigateur à découper parfaitement le backdrop-blur sur les coins arrondis et éliminer le fond carré transparent */}
-                                    <div class={`relative flex h-full flex-col min-h-[420px] rounded-[1.6rem] bg-white/[0.04] border border-white/10 backdrop-blur-xl p-4 shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 group-hover:-translate-y-2 group-hover:bg-white/[0.07] group-hover:border-white/20 group-hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] overflow-hidden isolate transform-gpu ${card.accent}`}>
-                                        
-                                        {/* Morceaux de scotch */}
-                                        <div class="absolute left-6 top-3 h-10 w-16 -rotate-12 rounded-[0.5rem] bg-white/10 backdrop-blur-md border border-white/5 shadow-sm z-10" />
-                                        <div class="absolute right-6 top-3 h-10 w-16 rotate-12 rounded-[0.5rem] bg-white/10 backdrop-blur-md border border-white/5 shadow-sm z-10" />
-                                        
-                                        {/* Conteneur interne */}
-                                        <div class="flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-black/40 border border-white/5 flex-1 shadow-inner isolate">
-                                            
-                                            <div class="relative flex-1 min-h-[220px] md:min-h-[260px] overflow-hidden rounded-t-[1.15rem]">
-                                                <img
-                                                    alt={card.alt}
-                                                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-                                                    loading="lazy"
-                                                    src={card.src}
-                                                />
-                                                <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),rgba(0,0,0,0)_55%,transparent)] opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
-                                                <div class="absolute left-4 top-4 z-10 rounded-full border border-white/20 bg-black/40 px-4 py-2 font-label-caps text-label-caps text-white/95 backdrop-blur-md">
-                                                    {card.label}
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="border-t border-white/10 bg-transparent px-4 py-5 sm:px-5 shrink-0">
-                                                <div class="flex flex-wrap items-center gap-2">
-                                                    <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-label-caps text-label-caps text-on-primary/80 backdrop-blur-sm">
-                                                        {card.meta}
-                                                    </span>
-                                                </div>
-                                                <p class="mt-3 font-body-md text-body-md leading-relaxed text-on-primary/70">
-                                                    {card.note}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-                            </Reveal>
-                        </div>
-                    ))}
-                </div>
+				<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-12 xl:gap-6 xl:auto-rows-[340px] md:auto-rows-[300px]">
+					{cards.map((card, index) => (
+						<div key={card.alt} class={`${card.span}`}>
+							<Reveal
+								className="h-full"
+								animation={card.priority ? 'fadeUp' : index % 2 === 0 ? 'fadeUp' : 'driftRight'}
+								delay={index * 70}
+								duration={700}
+							>
+								<button
+									type="button"
+									onClick={() => setLightbox(index)}
+									class="group relative h-full w-full overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] overflow-hidden isolate transform-gpu text-left"
+								>
+									<img
+										alt={card.alt}
+										class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+										loading="lazy"
+										src={card.src}
+									/>
+									<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+									<div class="absolute inset-x-0 bottom-0 p-5">
+										<span class="inline-block rounded-full border border-white/20 bg-black/50 px-4 py-1.5 font-label-caps text-label-caps text-white/95 backdrop-blur-md shadow-lg">
+											{card.label}
+										</span>
+										<p class="mt-2 font-body-md text-body-md text-white/80">{card.meta}</p>
+									</div>
+								</button>
+							</Reveal>
+						</div>
+					))}
+				</div>
 
                 <div class="mt-8 flex justify-end">
                     <button

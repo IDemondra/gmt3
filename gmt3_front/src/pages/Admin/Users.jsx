@@ -12,12 +12,13 @@ const roles = ['admin', 'manager', 'editor', 'viewer'];
 export function AdminUsers() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
 	const [users, setUsers] = useState([]);
 	const [showForm, setShowForm] = useState(false);
 	const [editingUser, setEditingUser] = useState(null);
-	const [confirm, setConfirm] = useState(null);
+	const [confirm, setConfirm] = useState(/** @type {{ type: string; user?: import("../../stores/auth.js").currentUser extends infer U ? U : never } | null} */ (null));
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
@@ -112,7 +113,7 @@ export function AdminUsers() {
 		<div class="h-screen flex flex-col bg-background text-on-background font-body-md antialiased overflow-hidden">
 			<Navbar 
 // @ts-ignore
-			user={currentUser.value} onLogout={handleLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+			user={currentUser.value} onLogout={promptLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
 			<div class="flex flex-1 w-full overflow-hidden">
 				<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />

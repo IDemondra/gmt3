@@ -8,6 +8,7 @@ import { EventDetail } from './pages/Events/Detail.jsx';
 import { AdminLogin } from './pages/Admin/Login.jsx';
 import { AdminDashboard } from './pages/Admin/Dashboard.jsx';
 import { AdminUsers } from './pages/Admin/Users.jsx';
+import { AdminClients } from './pages/Admin/Clients.jsx';
 import { NotFound } from './pages/_404.jsx';
 import './index.css';
 
@@ -32,6 +33,7 @@ function AppShell() {
 				<Route path="/admin" component={AdminLogin} />
 				<Route path="/admin/dashboard" component={AdminDashboard} />
 				<Route path="/admin/utilisateurs" component={AdminUsers} />
+				<Route path="/admin/clients" component={AdminClients} />
 				<Route default component={NotFound} />
 			</Router>
 		</>

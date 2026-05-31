@@ -1,15 +1,24 @@
 import type { BunRequest } from '../types/http.js';
 import { UserService } from '../services/UserService.js';
 import { UserRepository } from '../repositories/UserRepository.js';
+import type { Utilisateur } from '../types/index.js';
+import { formatDateToDDMMYYYY } from '../utils/date.js';
 
 const userService = new UserService(new UserRepository());
 
 const SET_COOKIE_OPTS = 'HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=604800';
 
+function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T {
+	return {
+		...user,
+		dateCreation: formatDateToDDMMYYYY(user.dateCreation),
+	};
+}
+
 export const UserController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const users = await userService.getAll();
-		return Response.json(users);
+		return Response.json(users.map(formatUserDates));
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
@@ -21,7 +30,7 @@ export const UserController = {
 		if (!user) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE' }, { status: 404 });
 		}
-		return Response.json(user);
+		return Response.json(formatUserDates(user));
 	},
 
 	async create(req: BunRequest): Promise<Response> {
@@ -39,7 +48,7 @@ export const UserController = {
 
 		try {
 			const user = await userService.create(body);
-			return Response.json(user, { status: 201 });
+			return Response.json(formatUserDates(user), { status: 201 });
 		} catch (e) {
 			const message = e instanceof Error ? e.message : 'ERREUR_INTERNE';
 			if (message === 'CE_NOM_UTILISATEUR_EXISTE_DEJA') {
@@ -66,7 +75,7 @@ export const UserController = {
 		if (!updated) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE' }, { status: 404 });
 		}
-		return Response.json(updated);
+		return Response.json(formatUserDates(updated));
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
@@ -88,7 +97,7 @@ export const UserController = {
 		}
 		try {
 			const { user, accessToken, refreshToken } = await userService.authenticate(body.nomUtilisateur, body.motDePasse);
-			return new Response(JSON.stringify({ message: 'OK', user, accessToken }), {
+			return new Response(JSON.stringify({ message: 'OK', user: formatUserDates(user), accessToken }), {
 				status: 200,
 				headers: {
 					'Content-Type': 'application/json',
@@ -111,7 +120,7 @@ export const UserController = {
 		if (!result) {
 			return Response.json({ error: 'TOKEN_INVALIDE_OU_EXPIRE' }, { status: 401 });
 		}
-		return Response.json({ message: 'OK', user: result.user, accessToken: result.accessToken });
+		return Response.json({ message: 'OK', user: formatUserDates(result.user), accessToken: result.accessToken });
 	},
 
 	async logout(_req: BunRequest): Promise<Response> {

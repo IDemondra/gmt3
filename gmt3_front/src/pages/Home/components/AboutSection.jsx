@@ -134,8 +134,8 @@ export function AboutSection() {
 												loading="lazy"
 												src={img(member.src)}
 											/>
-											<div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75),rgba(0,0,0,0)_55%,transparent)] opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
-											<div class="absolute bottom-4 left-4 z-10 rounded-full border border-white/20 bg-black/50 backdrop-blur-md px-4 py-2 font-label-caps text-label-caps text-white/95 shadow-lg">
+											<div class="absolute inset-0 bg-gradient-to-t from-black/75 from-0% via-black/10 via-50% to-transparent to-100% opacity-90 transition-opacity duration-300 group-hover:opacity-100 z-10" />
+											<div class="absolute bottom-4 left-4 z-20 rounded-full border border-white/20 bg-black/50 backdrop-blur-md px-4 py-2 font-label-caps text-label-caps text-white/95 shadow-lg">
 												{member.name}
 											</div>
 										</div>

@@ -1,4 +1,4 @@
-import { sqliteTable, int, text, real, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 // ── Utilisateurs ──
 export const utilisateurs = sqliteTable('utilisateurs', {
@@ -8,7 +8,7 @@ export const utilisateurs = sqliteTable('utilisateurs', {
 	motDePasse: text('mot_de_passe', { length: 255 }).notNull(),
 	email: text('email', { length: 100 }),
 	role: text('role', { enum: ['admin', 'editeur'] }).default('editeur').notNull(),
-	dateCreation: text('date_creation').default('CURRENT_TIMESTAMP'),
+	dateCreation: text('date_creation').default(new Date().toISOString()),
 });
 
 // ── Clients ──
@@ -16,7 +16,7 @@ export const clients = sqliteTable('clients', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	nom: text('nom', { length: 100 }).notNull(),
 	contact: text('contact', { length: 100 }).notNull(),
-	dateAjout: text('date_ajout').default('CURRENT_TIMESTAMP'),
+	dateAjout: text('date_ajout').default(new Date().toISOString()),
 });
 
 // ── Événements ──
@@ -25,10 +25,14 @@ export const evenements = sqliteTable('evenements', {
 	titre: text('titre', { length: 150 }).notNull(),
 	description: text('description'),
 	dateEvenement: text('date_evenement').notNull(),
+	heureDepart: text('heure_depart'),
+	dateDepart: text('date_depart'),
+	heureRetour: text('heure_retour'),
+	dateRetour: text('date_retour'),
 	lieu: text('lieu', { length: 150 }),
 	imagePrincipale: text('image_principale', { length: 255 }),
 	estPublie: integer('est_publie', { mode: 'boolean' }).default(true).notNull(),
-	dateCreation: text('date_creation').default('CURRENT_TIMESTAMP'),
+	dateCreation: text('date_creation').default(new Date().toISOString()),
 });
 
 // ── Photos Événement ──
@@ -45,5 +49,5 @@ export const reservations = sqliteTable('reservations', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	clientId: integer('client_id').references(() => clients.id),
 	evenementId: integer('evenement_id').references(() => evenements.id),
-	dateReservation: text('date_reservation').default('CURRENT_TIMESTAMP'),
+	dateReservation: text('date_reservation').default(new Date().toISOString()),
 });

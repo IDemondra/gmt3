@@ -2,13 +2,21 @@ import { ClientService } from '../services/ClientService.js';
 import { ClientRepository } from '../repositories/ClientRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Client } from '../types/index.js';
+import { formatDateToDDMMYYYY } from '../utils/date.js';
+
+function formatClientDates<T extends { dateAjout?: string | null }>(client: T): T {
+	return {
+		...client,
+		dateAjout: formatDateToDDMMYYYY(client.dateAjout),
+	};
+}
 
 const clientService = new ClientService(new ClientRepository());
 
 export const ClientController = {
     async getAll(req: BunRequest): Promise<Response> {
         const clients = await clientService.getAll();
-        return Response.json(clients);
+        return Response.json(clients.map(formatClientDates));
     },
 
     async getById(req: BunRequest, params: { id: string }): Promise<Response> {
@@ -16,7 +24,7 @@ export const ClientController = {
         if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
         const client = await clientService.getById(id);
         if (!client) return Response.json({ error: 'CLIENT_INTROUVABLE' }, { status: 404 });
-        return Response.json(client);
+        return Response.json(formatClientDates(client));
     },
 
     async create(req: BunRequest): Promise<Response> {
@@ -24,8 +32,8 @@ export const ClientController = {
         if (!body.nom || !body.contact) {
             return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
         }
-        const client = await clientService.create(body);
-        return Response.json(client, { status: 201 });
+        const client = await clientService.create({ ...body, dateAjout: new Date().toISOString() });
+        return Response.json(formatClientDates(client), { status: 201 });
     },
 
     async update(req: BunRequest, params: { id: string }): Promise<Response> {
@@ -34,7 +42,7 @@ export const ClientController = {
         const body = await req.json() as Partial<Client>;
         const client = await clientService.update(id, body);
         if (!client) return Response.json({ error: 'CLIENT_INTROUVABLE' }, { status: 404 });
-        return Response.json(client);
+        return Response.json(formatClientDates(client));
     },
 
     async delete(req: BunRequest, params: { id: string }): Promise<Response> {

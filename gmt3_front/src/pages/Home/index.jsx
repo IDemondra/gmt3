@@ -1,12 +1,12 @@
-import { HeroSection } from './components/HeroSection';
-import { ActivitiesSection } from './components/ActivitiesSection';
-import { DestinationsSection } from './components/DestinationsSection';
-import { ToursSection } from './components/ToursSection';
-import { AboutSection } from './components/AboutSection';
-import { OffersSection } from './components/OffersSection';
-import { GallerySection } from './components/GallerySection';
-import { BannerSection } from './components/BannerSection';
-import { ContactSection } from './components/ContactSection';
+import { HeroSection } from './components/HeroSection.jsx';
+import { ActivitiesSection } from './components/ActivitiesSection.jsx';
+import { DestinationsSection } from './components/DestinationsSection.jsx';
+import { ToursSection } from './components/ToursSection.jsx';
+import { AboutSection } from './components/AboutSection.jsx';
+import { OffersSection } from './components/OffersSection.jsx';
+import { GallerySection } from './components/GallerySection.jsx';
+import { BannerSection } from './components/BannerSection.jsx';
+import { ContactSection } from './components/ContactSection.jsx';
 import { Footer } from '../../components/Footer.jsx';
 
 export function Home() {
