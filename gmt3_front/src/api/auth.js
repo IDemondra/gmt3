@@ -37,6 +37,7 @@ export async function logoutApi() {
 export async function apiFetch(url, options = {}) {
 	const { token, ...rest } = options;
 	const headers = { ...rest.headers };
+	// @ts-ignore
 	if (token) headers['Authorization'] = `Bearer ${token}`;
 
 	const res = await fetch(url, { ...rest, headers, credentials: 'include' });
@@ -44,6 +45,7 @@ export async function apiFetch(url, options = {}) {
 	if (res.status === 401 && token) {
 		try {
 			const data = await refreshApi();
+			// @ts-ignore
 			headers['Authorization'] = `Bearer ${data.accessToken}`;
 			const retry = await fetch(url, { ...rest, headers, credentials: 'include' });
 			return { response: retry, token: data.accessToken };

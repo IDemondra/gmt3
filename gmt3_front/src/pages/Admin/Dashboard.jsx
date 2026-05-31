@@ -38,7 +38,7 @@ export function AdminDashboard() {
 		} catch { /* keep current */ }
 	};
 
-	const handleCreate = () => { setEditingEvent(null); setShowForm(true); };
+	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setShowForm(true); };
 
 	// @ts-ignore
 	const handleEdit = (event) => {
@@ -49,33 +49,30 @@ export function AdminDashboard() {
 	// @ts-ignore
 	const handleSubmit = async (data) => {
 		try {
-			const titre = data.get('titre');
-			const description = data.get('description') || undefined;
-			const dateEvenement = data.get('dateEvenement');
-			const lieu = data.get('lieu') || undefined;
-			const estPublie = data.get('estPublie') === 'on';
+			setUploading(true);
+			const fd = new FormData();
+			fd.set('titre', data.get('titre'));
+			fd.set('description', data.get('description') || '');
+			fd.set('dateEvenement', data.get('dateEvenement'));
+			fd.set('lieu', data.get('lieu') || '');
+			fd.set('estPublie', data.get('estPublie') === 'on' ? 'on' : '');
+
 			const imageFile = data.get('imagePrincipale');
-
-			const payload = { titre, description, dateEvenement, lieu, estPublie };
-
 			if (imageFile && imageFile.size > 0) {
 				const ext = imageFile.name.split('.').pop().toLowerCase();
 				if (!['jpg', 'jpeg', 'png'].includes(ext)) {
 					alert('Format accepté : .jpg, .jpeg, .png uniquement');
+					setUploading(false);
 					return;
 				}
-				// @ts-ignore
-				payload.imagePrincipale = await fileToBase64(imageFile);
+				fd.set('imagePrincipale', imageFile);
 			}
 
 		if (editingEvent) {
-			// @ts-ignore
-			const updated = await updateEvenementApi(accessToken.value, editingEvent.id, payload);
-			// @ts-ignore
+			const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd);
 			setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
 		} else {
-			const created = await createEvenementApi(accessToken.value, payload);
-			// @ts-ignore
+			const created = await createEvenementApi(accessToken.value, fd);
 			setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
 		}
 		setShowForm(false);
@@ -234,8 +231,9 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 				open={showForm}
 				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-				onClose={() => { setShowForm(false); setEditingEvent(null); }}
+				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); }}
 				onSubmit={handleSubmit}
+				encType="multipart/form-data"
 			>
 				<div>
 					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="titre">Titre</label>

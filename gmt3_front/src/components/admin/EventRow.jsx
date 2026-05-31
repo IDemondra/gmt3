@@ -1,3 +1,4 @@
+// @ts-ignore
 export function EventRow({ event, index, onDelete, onEdit }) {
 	const isEven = index % 2 === 0;
 

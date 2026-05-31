@@ -1,5 +1,8 @@
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
+/**
+ * @param {null} token
+ */
 export async function usersApi(token) {
 	const headers = { Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/api/utilisateurs`, { headers, credentials: 'include' });
@@ -7,6 +10,10 @@ export async function usersApi(token) {
 	return res.json();
 }
 
+/**
+ * @param {null} token
+ * @param {{ nomUtilisateur: string; email: string; role: string; motDePasse: string; }} data
+ */
 export async function createUserApi(token, data) {
 	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/api/utilisateurs`, { method: 'POST', headers, body: JSON.stringify(data), credentials: 'include' });
@@ -17,6 +24,11 @@ export async function createUserApi(token, data) {
 	return res.json();
 }
 
+/**
+ * @param {null} token
+ * @param {any} id
+ * @param {{ nomUtilisateur: string; email: string; role: string; }} data
+ */
 export async function updateUserApi(token, id, data) {
 	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/api/utilisateurs/${id}`, { method: 'PUT', headers, body: JSON.stringify(data), credentials: 'include' });
@@ -24,6 +36,10 @@ export async function updateUserApi(token, id, data) {
 	return res.json();
 }
 
+/**
+ * @param {null} token
+ * @param {any} id
+ */
 export async function deleteUserApi(token, id) {
 	const headers = { Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/api/utilisateurs/${id}`, { method: 'DELETE', headers, credentials: 'include' });

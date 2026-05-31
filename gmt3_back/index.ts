@@ -1,14 +1,33 @@
 import { handleRequest } from './src/app.js';
+import { resolve } from 'path';
+import { readFileSync, existsSync } from 'fs';
 
+const UPLOADS_DIR = resolve(import.meta.dir, 'uploads');
 const PORT = Number(Bun.env.PORT) || 3000;
 
 Bun.serve({
 	port: PORT,
 	fetch(req) {
 		const url = new URL(req.url);
+		const path = url.pathname;
+
+		// Serve uploaded files
+		if (path.startsWith('/uploads/') && req.method === 'GET') {
+			const filePath = resolve(import.meta.dir, `.${path}`);
+			if (existsSync(filePath)) {
+				try {
+					const file = readFileSync(filePath);
+					const ext = path.split('.').pop() || '';
+					const mime: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
+					return new Response(file, { headers: { 'Content-Type': mime[ext] || 'application/octet-stream' } });
+				} catch {
+					return new Response('Not Found', { status: 404 });
+				}
+			}
+			return new Response('Not Found', { status: 404 });
+		}
 		const start = performance.now();
 		const method = req.method;
-		const path = url.pathname;
 
 		console.log(`\n[REQ] ${method} ${path}`);
 		if (req.body) {
