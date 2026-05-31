@@ -11,6 +11,8 @@ import { useState } from 'preact/hooks';
  *   icon?: string,
  *   onConfirm: () => void | Promise<void>,
  *   onCancel?: () => void,
+ *   children?: import('preact').ComponentChildren,
+ *   confirmClass?: string,
  * }} _
  */
 export function ConfirmDialog({
@@ -23,6 +25,8 @@ export function ConfirmDialog({
 	icon = 'help',
 	onConfirm,
 	onCancel,
+	children,
+	confirmClass = '',
 }) {
 	const [loading, setLoading] = useState(false);
 

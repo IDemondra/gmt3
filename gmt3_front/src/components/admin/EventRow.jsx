@@ -1,4 +1,4 @@
-export function EventRow({ event, index, onDelete }) {
+export function EventRow({ event, index, onDelete, onEdit }) {
 	const isEven = index % 2 === 0;
 
 	return (
@@ -31,7 +31,7 @@ export function EventRow({ event, index, onDelete }) {
 			</td>
 			<td class="px-6 py-4 text-right">
 				<div class="flex items-center justify-end gap-1">
-					<button class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
+					<button onClick={() => onEdit?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
 						<span class="material-symbols-outlined text-[20px]">edit</span>
 					</button>
 					<button

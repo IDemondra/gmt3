@@ -4,50 +4,117 @@ import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { KpiCards } from '../../components/admin/KpiCards.jsx';
 import { EventRow } from '../../components/admin/EventRow.jsx';
-import { currentUser, logout, tryAutoRefresh } from '../../stores/auth.js';
-
+import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { FormModal } from '../../components/admin/FormModal.jsx';
+import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 
 export function AdminDashboard() {
 	const { route } = useLocation();
+	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
-	const [confirm, setConfirm] = useState(null); // { type: 'logout' | 'delete-event', event?: any }
-	const [events, setEvents] = useState([
-		{ id: 'EXP-081', title: "Tsingy de Bemaraha Safari", date: "12 Oct - 18 Oct 2024", published: true },
-		{ id: 'EXP-082', title: "Avenue of the Baobabs Sunset", date: "20 Oct - 22 Oct 2024", published: true },
-		{ id: 'EXP-083', title: "Isalo National Park Trek", date: "05 Nov - 12 Nov 2024", published: false },
-	]);
+	const [showForm, setShowForm] = useState(false);
+	const [editingEvent, setEditingEvent] = useState(null);
+	const [previewSrc, setPreviewSrc] = useState('');
+	const [uploading, setUploading] = useState(false);
+	const [confirm, setConfirm] = useState(null); // { type: 'logout' | 'delete-event', eventId?: number }
+	const [events, setEvents] = useState([]);
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
-			if (!currentUser.value) {
-				route('/admin', true);
-			}
+			if (!currentUser.value) { route('/admin', true); return; }
+			loadEvents();
 		});
 	}, []);
 
-	const handleLogout = () => {
-		setConfirm({ type: 'logout' });
+	const loadEvents = async () => {
+		try {
+			const data = await evenementsApi(accessToken.value);
+			if (Array.isArray(data)) {
+				// @ts-ignore
+				setEvents(data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
+			}
+		} catch { /* keep current */ }
 	};
 
-	const confirmLogout = async () => {
-		await logout();
-		route('/admin', true);
+	const handleCreate = () => { setEditingEvent(null); setShowForm(true); };
+
+	// @ts-ignore
+	const handleEdit = (event) => {
+		setEditingEvent(event);
+		setShowForm(true);
 	};
 
-	const confirmDeleteEvent = (eventId) => {
-		setEvents((prev) => prev.filter((e) => e.id !== eventId));
+	// @ts-ignore
+	const handleSubmit = async (data) => {
+		try {
+			const titre = data.get('titre');
+			const description = data.get('description') || undefined;
+			const dateEvenement = data.get('dateEvenement');
+			const lieu = data.get('lieu') || undefined;
+			const estPublie = data.get('estPublie') === 'on';
+			const imageFile = data.get('imagePrincipale');
+
+			const payload = { titre, description, dateEvenement, lieu, estPublie };
+
+			if (imageFile && imageFile.size > 0) {
+				const ext = imageFile.name.split('.').pop().toLowerCase();
+				if (!['jpg', 'jpeg', 'png'].includes(ext)) {
+					alert('Format accepté : .jpg, .jpeg, .png uniquement');
+					return;
+				}
+				// @ts-ignore
+				payload.imagePrincipale = await fileToBase64(imageFile);
+			}
+
+		if (editingEvent) {
+			// @ts-ignore
+			const updated = await updateEvenementApi(accessToken.value, editingEvent.id, payload);
+			// @ts-ignore
+			setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
+		} else {
+			const created = await createEvenementApi(accessToken.value, payload);
+			// @ts-ignore
+			setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
+		}
+		setShowForm(false);
+		setEditingEvent(null);
+	} catch (e) {
+		// @ts-ignore
+		alert(e.message);
+	}
+};
+
+// @ts-ignore
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+	const r = new FileReader();
+	r.onload = () => resolve(r.result);
+	r.onerror = reject;
+	r.readAsDataURL(file);
+});
+
+	// @ts-ignore
+	const confirmDeleteEvent = async (eventId) => {
+		try {
+			await deleteEvenementApi(accessToken.value, eventId);
+			// @ts-ignore
+			setEvents((prev) => prev.filter((e) => e.id !== eventId));
+		} catch { /* ignore */ }
 		setConfirm(null);
 	};
 
+	// @ts-ignore
 	const filtered = search
+		// @ts-ignore
 		? events.filter((e) => e.title.toLowerCase().includes(search.toLowerCase()))
 		: events;
 
 	return (
 		<div class="h-screen flex flex-col bg-background text-on-background font-body-md antialiased overflow-hidden">
-			<Navbar user={currentUser.value} onLogout={handleLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+			<Navbar 
+// @ts-ignore
+			user={currentUser.value} onLogout={handleLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
 			<div class="flex flex-1 w-full overflow-hidden">
 				<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -63,7 +130,7 @@ export function AdminDashboard() {
 								Gérez les expéditions, destinations et offres actives.
 							</p>
 						</div>
-						<button class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 font-bold">
+						<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 font-bold">
 							<span class="material-symbols-outlined">add</span>
 							Ajouter
 						</button>
@@ -110,7 +177,8 @@ export function AdminDashboard() {
 								</thead>
 								<tbody>
 									{filtered.map((event, i) => (
-										<EventRow key={event.id} event={event} index={i} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} />
+										// @ts-ignore
+										<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} />
 									))}
 								</tbody>
 							</table>
@@ -138,6 +206,7 @@ export function AdminDashboard() {
 
 			{/* ── Confirm dialogs ── */}
 			<ConfirmDialog
+				// @ts-ignore
 				open={confirm?.type === 'logout'}
 				title="Déconnexion"
 				message="Êtes-vous sûr de vouloir vous déconnecter ?"
@@ -149,15 +218,84 @@ export function AdminDashboard() {
 			/>
 
 			<ConfirmDialog
+				// @ts-ignore
 				open={confirm?.type === 'delete-event'}
 				title="Supprimer l'événement"
 				message="Cette action est irréversible. L'événement sera définitivement supprimé."
 				confirmLabel="Supprimer"
 				icon="delete"
 				variant="danger"
+				// @ts-ignore
 				onConfirm={() => confirmDeleteEvent(confirm?.eventId)}
 				onCancel={() => setConfirm(null)}
 			/>
+
+			<FormModal
+				open={showForm}
+				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
+				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
+				onClose={() => { setShowForm(false); setEditingEvent(null); }}
+				onSubmit={handleSubmit}
+			>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="titre">Titre</label>
+					<input id="titre" name="titre" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="Nom de l'événement" required defaultValue={editingEvent?.
+// @ts-ignore
+					title || ''} />
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="description">Description</label>
+					<textarea id="description" name="description" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl resize-none" 
+// @ts-ignore
+					rows="3" placeholder="Description courte..." defaultValue={editingEvent?.description || ''} />
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateEvenement">Date</label>
+					<input id="dateEvenement" name="dateEvenement" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" required defaultValue={editingEvent?.
+// @ts-ignore
+					dateEvenement || ''} />
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
+					<input id="lieu" name="lieu" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.
+// @ts-ignore
+					lieu || ''} />
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="imagePrincipale">
+						Image principale (jpg, jpeg, png) {uploading && <span class="ml-2 text-primary-container animate-pulse">Uploading…</span>}
+					</label>
+					<input
+						id="imagePrincipale"
+						name="imagePrincipale"
+						type="file"
+						accept=".jpg,.jpeg,.png"
+						class="w-full px-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary-container file:text-on-primary file:font-button file:text-button file:cursor-pointer hover:file:brightness-110"
+						onInput={(e) => {
+							const f = e.currentTarget.files?.[0];
+							if (f) setPreviewSrc(URL.createObjectURL(f));
+						}}
+					/>
+					{previewSrc && (
+						<div class="mt-3 relative rounded-xl overflow-hidden border border-outline-variant/30">
+							<img src={previewSrc} alt="Aperçu" class="w-full h-40 object-cover" />
+							<button type="button" onClick={() => { setPreviewSrc(''); const inp = document.getElementById('imagePrincipale'); if (inp) inp.
+// @ts-ignore
+							value = ''; }} class="absolute top-2 right-2 p-1.5 rounded-lg bg-black/50 text-white hover:bg-black/70 transition-all" title="Supprimer">
+								<span class="material-symbols-outlined text-[18px]">close</span>
+							</button>
+						</div>
+					)}
+				</div>
+				<div>
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input id="estPublie" name="estPublie" type="checkbox" class="w-5 h-5 rounded border-outline-variant/30 text-primary-container focus:ring-primary-container/10" defaultChecked={editingEvent ? editingEvent.
+// @ts-ignore
+						published : true} />
+						<span class="font-body-md text-body-md text-on-background">Publier immédiatement</span>
+					</label>
+				</div>
+			</FormModal>
 		</div>
 	);
 }

@@ -2,25 +2,21 @@ import { useEffect, useState } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
-import { currentUser, accessToken, logout, tryAutoRefresh } from '../../stores/auth.js';
+import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { FormModal } from '../../components/admin/FormModal.jsx';
 import { usersApi, createUserApi, updateUserApi, deleteUserApi } from '../../api/users.js';
 
 const roles = ['admin', 'manager', 'editor', 'viewer'];
 
 export function AdminUsers() {
 	const { route } = useLocation();
+	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
-	const [users, setUsers] = useState([
-		{ id: 1, nomUtilisateur: 'admin', email: 'admin@gmt3.mg', role: 'admin', actif: true, derniereConnexion: '2026-05-30 14:32' },
-		{ id: 2, nomUtilisateur: 'manager1', email: 'manager@gmt3.mg', role: 'manager', actif: true, derniereConnexion: '2026-05-29 09:15' },
-		{ id: 3, nomUtilisateur: 'editor1', email: 'editor@gmt3.mg', role: 'editor', actif: true, derniereConnexion: '2026-05-28 16:45' },
-		{ id: 4, nomUtilisateur: 'viewer1', email: 'viewer@gmt3.mg', role: 'viewer', actif: false, derniereConnexion: '2026-05-20 11:00' },
-	]);
+	const [users, setUsers] = useState([]);
 	const [showForm, setShowForm] = useState(false);
 	const [editingUser, setEditingUser] = useState(null);
-	const [form, setForm] = useState({ nomUtilisateur: '', email: '', role: 'editor', motDePasse: '' });
 	const [confirm, setConfirm] = useState(null);
 
 	useEffect(() => {
@@ -33,28 +29,29 @@ export function AdminUsers() {
 	const loadUsers = async () => {
 		try {
 			const data = await usersApi(accessToken.value);
-			setUsers(data);
+			if (Array.isArray(data)) setUsers(data);
 		} catch { /* keep current list */ }
 	};
 
-	const handleLogout = () => setConfirm({ type: 'logout' });
-	const confirmLogout = async () => { await logout(); route('/admin', true); };
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
+	const handleSubmit = async (data) => {
 		try {
 			if (editingUser) {
-				const payload = { nomUtilisateur: form.nomUtilisateur, email: form.email, role: form.role };
-				if (form.motDePasse) payload.motDePasse = form.motDePasse;
+				const payload = { nomUtilisateur: data.get('nomUtilisateur'), email: data.get('email'), role: data.get('role') };
+				const pwd = data.get('motDePasse');
+				if (pwd) payload.motDePasse = pwd;
 				const updated = await updateUserApi(accessToken.value, editingUser.id, payload);
 				setUsers((prev) => prev.map((u) => u.id === editingUser.id ? updated : u));
 			} else {
-				const created = await createUserApi(accessToken.value, form);
+				const created = await createUserApi(accessToken.value, {
+					nomUtilisateur: data.get('nomUtilisateur'),
+					email: data.get('email'),
+					role: data.get('role'),
+					motDePasse: data.get('motDePasse'),
+				});
 				setUsers((prev) => [...prev, created]);
 			}
 			setShowForm(false);
 			setEditingUser(null);
-			setForm({ nomUtilisateur: '', email: '', role: 'editor', motDePasse: '' });
 		} catch (e) {
 			alert(e.message);
 		}
@@ -62,7 +59,11 @@ export function AdminUsers() {
 
 	const openEdit = (user) => {
 		setEditingUser(user);
-		setForm({ nomUtilisateur: user.nomUtilisateur, email: user.email, role: user.role, motDePasse: '' });
+		setShowForm(true);
+	};
+
+	const handleCreate = () => {
+		setEditingUser(null);
 		setShowForm(true);
 	};
 
@@ -111,7 +112,7 @@ export function AdminUsers() {
 							</p>
 						</div>
 						<button
-							onClick={() => { setEditingUser(null); setForm({ nomUtilisateur: '', email: '', role: 'editor', motDePasse: '' }); setShowForm(true); }}
+							onClick={handleCreate}
 							class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 font-bold"
 						>
 							<span class="material-symbols-outlined">add</span>
@@ -214,72 +215,63 @@ export function AdminUsers() {
 			</div>
 
 			{/* Add/Edit dialog */}
-			{showForm && (
-				<div class="fixed inset-0 z-50 flex items-center justify-center">
-					<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowForm(false)} />
-					<div class="relative bg-surface rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-8 border border-outline-variant/30">
-						<h3 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight mb-6">
-							{editingUser ? 'Modifier' : 'Ajouter'} un utilisateur
-						</h3>
-						<form onSubmit={handleSubmit} class="space-y-5">
-							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2">Nom d'utilisateur</label>
-								<input
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
-									placeholder="ex: jdoe"
-									required
-									value={form.nomUtilisateur}
-									onInput={(e) => setForm({ ...form, nomUtilisateur: e.currentTarget.value })}
-								/>
-							</div>
-							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2">Email</label>
-								<input
-									type="email"
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
-									placeholder="ex: jdoe@gmt3.mg"
-									required
-									value={form.email}
-									onInput={(e) => setForm({ ...form, email: e.currentTarget.value })}
-								/>
-							</div>
-							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2">Rôle</label>
-								<select
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl appearance-none cursor-pointer"
-									value={form.role}
-									onChange={(e) => setForm({ ...form, role: e.currentTarget.value })}
-								>
-									{roles.map((r) => (
-										<option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
-									))}
-								</select>
-							</div>
-							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2">
-									{editingUser ? 'Nouveau mot de passe (laisser vide pour conserver)' : 'Mot de passe'}
-								</label>
-								<input
-									type="password"
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
-									placeholder={editingUser ? '••••••••' : 'Mot de passe'}
-									required={!editingUser}
-									value={form.motDePasse}
-									onInput={(e) => setForm({ ...form, motDePasse: e.currentTarget.value })}
-								/>
-							</div>
-							<div class="flex justify-end gap-3 pt-2">
-								<button type="button" onClick={() => { setShowForm(false); setEditingUser(null); }} class="px-6 py-3 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all font-button text-button">
-									Annuler
-								</button>
-								<button type="submit" class="px-6 py-3 rounded-xl bg-primary-container text-on-primary font-button text-button hover:shadow-xl hover:shadow-primary/20 transition-all font-bold">
-									{editingUser ? 'Enregistrer' : 'Créer'}
-								</button>
-							</div>
-						</form>
-					</div>
+			<FormModal
+				open={showForm}
+				title={editingUser ? "Modifier l'utilisateur" : 'Ajouter un utilisateur'}
+				submitLabel={editingUser ? 'Enregistrer' : 'Créer'}
+				onClose={() => { setShowForm(false); setEditingUser(null); }}
+				onSubmit={handleSubmit}
+			>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="nomUtilisateur">Nom d'utilisateur</label>
+					<input
+						id="nomUtilisateur"
+						name="nomUtilisateur"
+						class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
+						placeholder="ex: jdoe"
+						required
+						defaultValue={editingUser?.nomUtilisateur || ''}
+					/>
 				</div>
-			)}
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="email">Email</label>
+					<input
+						id="email"
+						name="email"
+						type="email"
+						class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
+						placeholder="ex: jdoe@gmt3.mg"
+						required
+						defaultValue={editingUser?.email || ''}
+					/>
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="role">Rôle</label>
+					<select
+						id="role"
+						name="role"
+						class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl appearance-none cursor-pointer"
+						defaultValue={editingUser?.role || 'editor'}
+					>
+						{roles.map((r) => (
+							<option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+						))}
+					</select>
+				</div>
+				<div>
+					<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="motDePasse">
+						{editingUser ? 'Nouveau mot de passe (laisser vide pour conserver)' : 'Mot de passe'}
+					</label>
+					<input
+						id="motDePasse"
+						name="motDePasse"
+						type="password"
+						class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl"
+						placeholder={editingUser ? '••••••••' : 'Mot de passe'}
+						required={!editingUser}
+					/>
+				</div>
+			</FormModal>
 
 			{/* Confirm dialogs */}
 			<ConfirmDialog
@@ -297,7 +289,7 @@ export function AdminUsers() {
 				message={`Supprimer définitivement l'utilisateur "${confirm?.user?.nomUtilisateur}" ?`}
 				confirmLabel="Supprimer"
 				icon="delete"
-				confirmClass="bg-error text-on-error"
+				variant="danger"
 				onConfirm={executeDelete}
 				onCancel={() => setConfirm(null)}
 			/>
