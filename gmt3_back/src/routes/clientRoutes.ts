@@ -1,8 +1,8 @@
 import { ClientController } from '../controllers/ClientController.js';
 import type { RouteMap, RouteHandler } from '../types/http.js';
 
-const withId = (fn: (req: import('../types/http.js').BunRequest, params: Record<string, string>) => Promise<Response>): RouteHandler =>
-	(req, params) => fn(req, params);
+const withId = (fn: (req: import('../types/http.js').BunRequest, params: { id: string }) => Promise<Response>): RouteHandler =>
+	(req, params) => fn(req, { id: params.id ?? '' });
 
 export const clientRoutes: RouteMap = {
     '/api/clients': {

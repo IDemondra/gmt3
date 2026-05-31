@@ -1,6 +1,7 @@
 import { userRoutes } from './routes/userRoutes.js';
 import { clientRoutes } from './routes/clientRoutes.js';
 import { evenementRoutes } from './routes/evenementRoutes.js';
+import { reservationRoutes } from './routes/reservationRoutes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
 
@@ -8,6 +9,7 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...userRoutes,
 	...clientRoutes,
 	...evenementRoutes,
+	...reservationRoutes,
 };
 
 const PROTECTED_ROUTES = new Set([
@@ -18,6 +20,9 @@ const PROTECTED_ROUTES = new Set([
 	'POST /api/evenements',
 	'PUT /api/evenements/:id',
 	'DELETE /api/evenements/:id',
+	'POST /api/reservations',
+	'PUT /api/reservations/:id',
+	'DELETE /api/reservations/:id',
 ]);
 
 function matchRoute(

@@ -32,6 +32,16 @@ export const EvenementController = {
 		return Response.json(items.map(formatEvenementDates));
 	},
 
+	async getById(req: BunRequest, params: Record<string, string>): Promise<Response> {
+		const id = Number(params.id);
+		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+
+		const item = await evenementService.getById(id);
+		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+
+		return Response.json(formatEvenementDates(item));
+	},
+
 	async create(req: BunRequest): Promise<Response> {
 		const fd = await req.formData();
 		const titre = fd.get('titre') as string;
