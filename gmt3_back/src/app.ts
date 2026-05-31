@@ -2,6 +2,7 @@ import { userRoutes } from './routes/userRoutes.js';
 import { clientRoutes } from './routes/clientRoutes.js';
 import { evenementRoutes } from './routes/evenementRoutes.js';
 import { reservationRoutes } from './routes/reservationRoutes.js';
+import { kpiRoutes } from './routes/kpiRoutes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
 
@@ -10,6 +11,7 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...clientRoutes,
 	...evenementRoutes,
 	...reservationRoutes,
+	...kpiRoutes,
 };
 
 const PROTECTED_ROUTES = new Set([
@@ -22,6 +24,7 @@ const PROTECTED_ROUTES = new Set([
 	'DELETE /api/evenements/:id',
 	'PUT /api/reservations/:id',
 	'DELETE /api/reservations/:id',
+	'GET /api/kpis',
 ]);
 
 function matchRoute(

@@ -1,37 +1,40 @@
-const kpis = [
-	{
-		icon: 'landscape',
-		label: 'Expéditions',
-		value: '42',
-		unit: 'Actives',
-		color: 'primary',
-		gradient: 'from-primary/5 via-primary/5 to-transparent',
-		iconBg: 'bg-primary-container',
-		iconText: 'text-on-primary',
-	},
-	{
-		icon: 'confirmation_number',
-		label: 'Réservations',
-		value: '128',
-		unit: 'Cette semaine',
-		color: 'primary-container',
-		gradient: 'from-primary-container/5 via-primary-container/10 to-transparent',
-		iconBg: 'bg-primary-container',
-		iconText: 'text-on-primary',
-	},
-	{
-		icon: 'warning',
-		label: 'Places limitées',
-		value: '7',
-		unit: 'Événements',
-		color: 'on-background',
-		gradient: 'from-surface-container via-surface-container to-transparent',
-		iconBg: 'bg-surface-container-high',
-		iconText: 'text-on-background',
-	},
-];
+/**
+ * @param {Object} props
+ * @param {number} [props.totalEvents]
+ * @param {number} [props.totalReservations]
+ * @param {number} [props.limitedEvents]
+ */
+export function KpiCards({ totalEvents = 0, totalReservations = 0, limitedEvents = 0 }) {
+	const kpis = [
+		{
+			icon: 'landscape',
+			label: 'Expéditions',
+			value: String(totalEvents),
+			unit: 'Actives',
+			gradient: 'from-primary/5 via-primary/5 to-transparent',
+			iconBg: 'bg-primary-container',
+			iconText: 'text-on-primary',
+		},
+		{
+			icon: 'confirmation_number',
+			label: 'Réservations',
+			value: String(totalReservations),
+			unit: 'Cette semaine',
+			gradient: 'from-primary-container/5 via-primary-container/10 to-transparent',
+			iconBg: 'bg-primary-container',
+			iconText: 'text-on-primary',
+		},
+		{
+			icon: 'warning',
+			label: 'Places limitées',
+			value: String(limitedEvents),
+			unit: 'Événements',
+			gradient: 'from-surface-container via-surface-container to-transparent',
+			iconBg: 'bg-surface-container-high',
+			iconText: 'text-on-background',
+		},
+	];
 
-export function KpiCards() {
 	return (
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
 			{kpis.map((kpi) => (
