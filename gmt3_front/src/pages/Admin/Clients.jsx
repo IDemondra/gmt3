@@ -7,6 +7,7 @@ import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { clientsApi, createClientApi, updateClientApi, deleteClientApi } from '../../api/clients.js';
 
 const ROWS_PER_PAGE = 10;
+const CONTACT_DIGITS = 10;
 
 export function AdminClients() {
 	const { route } = useLocation();
@@ -18,6 +19,8 @@ export function AdminClients() {
 	const [showForm, setShowForm] = useState(false);
 	const [editingClient, setEditingClient] = useState(/** @type {any|null} */(null));
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; clientId?: number } | null} */(null));
+	const [contactValue, setContactValue] = useState('');
+	const [contactError, setContactError] = useState('');
 	const [page, setPage] = useState(0);
 
 	useEffect(() => {
@@ -34,14 +37,49 @@ export function AdminClients() {
 		} catch {}
 	};
 
-	const handleCreate = () => { setEditingClient(null); setShowForm(true); };
-	const handleEdit = (c) => { setEditingClient(c); setShowForm(true); };
+	const handleCreate = () => {
+		setEditingClient(null);
+		setContactValue('');
+		setContactError('');
+		setShowForm(true);
+	};
+	const handleEdit = (c) => {
+		setEditingClient(c);
+		setContactValue(c.contact || '');
+		setContactError('');
+		setShowForm(true);
+	};
+
+	const handleContactKeyDown = (e) => {
+		if (e.ctrlKey || e.altKey || e.metaKey) return;
+		const allowed = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+		if (allowed.includes(e.key)) return;
+		if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+	};
+
+	const handleContactInput = (e) => {
+		const el = e.currentTarget;
+		const raw = el.value;
+		const digitsOnly = raw.replace(/\D/g, '').slice(0, CONTACT_DIGITS);
+		if (digitsOnly !== raw) el.value = digitsOnly;
+		setContactValue(digitsOnly);
+		setContactError(
+			digitsOnly.length > 0 && digitsOnly.length !== CONTACT_DIGITS
+				? `Le contact doit contenir exactement ${CONTACT_DIGITS} chiffres.`
+				: ''
+		);
+	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const fd = new FormData(e.target);
-		const data = { nom: fd.get('nom'), contact: fd.get('contact') };
-		if (!data.nom || !data.contact) { alert('Tous les champs sont obligatoires.'); return; }
+		const nom = fd.get('nom');
+		if (!nom) { alert('Le nom est obligatoire.'); return; }
+		if (contactValue.length !== CONTACT_DIGITS) {
+			setContactError(`Le contact doit contenir exactement ${CONTACT_DIGITS} chiffres.`);
+			return;
+		}
+		const data = { nom, contact: contactValue };
 		try {
 			if (editingClient) {
 				const updated = await updateClientApi(accessToken.value, editingClient.id, data);
@@ -163,7 +201,23 @@ export function AdminClients() {
 							</div>
 							<div>
 								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="contact">Contact</label>
-								<input id="contact" name="contact" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="Téléphone / Email" required defaultValue={editingClient?.contact || ''} />
+								<input
+									id="contact"
+									name="contact"
+									class={`w-full px-4 py-3 bg-background border outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl ${contactError ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/10' : 'border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10'}`}
+									placeholder="10 chiffres requis"
+									inputmode="numeric"
+									pattern="[0-9]{10}"
+									maxlength={CONTACT_DIGITS}
+									required
+									value={contactValue}
+									onKeyDown={handleContactKeyDown}
+									onKeyDown={handleContactKeyDown}
+									onInput={handleContactInput}
+								/>
+								{contactError && (
+									<p class="mt-1.5 text-xs text-red-500 font-medium">{contactError}</p>
+								)}
 							</div>
 							<div class="flex justify-end gap-3 pt-2">
 								<button type="button" onClick={() => { setShowForm(false); setEditingClient(null); }} class="px-6 py-3 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all font-button text-button">Annuler</button>
