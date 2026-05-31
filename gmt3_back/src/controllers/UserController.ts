@@ -103,7 +103,7 @@ export const UserController = {
 	async refresh(req: BunRequest): Promise<Response> {
 		const cookie = req.headers.get('Cookie') || '';
 		const match = cookie.match(/refreshToken=([^;]+)/);
-		const token = match ? decodeURIComponent(match[1]) : null;
+		const token = match ? decodeURIComponent(match[1]!) : null;
 		if (!token) {
 			return Response.json({ error: 'NON_AUTORISE' }, { status: 401 });
 		}
