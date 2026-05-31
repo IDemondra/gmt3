@@ -323,11 +323,19 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					)}
 				</div>
 				<div>
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input id="estPublie" name="estPublie" type="checkbox" class="w-5 h-5 rounded border-outline-variant/30 text-primary-container focus:ring-primary-container/10" defaultChecked={editingEvent ? editingEvent.
-// @ts-ignore
-						published : true} />
-						<span class="font-body-md text-body-md text-on-background">Publier immédiatement</span>
+					<label class="group flex items-center justify-between gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container/40 px-4 py-3 cursor-pointer transition-all duration-200 hover:border-primary-container/45 hover:bg-surface-container/70">
+						<span class="flex flex-col">
+							<span class="font-body-md text-body-md text-on-background font-semibold">Publier immédiatement</span>
+							<span class="text-sm text-secondary">Active la visibilité publique dès l'enregistrement.</span>
+						</span>
+						<span class="relative inline-flex h-8 w-14 shrink-0 items-center">
+							<input id="estPublie" name="estPublie" type="checkbox" role="switch" class="peer sr-only" defaultChecked={editingEvent ? editingEvent.
+	// @ts-ignore
+							published : true} />
+							<span class="absolute inset-0 rounded-full bg-outline-variant/40 shadow-inner transition-all duration-300 peer-checked:bg-primary-container peer-focus-visible:ring-2 peer-focus-visible:ring-primary-container/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface" />
+							<span class="absolute left-1 h-6 w-6 rounded-full bg-white shadow-[0_6px_16px_rgba(0,0,0,0.24)] transition-all duration-300 peer-checked:translate-x-6 peer-checked:shadow-[0_8px_20px_rgba(0,0,0,0.32)]" />
+							<span class="material-symbols-outlined pointer-events-none absolute right-2 text-[14px] text-on-primary opacity-0 transition-opacity duration-200 peer-checked:opacity-100">check</span>
+						</span>
 					</label>
 				</div>
 			</FormModal>

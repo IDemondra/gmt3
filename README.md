@@ -7,6 +7,7 @@
 - `README.md`
 
 ## Summary of What Works
+- Le champ `Publier immédiatement` du formulaire admin est maintenant présenté comme un switch accessible tout en conservant l'envoi `estPublie`.
 - Le bouton de fermeture de l'aperçu image garde la même structure, avec une ombre flottante plus lisible et un état focus accessible.
 - L'aperçu plein écran des images admin n'utilise plus le mode CORS forcé qui bloquait les images servies par le backend local.
 - Le clic dans l'image preview ne ferme plus immédiatement la modale par propagation.
