@@ -20,7 +20,6 @@ const PROTECTED_ROUTES = new Set([
 	'POST /api/evenements',
 	'PUT /api/evenements/:id',
 	'DELETE /api/evenements/:id',
-	'POST /api/reservations',
 	'PUT /api/reservations/:id',
 	'DELETE /api/reservations/:id',
 ]);

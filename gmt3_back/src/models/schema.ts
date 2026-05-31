@@ -49,5 +49,6 @@ export const reservations = sqliteTable('reservations', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	clientId: integer('client_id').references(() => clients.id),
 	evenementId: integer('evenement_id').references(() => evenements.id),
+	nombrePlaces: integer('nombre_places').default(1).notNull(),
 	dateReservation: text('date_reservation').default(new Date().toISOString()),
 });

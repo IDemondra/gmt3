@@ -7,6 +7,7 @@ import { formatDateToDDMMYYYY } from '../utils/date.js';
 type ReservationBody = {
 	clientId?: number;
 	evenementId?: number;
+	nombrePlaces?: number;
 	dateReservation?: string;
 };
 
@@ -44,14 +45,16 @@ export const ReservationController = {
 		const body = await req.json() as ReservationBody;
 		const clientId = toPositiveInteger(body.clientId);
 		const evenementId = toPositiveInteger(body.evenementId);
+		const nombrePlaces = body.nombrePlaces === undefined ? 1 : toPositiveInteger(body.nombrePlaces);
 
-		if (!clientId || !evenementId) {
+		if (!clientId || !evenementId || !nombrePlaces) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
 		}
 
 		const reservation = await reservationService.create({
 			clientId,
 			evenementId,
+			nombrePlaces,
 			dateReservation: body.dateReservation || new Date().toISOString(),
 		});
 
@@ -75,6 +78,12 @@ export const ReservationController = {
 			const evenementId = toPositiveInteger(body.evenementId);
 			if (!evenementId) return Response.json({ error: 'EVENEMENT_ID_INVALIDE' }, { status: 400 });
 			data.evenementId = evenementId;
+		}
+
+		if (body.nombrePlaces !== undefined) {
+			const nombrePlaces = toPositiveInteger(body.nombrePlaces);
+			if (!nombrePlaces) return Response.json({ error: 'NOMBRE_PLACES_INVALIDE' }, { status: 400 });
+			data.nombrePlaces = nombrePlaces;
 		}
 
 		if (body.dateReservation !== undefined) {

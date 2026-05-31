@@ -35,4 +35,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 cookies.txt
 uploads
 data
-drizzle
+
+# Drizzle migrations are source artifacts and must stay versioned.
+!drizzle/
+!drizzle/**
