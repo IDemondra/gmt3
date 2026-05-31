@@ -7,6 +7,7 @@
 - `README.md`
 
 ## Summary of What Works
+- Le bouton de fermeture de l'aperçu image garde la même structure, avec une ombre flottante plus lisible et un état focus accessible.
 - L'aperçu plein écran des images admin n'utilise plus le mode CORS forcé qui bloquait les images servies par le backend local.
 - Le clic dans l'image preview ne ferme plus immédiatement la modale par propagation.
 - Un message explicite apparaît si l'image preview ne peut pas être chargée.

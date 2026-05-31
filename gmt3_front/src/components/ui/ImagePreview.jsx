@@ -40,7 +40,8 @@ export function ImagePreview({ image, onClose }) {
 				<button
 					type="button"
 					onClick={onClose}
-					class="absolute -top-3 -right-3 z-10 p-2 rounded-full bg-surface shadow-lg border border-outline-variant/30 hover:bg-surface-container transition-all"
+					aria-label="Fermer l'aperçu"
+					class="absolute -top-4 -right-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/45 bg-surface/90 text-on-background shadow-[0_18px_45px_rgba(0,0,0,0.35),0_4px_12px_rgba(255,255,255,0.18)_inset] ring-1 ring-black/10 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-white hover:shadow-[0_24px_60px_rgba(0,0,0,0.45),0_4px_14px_rgba(255,255,255,0.28)_inset] focus:outline-none focus:ring-2 focus:ring-primary-container/70 active:translate-y-0 active:scale-95"
 				>
 					<span class="material-symbols-outlined text-[20px]">close</span>
 				</button>
