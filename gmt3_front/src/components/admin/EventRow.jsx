@@ -63,6 +63,11 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick }) {
 			) : fmtDate(event.date) || fmtDate(event.dateEvenement) || '—'}
 		</td>
 			<td class="px-6 py-4">
+				<span class="font-mono text-sm font-semibold text-on-background bg-surface-container px-3 py-1 rounded-lg">
+					{event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—'}
+				</span>
+			</td>
+			<td class="px-6 py-4">
 				<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
 					event.published
 						? 'bg-green-50 text-green-700 border border-green-200'

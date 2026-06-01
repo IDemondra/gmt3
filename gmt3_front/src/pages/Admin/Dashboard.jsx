@@ -10,6 +10,7 @@ import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 import { kpisApi } from '../../api/kpis.js';
+import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
 
 const toDateInputValue = (date = new Date()) => {
 	const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -191,6 +192,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Réf</th>
 											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Titre</th>
 											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Départ — Retour</th>
+											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Prix</th>
 											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Statut</th>
 											<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest text-right">Actions</th>
 										</tr>
@@ -301,6 +303,12 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 						<input id="lieu" name="lieu" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.
 	// @ts-ignore
 						lieu || ''} />
+					</div>
+					<div>
+						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
+						<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="ex: 150000" defaultValue={editingEvent?.
+	// @ts-ignore
+							prix ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
 					</div>
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="imagePrincipale">

@@ -48,6 +48,8 @@ export const EvenementController = {
 		const dateEvenement = fd.get('dateEvenement') as string;
 		const description = fd.get('description') as string || undefined;
 		const lieu = fd.get('lieu') as string || undefined;
+		const prixStr = fd.get('prix') as string;
+		const prix = prixStr ? parseFloat(prixStr) : null;
 		const heureDepart = fd.get('heureDepart') as string || undefined;
 		const dateDepart = fd.get('dateDepart') as string || undefined;
 		const heureRetour = fd.get('heureRetour') as string || undefined;
@@ -68,6 +70,7 @@ export const EvenementController = {
 			heureRetour: heureRetour ?? null,
 			dateRetour: dateRetour ?? null,
 			lieu: lieu ?? null,
+			prix,
 			imagePrincipale: null,
 			estPublie,
 		});
@@ -103,6 +106,8 @@ export const EvenementController = {
 		if (fd.get('dateDepart')) data.dateDepart = fd.get('dateDepart') as string;
 		if (fd.get('heureRetour')) data.heureRetour = fd.get('heureRetour') as string;
 		if (fd.get('dateRetour')) data.dateRetour = fd.get('dateRetour') as string;
+		const prixStr = fd.get('prix') as string;
+		if (prixStr) data.prix = parseFloat(prixStr);
 		data.estPublie = fd.get('estPublie') === 'on';
 
 		const imageFile = fd.get('imagePrincipale') as File | null;

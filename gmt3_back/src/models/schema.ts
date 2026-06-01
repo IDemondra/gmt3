@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 // ── Utilisateurs ──
 export const utilisateurs = sqliteTable('utilisateurs', {
@@ -30,6 +30,7 @@ export const evenements = sqliteTable('evenements', {
 	heureRetour: text('heure_retour'),
 	dateRetour: text('date_retour'),
 	lieu: text('lieu', { length: 150 }),
+	prix: real('prix'),
 	imagePrincipale: text('image_principale', { length: 255 }),
 	estPublie: integer('est_publie', { mode: 'boolean' }).default(true).notNull(),
 	dateCreation: text('date_creation').default(new Date().toISOString()),

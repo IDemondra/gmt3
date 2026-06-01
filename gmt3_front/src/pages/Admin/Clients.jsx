@@ -5,6 +5,7 @@ import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { clientsApi, createClientApi, updateClientApi, deleteClientApi } from '../../api/clients.js';
+import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
 
 const ROWS_PER_PAGE = 10;
 const CONTACT_DIGITS = 10;
@@ -50,21 +51,14 @@ export function AdminClients() {
 		setShowForm(true);
 	};
 
-	const handleContactKeyDown = (e) => {
-		if (e.ctrlKey || e.altKey || e.metaKey) return;
-		const allowed = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-		if (allowed.includes(e.key)) return;
-		if (!/^[0-9]$/.test(e.key)) e.preventDefault();
-	};
+	const handleContactKeyDown = (e) => handleDigitKeyDown(e);
 
 	const handleContactInput = (e) => {
-		const el = e.currentTarget;
-		const raw = el.value;
-		const digitsOnly = raw.replace(/\D/g, '').slice(0, CONTACT_DIGITS);
-		if (digitsOnly !== raw) el.value = digitsOnly;
-		setContactValue(digitsOnly);
+		const digits = getDigitsValue(e, CONTACT_DIGITS);
+		e.currentTarget.value = digits;
+		setContactValue(digits);
 		setContactError(
-			digitsOnly.length > 0 && digitsOnly.length !== CONTACT_DIGITS
+			digits.length > 0 && digits.length !== CONTACT_DIGITS
 				? `Le contact doit contenir exactement ${CONTACT_DIGITS} chiffres.`
 				: ''
 		);
