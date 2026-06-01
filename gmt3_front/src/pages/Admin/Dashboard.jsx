@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
@@ -11,6 +11,8 @@ import { FormModal } from '../../components/admin/FormModal.jsx';
 import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 import { kpisApi } from '../../api/kpis.js';
 import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
+
+const DESC_MAX = 1000;
 
 const toDateInputValue = (date = new Date()) => {
 	const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -28,10 +30,13 @@ export function AdminDashboard() {
 	const [showForm, setShowForm] = useState(false);
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
+	const [galleryPreviewSrcs, setGalleryPreviewSrcs] = useState([]);
 	const [uploading, setUploading] = useState(false);
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
 	const [kpis, setKpis] = useState({ totalEvents: 0, totalReservations: 0, limitedEvents: 0 });
+	const [descText, setDescText] = useState('');
+	const descRef = useRef(null);
 	const [previewImage, setPreviewImage] = useState(/** @type {{ url: string; title: string } | null} */ (null));
 	const todayStr = toDateInputValue();
 	const currentTimeStr = toTimeInputValue();
@@ -57,11 +62,13 @@ export function AdminDashboard() {
 		} catch { /* keep current */ }
 	};
 
-	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setShowForm(true); };
+	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setShowForm(true); };
 
 	// @ts-ignore
 	const handleEdit = (event) => {
 		setEditingEvent(event);
+		setPreviewSrc('');
+		setGalleryPreviewSrcs([]);
 		setShowForm(true);
 	};
 
@@ -74,6 +81,7 @@ export function AdminDashboard() {
 			fd.set('description', data.get('description') || '');
 			fd.set('dateEvenement', data.get('dateEvenement') || data.get('dateDepart') || todayStr);
 			fd.set('lieu', data.get('lieu') || '');
+			fd.set('prix', data.get('prix') || '');
 			fd.set('heureDepart', data.get('heureDepart') || currentTimeStr);
 			fd.set('dateDepart', data.get('dateDepart') || '');
 			fd.set('heureRetour', data.get('heureRetour') || currentTimeStr);
@@ -85,26 +93,32 @@ export function AdminDashboard() {
 				const ext = imageFile.name.split('.').pop().toLowerCase();
 				if (!['jpg', 'jpeg', 'png'].includes(ext)) {
 					alert('Format accepté : .jpg, .jpeg, .png uniquement');
-					setUploading(false);
 					return;
 				}
 				fd.set('imagePrincipale', imageFile);
 			}
 
-		if (editingEvent) {
-			const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd);
-			setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
-		} else {
-			const created = await createEvenementApi(accessToken.value, fd);
-			setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
+			const galleryFiles = data.getAll('photosEvenement').filter((file) => file && file.size > 0);
+			for (const file of galleryFiles) {
+				fd.append('photosEvenement', file);
+			}
+
+			if (editingEvent) {
+				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd);
+				setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
+			} else {
+				const created = await createEvenementApi(accessToken.value, fd);
+				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
+			}
+			setShowForm(false);
+			setEditingEvent(null);
+		} catch (e) {
+			// @ts-ignore
+			alert(e.message);
+		} finally {
+			setUploading(false);
 		}
-		setShowForm(false);
-		setEditingEvent(null);
-	} catch (e) {
-		// @ts-ignore
-		alert(e.message);
-	}
-};
+	};
 
 // @ts-ignore
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
@@ -256,7 +270,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					open={showForm}
 					title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 					submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-					onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); }}
+						onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); }}
 					onSubmit={handleSubmit}
 					encType="multipart/form-data"
 				>
@@ -268,9 +282,49 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					</div>
 					<div>
 						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="description">Description</label>
-						<textarea id="description" name="description" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl resize-none"
+						<div class="flex items-center gap-1 mb-2">
+							<button type="button" onClick={() => {
+								const ta = descRef.current;
+								if (!ta) return;
+								const start = ta.selectionStart;
+								const end = ta.selectionEnd;
+								const txt = ta.value;
+								const sel = txt.slice(start, end);
+								const wrap = sel ? `**${sel}**` : '****';
+								const pos = sel ? end + 4 : start + 2;
+								const next = txt.slice(0, start) + wrap + txt.slice(end);
+								if (next.length <= DESC_MAX) {
+									ta.value = next;
+									setDescText(next);
+									ta.focus();
+									ta.setSelectionRange(pos, pos);
+								}
+							}} class="p-1.5 rounded-lg border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all text-xs font-bold" title="Gras">B</button>
+							<button type="button" onClick={() => {
+								const ta = descRef.current;
+								if (!ta) return;
+								const start = ta.selectionStart;
+								const end = ta.selectionEnd;
+								const txt = ta.value;
+								const sel = txt.slice(start, end);
+								const wrap = sel ? `*${sel}*` : '**';
+								const pos = sel ? end + 2 : start + 1;
+								const next = txt.slice(0, start) + wrap + txt.slice(end);
+								if (next.length <= DESC_MAX) {
+									ta.value = next;
+									setDescText(next);
+									ta.focus();
+									ta.setSelectionRange(pos, pos);
+								}
+							}} class="p-1.5 rounded-lg border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all text-xs italic font-serif" title="Italique">I</button>
+							<span class="ml-auto text-xs text-secondary">{descText.length}/{DESC_MAX}</span>
+						</div>
+						<textarea id="description" name="description" ref={descRef}
+							class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl resize-none"
 	// @ts-ignore
-						rows="3" placeholder="Description courte..." defaultValue={editingEvent?.description || ''} />
+							rows="3" placeholder="Description courte..." maxLength={DESC_MAX}
+							onInput={(e) => { setDescText(e.currentTarget.value); }}
+							defaultValue={editingEvent?.description || ''} />
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div>
@@ -310,9 +364,9 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 	// @ts-ignore
 							prix ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
 					</div>
-					<div>
-						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="imagePrincipale">
-							Image principale (jpg, jpeg, png) {uploading && <span class="ml-2 text-primary-container animate-pulse">Uploading…</span>}
+						<div>
+							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="imagePrincipale">
+								Image principale (jpg, jpeg, png) {uploading && <span class="ml-2 text-primary-container animate-pulse">Uploading…</span>}
 						</label>
 						<input
 							id="imagePrincipale"
@@ -334,10 +388,37 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 									<span class="material-symbols-outlined text-[18px]">close</span>
 								</button>
 							</div>
-						)}
-					</div>
-					<div>
-						<label class="group flex items-center justify-between gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container/40 px-4 py-3 cursor-pointer transition-all duration-200 hover:border-primary-container/45 hover:bg-surface-container/70">
+							)}
+						</div>
+						<div>
+							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="photosEvenement">
+								Galerie photos
+							</label>
+							<input
+								id="photosEvenement"
+								name="photosEvenement"
+								type="file"
+								multiple
+								accept=".jpg,.jpeg,.png"
+								class="w-full px-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary-container file:text-on-primary file:font-button file:text-button file:cursor-pointer hover:file:brightness-110"
+								onInput={(e) => {
+									const files = Array.from(e.currentTarget.files || []);
+									setGalleryPreviewSrcs(files.map((file) => URL.createObjectURL(file)).slice(0, 10));
+								}}
+							/>
+							<p class="mt-2 text-sm text-secondary">Ajoute 5 a 10 images pour le detail public de l'evenement.</p>
+							{galleryPreviewSrcs.length > 0 && (
+								<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+									{galleryPreviewSrcs.map((src, index) => (
+										<div key={`${src}-${index}`} class="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container">
+											<img src={src} alt={`Aperçu galerie ${index + 1}`} class="h-24 w-full object-cover" />
+										</div>
+									))}
+								</div>
+							)}
+						</div>
+						<div>
+							<label class="group flex items-center justify-between gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container/40 px-4 py-3 cursor-pointer transition-all duration-200 hover:border-primary-container/45 hover:bg-surface-container/70">
 							<span class="flex flex-col">
 								<span class="font-body-md text-body-md text-on-background font-semibold">Publier immédiatement</span>
 								<span class="text-sm text-secondary">Active la visibilité publique dès l'enregistrement.</span>

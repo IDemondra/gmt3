@@ -1,9 +1,11 @@
 import { EvenementService } from '../services/EvenementService.js';
 import { EvenementRepository } from '../repositories/EvenementRepository.js';
+import { PhotoEvenementRepository } from '../repositories/PhotoEvenementRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Evenement } from '../types/index.js';
+import { buildGalleryUploadPlan } from '../utils/photoGallery.js';
 import { formatDateToDDMMYYYY } from '../utils/date.js';
-import { mkdirSync, writeFileSync, existsSync } from 'fs';
+import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {
@@ -24,7 +26,52 @@ function ensureDir(id: number) {
 	return dir;
 }
 
+function ensureGalleryDir(id: number) {
+	const dir = resolve(ensureDir(id), 'gallery');
+	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+	return dir;
+}
+
+type GalleryFormData = {
+	getAll(name: string): unknown[];
+};
+
+function getGalleryFiles(fd: GalleryFormData): File[] {
+	return fd.getAll('photosEvenement').filter((value): value is File => value instanceof File && value.size > 0);
+}
+
 const evenementService = new EvenementService(new EvenementRepository());
+const photoRepository = new PhotoEvenementRepository();
+
+async function serializeEvenement(id: number) {
+	const item = await evenementService.getById(id);
+	if (!item) return null;
+	const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
+	return { ...formatEvenementDates(item), photosEvenement };
+}
+
+async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
+	const files = getGalleryFiles(fd);
+	if (files.length === 0) return [];
+
+	const plan = buildGalleryUploadPlan(evenementId, files);
+	const galleryDir = ensureGalleryDir(evenementId);
+
+	for (const item of plan) {
+		const filePath = resolve(galleryDir, item.filename);
+		writeFileSync(filePath, Buffer.from(await item.file.arrayBuffer()));
+	}
+
+	await photoRepository.deleteByEvenementId(evenementId);
+	return photoRepository.createMany(
+		plan.map((item) => ({
+			evenementId,
+			url: item.url,
+			ordre: item.ordre,
+			legende: null,
+		})),
+	);
+}
 
 export const EvenementController = {
 	async getAll(req: BunRequest): Promise<Response> {
@@ -36,10 +83,33 @@ export const EvenementController = {
 		const id = Number(params.id);
 		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
+		const item = await serializeEvenement(id);
+		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+
+		return Response.json(item);
+	},
+
+	async getPhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
+		const id = Number(params.id);
+		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
 
-		return Response.json(formatEvenementDates(item));
+		const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
+		return Response.json({ photosEvenement });
+	},
+
+	async replacePhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
+		const id = Number(params.id);
+		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+
+		const item = await evenementService.getById(id);
+		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+
+		const fd = await req.formData();
+		const photos = await storeGalleryPhotos(id, fd);
+		return Response.json({ success: true, photosEvenement: photos }, { status: 201 });
 	},
 
 	async create(req: BunRequest): Promise<Response> {
@@ -60,7 +130,6 @@ export const EvenementController = {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
 		}
 
-		// 1. Créer l'événement sans image
 		const item = await evenementService.create({
 			titre,
 			description: description ?? null,
@@ -75,7 +144,6 @@ export const EvenementController = {
 			estPublie,
 		});
 
-		// 2. Sauver l'image dans le dossier uploads/evenements/{id}/
 		const imageFile = fd.get('imagePrincipale') as File | null;
 		if (imageFile && imageFile.size > 0) {
 			const dir = ensureDir(item.id);
@@ -86,7 +154,10 @@ export const EvenementController = {
 			await evenementService.update(item.id, { imagePrincipale: `/uploads/evenements/${item.id}/${filename}` });
 		}
 
-		return Response.json(formatEvenementDates(item), { status: 201 });
+		await storeGalleryPhotos(item.id, fd);
+		const created = await serializeEvenement(item.id);
+		if (!created) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		return Response.json(created, { status: 201 });
 	},
 
 	async update(req: BunRequest, params: Record<string, string>): Promise<Response> {
@@ -122,7 +193,11 @@ export const EvenementController = {
 
 		const item = await evenementService.update(id, data);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
-		return Response.json(formatEvenementDates(item));
+
+		await storeGalleryPhotos(id, fd);
+		const updated = await serializeEvenement(id);
+		if (!updated) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		return Response.json(updated);
 	},
 
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {

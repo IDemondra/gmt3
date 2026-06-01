@@ -11,4 +11,8 @@ export const evenementRoutes: RouteMap = {
 		PUT: EvenementController.update as import('../types/http.js').RouteHandler,
 		DELETE: EvenementController.delete as import('../types/http.js').RouteHandler,
 	},
+	'/api/evenements/:id/photos': {
+		GET: EvenementController.getPhotos as import('../types/http.js').RouteHandler,
+		POST: EvenementController.replacePhotos as import('../types/http.js').RouteHandler,
+	},
 };

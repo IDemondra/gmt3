@@ -8,25 +8,25 @@ export interface KpiData {
 	limitedEvents: number;
 }
 
-export class KpiRepository {
-	async getKpis(): Promise<KpiData> {
-		const [{ value: totalEvents }] = await db
-			.select({ value: count() })
-			.from(evenements)
-			.where(eq(evenements.estPublie, true));
+	export class KpiRepository {
+		async getKpis(): Promise<KpiData> {
+			const totalEventsRow = await db
+				.select({ value: count() })
+				.from(evenements)
+				.where(eq(evenements.estPublie, true));
 
-		const [{ value: totalReservations }] = await db
-			.select({ value: count() })
-			.from(reservations);
+			const totalReservationsRow = await db
+				.select({ value: count() })
+				.from(reservations);
 
-		const [{ value: limitedEvents }] = await db
-			.select({ value: count(sql`DISTINCT ${reservations.evenementId}`) })
-			.from(reservations);
+			const limitedEventsRow = await db
+				.select({ value: count(sql`DISTINCT ${reservations.evenementId}`) })
+				.from(reservations);
 
-		return {
-			totalEvents: totalEvents ?? 0,
-			totalReservations: totalReservations ?? 0,
-			limitedEvents: limitedEvents ?? 0,
-		};
+			return {
+				totalEvents: totalEventsRow[0]?.value ?? 0,
+				totalReservations: totalReservationsRow[0]?.value ?? 0,
+				limitedEvents: limitedEventsRow[0]?.value ?? 0,
+			};
+		}
 	}
-}

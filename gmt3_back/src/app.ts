@@ -5,6 +5,10 @@ import { reservationRoutes } from './routes/reservationRoutes.js';
 import { kpiRoutes } from './routes/kpiRoutes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+
+const STATIC_UPLOADS_ROOT = resolve(import.meta.dir, '..', 'uploads');
 
 const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...userRoutes,
@@ -22,6 +26,7 @@ const PROTECTED_ROUTES = new Set([
 	'POST /api/evenements',
 	'PUT /api/evenements/:id',
 	'DELETE /api/evenements/:id',
+	'POST /api/evenements/:id/photos',
 	'PUT /api/reservations/:id',
 	'DELETE /api/reservations/:id',
 	'GET /api/kpis',
@@ -77,6 +82,18 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 		'Vary': 'Origin',
 	};
+
+	if (pathname.startsWith('/uploads/')) {
+		const relativePath = pathname.slice('/uploads/'.length);
+		const filePath = resolve(STATIC_UPLOADS_ROOT, relativePath);
+		if (!filePath.startsWith(STATIC_UPLOADS_ROOT) || !existsSync(filePath)) {
+			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+		}
+
+		return new Response(Bun.file(filePath), {
+			headers: corsHeaders,
+		});
+	}
 
 	// ── CORS preflight ──
 	if (req.method === 'OPTIONS') {

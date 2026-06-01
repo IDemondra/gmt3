@@ -1,11 +1,15 @@
+import { useState } from 'preact/hooks';
 import { Footer } from '../../components/Footer.jsx';
+import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
+import { buildPreviewGallery } from '../../utils/gallery.js';
 import { img } from '../../utils/images.js';
 import { getUpcomingEventBySlug, upcomingEvents } from '../../data/upcomingEvents.js';
 
 export function EventDetail({ params }) {
 	const event = getUpcomingEventBySlug(params.slug);
+	const [preview, setPreview] = useState(null);
 
 	if (!event) {
 		return (
@@ -31,6 +35,7 @@ export function EventDetail({ params }) {
 	}
 
 	const relatedEvents = upcomingEvents.filter((item) => item.slug !== event.slug).slice(0, 2);
+	const gallery = buildPreviewGallery(event.image, event.gallery || event.photosEvenement || []);
 	const facts = [
 		{ label: 'Location', value: event.location },
 		{ label: 'Duration', value: event.duration },
@@ -182,6 +187,38 @@ export function EventDetail({ params }) {
 										))}
 									</ul>
 								</div>
+								<div class="mt-8">
+									<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+										<div>
+											<p class="font-label-caps text-label-caps text-secondary">Photo previews</p>
+											<h3 class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
+												{gallery.length} selected frames
+											</h3>
+										</div>
+										<p class="max-w-md font-body-md text-body-md leading-relaxed text-secondary sm:text-right">
+											The hero photo stays untouched. The strip below previews the gallery in the order it should be seen.
+										</p>
+									</div>
+									<div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+										{gallery.map((src, index) => (
+											<button
+												key={`${event.slug}-${index}`}
+												type="button"
+												onClick={() => setPreview({ url: img(src), title: `${event.title} photo ${index + 1}` })}
+												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10"
+											>
+												<img
+													src={img(src)}
+													alt={`${event.title} preview ${index + 1}`}
+													class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+													loading="lazy"
+													referrerPolicy="no-referrer"
+												/>
+												<div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+											</button>
+										))}
+									</div>
+								</div>
 							</article>
 						</Reveal>
 
@@ -249,6 +286,7 @@ export function EventDetail({ params }) {
 				</section>
 			</main>
 			<Footer />
+			<ImagePreview image={preview} onClose={() => setPreview(null)} />
 		</>
 	);
 }
