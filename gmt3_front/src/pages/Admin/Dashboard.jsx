@@ -8,9 +8,10 @@ import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../store
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
-import { evenementsApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
+import { evenementsApi, evenementApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 import { kpisApi } from '../../api/kpis.js';
 import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
+import { EventDetailModal } from '../../components/admin/EventDetailModal.jsx';
 
 const DESC_MAX = 1000;
 
@@ -39,6 +40,9 @@ export function AdminDashboard() {
 	const [descText, setDescText] = useState('');
 	const descRef = useRef(null);
 	const [previewImage, setPreviewImage] = useState(/** @type {{ url: string; title: string } | null} */ (null));
+	const [detailEvent, setDetailEvent] = useState(null);
+	const [detailLoading, setDetailLoading] = useState(false);
+	const [detailError, setDetailError] = useState(null);
 	const todayStr = toDateInputValue();
 	const currentTimeStr = toTimeInputValue();
 
@@ -48,6 +52,21 @@ export function AdminDashboard() {
 			const next = current.filter((_, index) => index !== indexToRemove);
 			return next;
 		});
+	};
+
+	const handleViewDetails = async (event) => {
+		setDetailError(null);
+		setDetailLoading(true);
+		setDetailEvent({ ...event, photosEvenement: event.photosEvenement || [] });
+		try {
+			const detail = await evenementApi(accessToken.value, event.id);
+			setDetailEvent(detail);
+		} catch (error) {
+			// @ts-ignore
+			setDetailError(error?.message || 'Impossible de charger le détail de l’événement');
+		} finally {
+			setDetailLoading(false);
+		}
 	};
 
 	useEffect(() => {
@@ -225,7 +244,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 									<tbody>
 										{filtered.map((event, i) => (
 											// @ts-ignore
-											<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} />
+											<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} onViewDetails={handleViewDetails} />
 										))}
 									</tbody>
 								</table>
@@ -277,7 +296,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					onCancel={() => setConfirm(null)}
 				/>
 
-				<FormModal
+					<FormModal
 					open={showForm}
 					title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 					submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
@@ -469,11 +488,21 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 							</span>
 						</label>
 					</div>
-				</FormModal>
-				</div>
+					</FormModal>
+					</div>
 
-				{/* ── Image preview modal ── */}
-				<ImagePreview image={previewImage} onClose={() => setPreviewImage(null)} />
-			</>
-		);
-	}
+					{/* ── Image preview modal ── */}
+					<ImagePreview image={previewImage} onClose={() => setPreviewImage(null)} />
+
+					<EventDetailModal
+						open={Boolean(detailEvent)}
+						loading={detailLoading}
+						error={detailError}
+						event={detailEvent}
+						onClose={() => { setDetailEvent(null); setDetailError(null); setDetailLoading(false); }}
+						onEdit={() => { if (detailEvent) { setShowForm(true); setEditingEvent(detailEvent); setDetailEvent(null); } }}
+						onPreviewImage={(image) => setPreviewImage(image)}
+					/>
+				</>
+			);
+		}

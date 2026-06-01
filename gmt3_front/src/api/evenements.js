@@ -10,6 +10,17 @@ export async function evenementsApi(token) {
 	return res.json();
 }
 
+/**
+ * @param {null} token
+ * @param {number} id
+ */
+export async function evenementApi(token, id) {
+	const headers = token ? { Authorization: `Bearer ${token}` } : {};
+	const res = await fetch(`${API_BASE}/api/evenements/${id}`, { headers, credentials: 'include' });
+	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CHARGEMENT'); }
+	return res.json();
+}
+
 export async function createEvenementApi(token, formData) {
 	const headers = { Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/api/evenements`, { method: 'POST', headers, body: formData, credentials: 'include' });

@@ -7,7 +7,7 @@ const resolveUrl = (url) => {
 	return `${BACKEND}${url}`;
 };
 
-export function EventRow({ event, index, onDelete, onEdit, onImageClick }) {
+export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewDetails }) {
 	const isEven = index % 2 === 0;
 
 	const hasImage = event.imagePrincipale && typeof event.imagePrincipale === 'string' && event.imagePrincipale.length > 0;
@@ -78,10 +78,13 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick }) {
 				</span>
 			</td>
 			<td class="px-6 py-4 text-right">
-				<div class="flex items-center justify-end gap-1">
-					<button onClick={() => onEdit?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
-						<span class="material-symbols-outlined text-[20px]">edit</span>
-					</button>
+					<div class="flex items-center justify-end gap-1">
+						<button onClick={() => onViewDetails?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
+							<span class="material-symbols-outlined text-[20px]">visibility</span>
+						</button>
+						<button onClick={() => onEdit?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
+							<span class="material-symbols-outlined text-[20px]">edit</span>
+						</button>
 					<button
 						onClick={() => onDelete?.(event.id)}
 						class="p-2.5 rounded-xl text-secondary hover:text-red-600 hover:bg-red-50 transition-all duration-150"
@@ -89,9 +92,9 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick }) {
 					>
 						<span class="material-symbols-outlined text-[20px]">delete</span>
 					</button>
-					<button class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Plus">
-						<span class="material-symbols-outlined text-[20px]">more_vert</span>
-					</button>
+						<button type="button" class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Plus">
+							<span class="material-symbols-outlined text-[20px]">more_vert</span>
+						</button>
 				</div>
 			</td>
 		</tr>
