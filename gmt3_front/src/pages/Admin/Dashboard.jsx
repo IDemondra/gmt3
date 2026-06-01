@@ -31,6 +31,7 @@ export function AdminDashboard() {
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
 	const [galleryPreviewSrcs, setGalleryPreviewSrcs] = useState([]);
+	const [galleryFiles, setGalleryFiles] = useState([]);
 	const [uploading, setUploading] = useState(false);
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
@@ -40,6 +41,14 @@ export function AdminDashboard() {
 	const [previewImage, setPreviewImage] = useState(/** @type {{ url: string; title: string } | null} */ (null));
 	const todayStr = toDateInputValue();
 	const currentTimeStr = toTimeInputValue();
+
+	const removeGalleryItem = (indexToRemove) => {
+		setGalleryFiles((current) => current.filter((_, index) => index !== indexToRemove));
+		setGalleryPreviewSrcs((current) => {
+			const next = current.filter((_, index) => index !== indexToRemove);
+			return next;
+		});
+	};
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
@@ -62,13 +71,14 @@ export function AdminDashboard() {
 		} catch { /* keep current */ }
 	};
 
-	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setShowForm(true); };
+	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
 
 	// @ts-ignore
 	const handleEdit = (event) => {
 		setEditingEvent(event);
 		setPreviewSrc('');
 		setGalleryPreviewSrcs([]);
+		setGalleryFiles([]);
 		setShowForm(true);
 	};
 
@@ -98,7 +108,6 @@ export function AdminDashboard() {
 				fd.set('imagePrincipale', imageFile);
 			}
 
-			const galleryFiles = data.getAll('photosEvenement').filter((file) => file && file.size > 0);
 			for (const file of galleryFiles) {
 				fd.append('photosEvenement', file);
 			}
@@ -110,9 +119,11 @@ export function AdminDashboard() {
 				const created = await createEvenementApi(accessToken.value, fd);
 				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
 			}
-			setShowForm(false);
-			setEditingEvent(null);
-		} catch (e) {
+				setShowForm(false);
+				setEditingEvent(null);
+				setGalleryFiles([]);
+				setGalleryPreviewSrcs([]);
+			} catch (e) {
 			// @ts-ignore
 			alert(e.message);
 		} finally {
@@ -270,7 +281,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 					open={showForm}
 					title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 					submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-						onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); }}
+			onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); }}
 					onSubmit={handleSubmit}
 					encType="multipart/form-data"
 				>
@@ -401,20 +412,45 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 								multiple
 								accept=".jpg,.jpeg,.png"
 								class="w-full px-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary-container file:text-on-primary file:font-button file:text-button file:cursor-pointer hover:file:brightness-110"
-								onInput={(e) => {
-									const files = Array.from(e.currentTarget.files || []);
-									setGalleryPreviewSrcs(files.map((file) => URL.createObjectURL(file)).slice(0, 10));
+								onChange={(e) => {
+									const nextFiles = Array.from(e.currentTarget.files || []);
+									if (nextFiles.length === 0) return;
+									setGalleryFiles((current) => {
+										const merged = [...current, ...nextFiles];
+										const unique = merged.filter((file, index, list) => {
+											const key = `${file.name}:${file.size}:${file.lastModified}`;
+											return index === list.findIndex((candidate) => `${candidate.name}:${candidate.size}:${candidate.lastModified}` === key);
+										});
+										const limited = unique.slice(0, 10);
+										setGalleryPreviewSrcs(limited.map((file) => URL.createObjectURL(file)));
+										return limited;
+									});
+									e.currentTarget.value = '';
 								}}
 							/>
-							<p class="mt-2 text-sm text-secondary">Ajoute 5 a 10 images pour le detail public de l'evenement.</p>
+							<p class="mt-2 text-sm text-secondary">Ajoute jusqu'a 10 images. Tu peux les ajouter en plusieurs selections successives, puis retirer celle a changer.</p>
 							{galleryPreviewSrcs.length > 0 && (
 								<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
 									{galleryPreviewSrcs.map((src, index) => (
-										<div key={`${src}-${index}`} class="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container">
+										<div key={`${src}-${index}`} class="group relative overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container">
 											<img src={src} alt={`Aperçu galerie ${index + 1}`} class="h-24 w-full object-cover" />
+											<button
+												type="button"
+												class="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/65 text-white opacity-100 transition-all duration-200 hover:bg-black/80"
+												onClick={() => removeGalleryItem(index)}
+												title="Retirer cette image"
+											>
+												<span class="material-symbols-outlined text-[18px]">close</span>
+											</button>
+											<div class="absolute inset-x-0 bottom-0 bg-black/45 px-2 py-1 text-center text-[11px] font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+												Modifier = retirer puis ajouter une nouvelle image
+											</div>
 										</div>
 									))}
 								</div>
+							)}
+							{galleryFiles.length > 0 && (
+								<p class="mt-2 text-xs text-secondary">{galleryFiles.length} photo{galleryFiles.length > 1 ? 's' : ''} selectionnee{galleryFiles.length > 1 ? 's' : ''}</p>
 							)}
 						</div>
 						<div>

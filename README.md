@@ -17,6 +17,8 @@
 
 ## Summary of What Works
 - L'admin evenement permet maintenant d'uploader l'image principale et 5-10 photos de galerie dans le meme formulaire.
+- Le champ galerie accepte plusieurs selections successives et accumule les photos jusqu'a 10.
+- Chaque vignette de galerie peut etre retiree avant l'enregistrement pour remplacer une seule image.
 - Le backend stocke les photos dans `photos_evenement`, expose `GET /api/evenements/:id/photos` et inclut `photosEvenement` dans `GET /api/evenements/:id`.
 - Les fichiers uploades sont servis depuis `/uploads/...` par le backend.
 - La page detail affiche une galerie de vignettes cliquables avec apercu plein ecran.
