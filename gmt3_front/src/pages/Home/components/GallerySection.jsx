@@ -60,37 +60,37 @@ export function GallerySection() {
             <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
             
             <div class="relative mx-auto max-w-container-max">
-                <div class="mb-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+                <div class="mb-8 md:mb-10 grid gap-5 md:gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
                     <div class="max-w-2xl">
-                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 font-label-caps text-label-caps text-on-primary/75 backdrop-blur-sm">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 md:px-4 md:py-2 font-label-caps text-label-caps text-on-primary/75 backdrop-blur-sm">
                             <span class="h-2 w-2 rounded-full bg-primary-container" />
                             ARCHIVES VISUELS
                         </span>
-                        <h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.75rem)] text-on-primary font-black uppercase tracking-tighter leading-[1.05]">
+                        <h2 class="mt-4 md:mt-5 font-h2 text-[clamp(1.75rem,5.5vw,2.25rem)] md:text-[clamp(2.25rem,3vw,3.75rem)] text-on-primary font-black uppercase tracking-tighter leading-[1.05]">
                             Expeditions Passees
                         </h2>
-                        <div class="section-divider mt-4 w-28" />
-                        <p class="mt-5 max-w-xl font-body-md text-body-md leading-relaxed text-on-primary/72">
+                        <div class="section-divider mt-3 md:mt-4 w-20 md:w-28" />
+                        <p class="mt-4 md:mt-5 max-w-xl font-body-md text-body-md leading-relaxed text-on-primary/72">
                             Une mise en scène plus large, inspirée des model cards: cartes hautes, labels lisibles et images qui prennent enfin la place principale.
                         </p>
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
-                            <p class="font-h3 text-h3 text-on-primary">05</p>
-                            <p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Souvenirs archivés</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
+                        <div class="rounded-2xl border border-white/10 bg-white/8 px-3 py-2.5 md:px-4 md:py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
+                            <p class="font-h3 text-[clamp(1.25rem,4vw,1.5rem)] md:text-h3 text-on-primary">05</p>
+                            <p class="mt-1 font-label-caps text-[11px] md:text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Souvenirs archivés</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
-                            <p class="font-h3 text-h3 text-on-primary">12</p>
-                            <p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Moments capturés</p>
+                        <div class="rounded-2xl border border-white/10 bg-white/8 px-3 py-2.5 md:px-4 md:py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
+                            <p class="font-h3 text-[clamp(1.25rem,4vw,1.5rem)] md:text-h3 text-on-primary">12</p>
+                            <p class="mt-1 font-label-caps text-[11px] md:text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Moments capturés</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
-                            <p class="font-h3 text-h3 text-on-primary">100%</p>
-                            <p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Terrain réel</p>
+                        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-white/10 bg-white/8 px-3 py-2.5 md:px-4 md:py-3 shadow-lg shadow-black/10 backdrop-blur-sm">
+                            <p class="font-h3 text-[clamp(1.25rem,4vw,1.5rem)] md:text-h3 text-on-primary">100%</p>
+                            <p class="mt-1 font-label-caps text-[11px] md:text-label-caps uppercase tracking-[0.22em] text-on-primary/55">Terrain réel</p>
                         </div>
                     </div>
                 </div>
-				
-				<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-12 xl:gap-6 xl:auto-rows-[340px] md:auto-rows-[300px]">
+
+				<div class="grid grid-cols-1 gap-5 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-12 xl:gap-6 auto-rows-[260px] sm:auto-rows-[280px] md:auto-rows-[300px] xl:auto-rows-[340px]">
 					{cards.map((card, index) => (
 						<div key={card.alt} class={`${card.span}`}>
 							<Reveal
@@ -102,20 +102,20 @@ export function GallerySection() {
 								<button
 									type="button"
 									onClick={() => setLightbox(index)}
-									class="group relative h-full w-full overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] overflow-hidden isolate transform-gpu text-left"
+									class="group relative h-full w-full overflow-hidden rounded-[1.2rem] md:rounded-[1.6rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_14px_28px_rgba(0,0,0,0.35)] md:shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] isolate transform-gpu text-left"
 								>
 									<img
 										alt={card.alt}
 										class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-										loading="lazy"
+										loading={card.priority ? 'eager' : 'lazy'}
 										src={card.src}
 									/>
 									<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-									<div class="absolute inset-x-0 bottom-0 p-5">
-										<span class="inline-block rounded-full border border-white/20 bg-black/50 px-4 py-1.5 font-label-caps text-label-caps text-white/95 backdrop-blur-md shadow-lg">
+									<div class="absolute inset-x-0 bottom-0 p-3 md:p-5">
+										<span class="inline-block rounded-full border border-white/20 bg-black/50 px-3 py-1 md:px-4 md:py-1.5 font-label-caps text-[11px] md:text-label-caps text-white/95 backdrop-blur-md shadow-lg">
 											{card.label}
 										</span>
-										<p class="mt-2 font-body-md text-body-md text-white/80">{card.meta}</p>
+										<p class="mt-1.5 md:mt-2 font-body-md text-[13px] md:text-body-md text-white/80 leading-snug md:leading-normal">{card.meta}</p>
 									</div>
 								</button>
 							</Reveal>
@@ -123,13 +123,13 @@ export function GallerySection() {
 					))}
 				</div>
 
-                <div class="mt-8 flex justify-end">
+                <div class="mt-6 md:mt-8 flex justify-center sm:justify-end">
                     <button
-                        class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/8 px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:border-white/25 hover:bg-white/12 hover:shadow-lg hover:shadow-black/12"
+                        class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/8 px-4 py-2.5 md:px-5 md:py-3 font-button text-[13px] md:text-button text-on-primary transition-all duration-300 hover:border-white/25 hover:bg-white/12 hover:shadow-lg hover:shadow-black/12"
                         type="button"
                     >
                         VOIR TOUTE LA GALERIE
-                        <span class="material-symbols-outlined text-[20px]">collections</span>
+                        <span class="material-symbols-outlined text-[18px] md:text-[20px]">collections</span>
                     </button>
                 </div>
             </div>

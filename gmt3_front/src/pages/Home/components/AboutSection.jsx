@@ -121,8 +121,8 @@ export function AboutSection() {
 								{/* Outer polaroid wrapper */}
 								<div class={`relative flex h-full flex-col rounded-[1.6rem] bg-white border border-outline-variant/50 p-4 shadow-lg shadow-black/8 transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl group-hover:shadow-black/12 overflow-hidden isolate transform-gpu ${member.accent}`}>
 									{/* Tape pieces */}
-									<div class="absolute left-6 top-3 h-10 w-16 -rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
-									<div class="absolute right-6 top-3 h-10 w-16 rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
+									<div class="absolute left-3 md:left-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 -rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
+									<div class="absolute right-3 md:right-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
 
 									{/* Inner container */}
 									<div class="flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-stone-100 border border-stone-200/60 flex-1 shadow-inner isolate">
@@ -141,7 +141,7 @@ export function AboutSection() {
 										</div>
 
 										{/* Info area */}
-										<div class="border-t border-stone-200 bg-white/60 px-4 py-5 sm:px-5 shrink-0">
+										<div class="border-t border-stone-200 bg-white/60 px-3 py-4 sm:px-5 sm:py-5 shrink-0">
 											<div class="flex flex-wrap items-center gap-2">
 												<span class="rounded-full border border-outline-variant/60 bg-white px-3 py-1.5 font-label-caps text-label-caps text-on-background/80 shadow-sm">
 													{member.role}
@@ -150,7 +150,7 @@ export function AboutSection() {
 													{member.meta}
 												</span>
 											</div>
-											<p class="mt-3 font-body-md text-body-md leading-relaxed text-secondary italic">
+											<p class="mt-2 md:mt-3 font-body-md text-body-md md:text-body-md text-[14px] leading-relaxed text-secondary italic break-words hyphens-auto">
 												{member.note}
 											</p>
 										</div>
@@ -162,15 +162,15 @@ export function AboutSection() {
 				</div>
 
 				{/* ── Expertise pills ── */}
-				<div class="mt-12 flex flex-wrap justify-center gap-3">
+				<div class="mt-10 md:mt-12 flex flex-wrap justify-center gap-2 md:gap-3">
 					{expertise.map((item) => (
-						<div class="flex items-center gap-3 rounded-2xl border border-outline-variant/70 bg-white/80 px-5 py-3.5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8">
-							<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container/15 text-primary">
-								<span class="material-symbols-outlined text-[22px]">{item.icon}</span>
+						<div class="flex items-center gap-2 md:gap-3 rounded-2xl border border-outline-variant/70 bg-white/80 px-3 py-2.5 md:px-5 md:py-3.5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8 w-full sm:w-auto">
+							<div class="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container/15 text-primary">
+								<span class="material-symbols-outlined text-[18px] md:text-[22px]">{item.icon}</span>
 							</div>
-							<div>
-								<p class="font-body-md font-semibold text-on-background leading-tight">{item.title}</p>
-								<p class="text-sm text-secondary mt-0.5">{item.detail}</p>
+							<div class="min-w-0">
+								<p class="font-body-md text-[14px] md:text-body-md font-semibold text-on-background leading-tight">{item.title}</p>
+								<p class="text-[12px] md:text-sm text-secondary mt-0.5">{item.detail}</p>
 							</div>
 						</div>
 					))}
