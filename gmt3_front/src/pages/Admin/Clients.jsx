@@ -12,7 +12,7 @@ const CONTACT_DIGITS = 10;
 
 export function AdminClients() {
 	const { route } = useLocation();
-	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const { confirmLogout } = useLogout(() => route('/admin', true));
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -205,7 +205,6 @@ export function AdminClients() {
 									maxlength={CONTACT_DIGITS}
 									required
 									value={contactValue}
-									onKeyDown={handleContactKeyDown}
 									onKeyDown={handleContactKeyDown}
 									onInput={handleContactInput}
 								/>
