@@ -20,7 +20,7 @@ export function ContactSection() {
 				</Reveal>
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center max-w-4xl mx-auto">
 					<Reveal animation="fadeUp" delay={70} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 group hover:-translate-y-1">
+						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
 							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
 								<span class="material-symbols-outlined text-3xl text-on-primary">location_on</span>
 							</div>
@@ -29,7 +29,7 @@ export function ContactSection() {
 						</div>
 					</Reveal>
 					<Reveal animation="fadeUp" delay={140} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 group hover:-translate-y-1">
+						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
 							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
 								<span class="material-symbols-outlined text-3xl text-on-primary">phone</span>
 							</div>
@@ -38,7 +38,7 @@ export function ContactSection() {
 						</div>
 					</Reveal>
 					<Reveal animation="fadeUp" delay={210} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 group hover:-translate-y-1">
+						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
 							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
 								<span class="material-symbols-outlined text-3xl text-on-primary">email</span>
 							</div>

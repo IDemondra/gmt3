@@ -38,14 +38,14 @@ export function TourCard({ image, badge, date, title, description, href }) {
         <div class="mt-auto flex flex-col items-start gap-4 sm:items-start">
           {href ? (
             <a
-              class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+              class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
               href={href}
             >
               EN SAVOIR PLUS
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </a>
           ) : (
-            <button type="button" class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95">
+            <button type="button" class="inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl bg-primary px-5 py-3 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer">
               EN SAVOIR PLUS
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>

@@ -82,7 +82,7 @@ export function AdminLogin() {
 						<button
 							type="submit"
 							disabled={formState.value === 'loading'}
-							class="w-full py-3 rounded-xl bg-primary-container text-white font-bold text-sm uppercase tracking-[0.08em] transition-all duration-300 hover:shadow-lg hover:shadow-primary-container/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+							class="w-full py-3 rounded-xl bg-primary-container text-white font-bold text-sm uppercase tracking-[0.08em] transition-all duration-300 hover:shadow-lg hover:shadow-primary-container/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 						>
 							{formState.value === 'loading' ? (
 								<span class="inline-flex items-center gap-2">

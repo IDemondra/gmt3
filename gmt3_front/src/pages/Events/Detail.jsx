@@ -24,7 +24,7 @@ export function EventDetail({ params }) {
 					</p>
 					<a
 						href="/events"
-						class="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+						class="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
 					>
 						<span class="material-symbols-outlined text-[18px]">arrow_back</span>
 						BACK TO EVENTS
@@ -48,7 +48,7 @@ export function EventDetail({ params }) {
 	return (
 		<>
 			<main class="flex-grow pb-section-gap">
-				<section class="relative overflow-hidden bg-inverse-surface">
+				<section class="relative overflow-hidden bg-on-secondary-fixed">
 					<div class="absolute inset-0">
 						<div class="absolute inset-0 bg-cover bg-center scale-105" style={`background-image: url('${img(event.image)}')`} />
 						<div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/30" />
@@ -85,14 +85,14 @@ export function EventDetail({ params }) {
 									<div class="mt-8 flex flex-col sm:flex-row items-start gap-4">
 										<a
 											href="#details"
-											class="inline-flex items-center gap-2 rounded-2xl bg-primary-container px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20 active:scale-95"
+											class="inline-flex items-center gap-2 rounded-2xl bg-primary-container px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-xl hover:shadow-primary/20 cursor-pointer"
 										>
 											EXPLORE DETAILS
 											<span class="material-symbols-outlined text-[18px]">south</span>
 										</a>
 										<a
 											href="#related"
-											class="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/8 px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:bg-white/12 hover:shadow-lg hover:shadow-black/15 active:scale-95"
+											class="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/8 px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:bg-white/12 hover:shadow-lg hover:shadow-black/15 cursor-pointer"
 										>
 											RELATED EVENTS
 										</a>
@@ -137,7 +137,7 @@ export function EventDetail({ params }) {
 
 									<a
 										href="#contact"
-										class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+										class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
 									>
 										BOOK THIS EXPERIENCE
 										<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -151,7 +151,7 @@ export function EventDetail({ params }) {
 				<section id="details" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full -mt-10">
 					<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
 						<Reveal animation="fadeUp" duration={760}>
-							<article class="rounded-[1.75rem] border border-outline-variant/70 bg-white/92 p-6 shadow-md shadow-black/5 md:p-8">
+							<article class="rounded-[1.75rem] border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-6 shadow-md shadow-black/5 md:p-8">
 								<div class="flex items-center justify-between gap-4">
 									<div>
 										<p class="font-label-caps text-label-caps text-secondary">Experience overview</p>
@@ -168,7 +168,7 @@ export function EventDetail({ params }) {
 								</p>
 								<div class="mt-8 grid gap-4 sm:grid-cols-2">
 									{facts.slice(4).map((fact) => (
-										<div class="rounded-2xl border border-outline-variant/70 bg-surface-variant/50 p-5">
+										<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-5">
 											<p class="font-label-caps text-label-caps text-secondary">{fact.label}</p>
 											<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">{fact.value}</p>
 										</div>
@@ -205,7 +205,7 @@ export function EventDetail({ params }) {
 												key={`${event.slug}-${index}`}
 												type="button"
 												onClick={() => setPreview({ url: img(src), title: `${event.title} photo ${index + 1}` })}
-												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10"
+												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-black/10 cursor-pointer"
 											>
 												<img
 													src={img(src)}
@@ -224,7 +224,7 @@ export function EventDetail({ params }) {
 
 						<Reveal animation="driftRight" delay={80} duration={820}>
 							<aside class="space-y-6 lg:sticky lg:top-24">
-								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-inverse-surface p-6 text-on-primary shadow-md shadow-black/10">
+								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-on-secondary-fixed p-6 text-on-primary shadow-md shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Trip rhythm</p>
 									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Day by day flow</h2>
 									<div class="mt-6 space-y-4">
@@ -239,19 +239,19 @@ export function EventDetail({ params }) {
 									</div>
 								</div>
 
-								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-white/92 p-6 shadow-md shadow-black/5">
+								<div class="rounded-[1.75rem] border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-6 shadow-md shadow-black/5">
 									<p class="font-label-caps text-label-caps text-secondary">Quick actions</p>
 									<div class="mt-5 grid gap-3">
 										<a
 											href="/events"
-											class="inline-flex items-center justify-center gap-2 rounded-2xl border border-outline-variant px-5 py-4 font-button text-button text-primary transition-all duration-300 hover:bg-primary/10 hover:scale-[1.01] active:scale-95"
+											class="inline-flex items-center justify-center gap-2 rounded-2xl border border-outline-variant px-5 py-4 font-button text-button text-primary transition-all duration-300 hover:bg-primary/10 hover:shadow-md cursor-pointer"
 										>
 											<span class="material-symbols-outlined text-[18px]">arrow_back</span>
 											BACK TO LIST
 										</a>
 										<a
 											href="#contact"
-											class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-button text-button text-on-primary transition-all duration-300 hover:scale-[1.01] hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+											class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
 										>
 											BOOK NOW
 											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>

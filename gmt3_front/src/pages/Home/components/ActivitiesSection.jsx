@@ -45,7 +45,7 @@ export function ActivitiesSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden border-y-2 border-outline-variant bg-surface-variant py-section-gap">
+		<section class="relative overflow-hidden bg-surface-variant py-section-gap">
 			{/* Decorative blobs */}
 			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
 			<div class="absolute bottom-[-6rem] left-[-4rem] h-72 w-72 rounded-full bg-white/50 blur-2xl pointer-events-none" />
@@ -72,7 +72,7 @@ export function ActivitiesSection() {
 				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:[&>*:nth-child(4)]:col-span-2">
 					{activities.map((activity, index) => (
 						<Reveal key={index} animation="fadeUp" delay={index * 80} duration={600}>
-							<article class="group relative h-full overflow-hidden rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-outline-variant/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-black/8">
+							<article class="group relative h-full overflow-hidden rounded-2xl bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md shadow-sm shadow-black/[0.04] border border-white/20 transition-all duration-300 hover:shadow-md hover:shadow-black/8 cursor-pointer">
 
 								{/* Color accent bar */}
 								<div class={`h-1.5 w-full bg-gradient-to-r ${activity.gradient}`} />
@@ -101,7 +101,7 @@ export function ActivitiesSection() {
 									</p>
 
 									{/* CTA */}
-									<div class="mt-5 md:mt-6 inline-flex items-center gap-2 text-primary/80 font-button text-button transition-all duration-300 group-hover:gap-3 group-hover:text-primary">
+									<div class="mt-5 md:mt-6 inline-flex items-center gap-2 text-primary/80 font-button text-button transition-all duration-300 group-hover:gap-3 group-hover:text-primary cursor-pointer">
 										<span>Voir le détail</span>
 										<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
 									</div>

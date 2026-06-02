@@ -113,7 +113,7 @@ export function AdminClients() {
 							<h1 class="font-h1 text-h1 text-on-background font-black uppercase tracking-tighter leading-none">Clients</h1>
 							<p class="font-body-lg text-body-lg text-secondary mt-1.5">Gérez les clients et leurs contacts.</p>
 						</div>
-						<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 font-bold">
+						<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 cursor-pointer font-bold">
 							<span class="material-symbols-outlined">add</span> Ajouter
 						</button>
 					</div>

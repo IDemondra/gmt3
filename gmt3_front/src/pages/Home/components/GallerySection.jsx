@@ -54,7 +54,7 @@ export function GallerySection() {
     ];
 
     return (
-        <section class="relative w-full overflow-hidden bg-inverse-surface px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
+        <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
             <div class="absolute -top-24 right-[-8rem] h-72 w-72 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
             <div class="absolute bottom-[-6rem] left-[-5rem] h-80 w-80 rounded-full bg-white/8 blur-2xl pointer-events-none" />
             <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
@@ -102,7 +102,7 @@ export function GallerySection() {
 								<button
 									type="button"
 									onClick={() => setLightbox(index)}
-									class="group relative h-full w-full overflow-hidden rounded-[1.2rem] md:rounded-[1.6rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_14px_28px_rgba(0,0,0,0.35)] md:shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] isolate transform-gpu text-left"
+									class="group relative h-full w-full overflow-hidden rounded-[1.2rem] md:rounded-[1.6rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_14px_28px_rgba(0,0,0,0.35)] md:shadow-[0_22px_45px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/20 hover:shadow-[0_26px_55px_rgba(0,0,0,0.55)] isolate transform-gpu text-left cursor-pointer"
 								>
 									<img
 										alt={card.alt}

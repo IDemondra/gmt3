@@ -14,7 +14,7 @@ export function BannerSection() {
 				<Reveal animation="driftRight" delay={100} duration={650}>
 					<a
 						href="#contact"
-						class="shrink-0 font-button text-button bg-on-primary text-primary px-6 sm:px-10 py-4 rounded-xl hover:shadow-xl hover:shadow-black/20 transition-all duration-300 uppercase w-full sm:w-auto text-center font-bold hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+						class="shrink-0 font-button text-button bg-on-primary text-primary px-6 sm:px-10 py-4 rounded-xl hover:shadow-xl hover:shadow-black/20 hover:brightness-95 transition-all duration-300 uppercase w-full sm:w-auto text-center font-bold whitespace-nowrap cursor-pointer"
 					>
 						NOUS CONTACTER
 					</a>

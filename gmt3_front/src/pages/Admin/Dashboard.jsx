@@ -195,7 +195,7 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 									Gérez les expéditions, destinations et offres actives.
 								</p>
 							</div>
-							<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 font-bold">
+							<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 cursor-pointer font-bold">
 								<span class="material-symbols-outlined">add</span>
 								Ajouter
 							</button>

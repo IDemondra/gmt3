@@ -7,8 +7,11 @@ export function Events() {
 	return (
 		<>
 		<main class="flex-grow flex flex-col pb-section-gap">
-			<section class="relative overflow-hidden bg-inverse-surface py-20">
+			<section class="relative overflow-hidden bg-on-secondary-fixed py-20 md:py-24">
 				<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(227,30,36,0.3),_transparent_60%)]" />
+				<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+				<div class="absolute bottom-[-5rem] right-[-4rem] h-80 w-80 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+				<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
 				<div class="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
 					<Reveal animation="fadeUp" duration={760}>
 						<span class="inline-block bg-primary-container px-4 py-1.5 font-label-caps text-label-caps mb-5 uppercase rounded-lg text-on-primary">EXPLOREZ NOS</span>

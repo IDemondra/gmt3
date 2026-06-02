@@ -27,26 +27,54 @@ export function ToursSection() {
 	];
 
 	return (
-		<section class="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto" id="expeditions">
-			<div class="flex justify-between items-end mb-12">
-				<div>
-					<h2 class="font-h2 text-h2 text-on-background font-bold mb-2">PROCHAINES EVENNEMENTS</h2>
-					<div class="h-1 w-24 bg-primary-container"></div>
+		<section class="relative overflow-hidden bg-surface-variant py-section-gap" id="expeditions">
+			{/* Decorative blobs */}
+			<div class="absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+			<div class="absolute bottom-[-5rem] left-[-5rem] h-80 w-80 rounded-full bg-white/30 blur-2xl pointer-events-none" />
+
+			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
+				{/* ── Header ── */}
+				<div class="mb-14 grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
+					<div class="max-w-2xl">
+						<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/70 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
+							<span class="h-2 w-2 rounded-full bg-primary-container" />
+							CALENDRIER TERRAIN
+						</span>
+						<h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.5rem)] text-on-background font-black uppercase tracking-tighter leading-[1.05]">
+							Prochains Événements
+						</h2>
+						<div class="section-divider mt-4 w-24" />
+						<p class="mt-5 max-w-xl font-body-lg text-body-lg text-secondary leading-relaxed">
+							Chaque expédition est pensée pour un petit groupe, un rythme maîtrisé et une immersion totale dans le terrain malgache.
+						</p>
+					</div>
+					<a
+						href="/events"
+						class="hidden md:inline-flex items-center gap-2 self-end rounded-2xl border border-outline-variant bg-white/80 px-5 py-3 font-button text-button text-primary hover:shadow-md hover:shadow-primary/8 transition-all duration-300 cursor-pointer"
+					>
+						VOIR TOUT
+						<span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:translate-x-1">arrow_forward</span>
+					</a>
 				</div>
-				<a class="hidden md:flex items-center gap-2 text-primary font-button text-button hover:text-[#C62828]" href="/events">
-					VOIR TOUT <span class="material-symbols-outlined">arrow_forward</span>
+
+				{/* ── Cards Grid ── */}
+				<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+					{tours.map((tour, i) => (
+						<Reveal key={i} animation={i % 2 === 0 ? 'fadeUp' : 'driftRight'} delay={i * 80} duration={680}>
+							<TourCard {...tour} />
+						</Reveal>
+					))}
+				</div>
+
+				{/* Mobile CTA */}
+				<a
+					href="/events"
+					class="w-full md:hidden mt-10 inline-flex items-center justify-center gap-2 rounded-2xl bg-primary-container text-on-primary px-5 py-3.5 font-button text-button hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer"
+				>
+					VOIR TOUT
+					<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 				</a>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter xl:gap-8">
-				{tours.map((tour, i) => (
-					<Reveal key={i} animation={i % 2 === 0 ? 'fadeUp' : 'driftRight'} delay={i * 80} duration={680}>
-						<TourCard {...tour} />
-					</Reveal>
-				))}
-			</div>
-			<a class="w-full md:hidden mt-8 font-button text-button bg-primary-container text-on-primary px-4 py-3 rounded-lg hover:shadow-lg transition-all duration-300 text-center block" href="/events">
-				VOIR TOUT
-			</a>
 		</section>
 	);
 }

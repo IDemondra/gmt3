@@ -12,7 +12,7 @@ export function NotFound() {
 				</p>
 				<a
 					href="/"
-					class="inline-flex items-center gap-2 font-button text-button bg-primary text-on-primary px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+					class="inline-flex items-center gap-2 font-button text-button bg-primary text-on-primary px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-primary/20 hover:brightness-110 transition-all duration-300 cursor-pointer"
 				>
 					<span class="material-symbols-outlined">arrow_back</span>
 					RETOUR A L'ACCUEIL

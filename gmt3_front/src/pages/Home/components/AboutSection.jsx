@@ -72,7 +72,7 @@ export function AboutSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden border-y-2 border-outline-variant bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
+		<section class="relative overflow-hidden bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
 			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
 			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-2xl pointer-events-none" />
 
@@ -98,15 +98,15 @@ export function AboutSection() {
 
 					{/* Stats strip */}
 					<div class="grid gap-3 sm:grid-cols-3">
-						<div class="rounded-2xl border border-outline-variant/70 bg-white/80 px-4 py-3 shadow-md shadow-black/5">
+						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
 							<p class="font-h3 text-h3 text-on-background">12+</p>
 							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Années d'expérience</p>
 						</div>
-						<div class="rounded-2xl border border-outline-variant/70 bg-white/80 px-4 py-3 shadow-md shadow-black/5">
+						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
 							<p class="font-h3 text-h3 text-on-background">06</p>
 							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Membres clés</p>
 						</div>
-						<div class="rounded-2xl border border-outline-variant/70 bg-white/80 px-4 py-3 shadow-md shadow-black/5">
+						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
 							<p class="font-h3 text-h3 text-on-background">100%</p>
 							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Originaires de Mada</p>
 						</div>
@@ -117,9 +117,9 @@ export function AboutSection() {
 				<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 					{team.map((member, i) => (
 						<Reveal key={member.name} animation={i % 2 === 0 ? 'fadeUp' : 'fadeRight'} delay={i * 70} duration={650}>
-							<article class="group relative h-full w-full">
+							<article class="group relative h-full w-full cursor-pointer">
 								{/* Outer polaroid wrapper */}
-								<div class={`relative flex h-full flex-col rounded-[1.6rem] bg-white border border-outline-variant/50 p-4 shadow-lg shadow-black/8 transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl group-hover:shadow-black/12 overflow-hidden isolate transform-gpu ${member.accent}`}>
+								<div class={`relative flex h-full flex-col rounded-[1.6rem] bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md border border-white/20 p-4 shadow-lg shadow-black/8 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-black/12 overflow-hidden isolate transform-gpu ${member.accent}`}>
 									{/* Tape pieces */}
 									<div class="absolute left-3 md:left-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 -rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
 									<div class="absolute right-3 md:right-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
@@ -164,7 +164,7 @@ export function AboutSection() {
 				{/* ── Expertise pills ── */}
 				<div class="mt-10 md:mt-12 flex flex-wrap justify-center gap-2 md:gap-3">
 					{expertise.map((item) => (
-						<div class="flex items-center gap-2 md:gap-3 rounded-2xl border border-outline-variant/70 bg-white/80 px-3 py-2.5 md:px-5 md:py-3.5 shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8 w-full sm:w-auto">
+						<div class="flex items-center gap-2 md:gap-3 rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-3 py-2.5 md:px-5 md:py-3.5 shadow-md shadow-black/5 transition-all duration-300 hover:shadow-lg hover:shadow-primary/8 cursor-pointer w-full sm:w-auto">
 							<div class="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container/15 text-primary">
 								<span class="material-symbols-outlined text-[18px] md:text-[22px]">{item.icon}</span>
 							</div>
