@@ -6,61 +6,155 @@ export function DestinationsSection() {
 	const bg2 = `url('${img('https://lh3.googleusercontent.com/aida-public/AB6AXuCHAzLv4UXF0svy3arGo10ftdnYfLums3ksC4WE7JYk2zFZybeTxudGnAtaljoSUaeo4O1gCndNZE4OCyTUWUG1i229gpkMtYSUhEamgwLkIT9dNCGtCrNVGDq50JEUAlRuOO1V8OiQWQ50xTMFhs-C7kVwOrk4KHDNnKgpiH1jJzLwXHdxcYwNE--zQQz891UPb2dPgQHRCg7FXHY6cBw94g_qP0p1DbPiEY3EU3VA-G3ESiWfc6A_Dhx9cb0Ew6-UbnkvRrMwCjc')}')`;
 	const bg3 = `url('${img('https://lh3.googleusercontent.com/aida-public/AB6AXuAcpLVLyVXKwhfrB3ptkpBv8UMN3Zd4okkh9YxHJ_zjPVuA2TAEGCErLDBy01Nax5opgkRzeNevm2Ev_53b14ZDvN1n3faD3-f_qAxt_ufVVDQiRfTiKV8yXKb58Un2xGqgNY70QCkd1GlsbeVTOtafFggRSzEHMNh3h82lOSffPDUNEyRQaLM2pTPK0lqlG5eaOEdS_QWAJ-bR7nldilwTvYyOA6UblYWEWqRBqXxkmbOki6RKfHkyXb7y6WIvGAyX0CccWOr5fIU')}')`;
 
-	return (
-		<section class="relative overflow-hidden bg-surface-variant py-section-gap" id="destinations">
-			<div class="absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
-			<div class="absolute bottom-[-5rem] left-[-4rem] h-80 w-80 rounded-full bg-white/50 blur-2xl pointer-events-none" />
-			<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
+	const sectors = [
+		{
+			id: 'SEC-01',
+			name: 'Fianarantsoa',
+			region: 'CENTRE-SUD',
+			desc: 'Plongez au coeur de la capitale du Betsileo, entre vignobles en terrasses et artisanat.',
+			coord: '21.4536° S, 47.0858° E',
+			elev: '1,374m',
+			bg: bg1,
+			span: 'lg:col-span-2 lg:row-span-2'
+		},
+		{
+			id: 'SEC-02',
+			name: 'Ranomafana',
+			region: 'HAUTS PLATEAUX',
+			desc: 'Forêt tropicale, lémuriens et sources chaudes.',
+			coord: '21.2585° S, 47.4521° E',
+			elev: '1,100m',
+			bg: bg2,
+			span: 'lg:col-span-1 lg:row-span-1'
+		},
+		{
+			id: 'SEC-03',
+			name: 'Ambalavao',
+			region: 'PORTES DU SUD',
+			desc: 'Réserve d\'Anja et artisanat Antaimoro.',
+			coord: '21.8333° S, 46.9333° E',
+			elev: '1,020m',
+			bg: bg3,
+			span: 'lg:col-span-1 lg:row-span-1'
+		}
+	];
 
+	return (
+		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="destinations">
+			{/* Technical Background */}
+			<div class="absolute inset-0 opacity-[0.02] pointer-events-none" 
+				style="background-image: repeating-linear-gradient(45deg, white 0px, white 1px, transparent 1px, transparent 10px);" />
+			
 			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
-			<Reveal animation="fadeUp">
-				<div class="text-center mb-12">
-					<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/70 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
-						<span class="h-2 w-2 rounded-full bg-primary-container" />
-						NOS RÉGIONS
-					</span>
-					<h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.5rem)] text-on-background font-black uppercase tracking-tighter leading-[1.05]">Destinations Phares</h2>
-					<div class="section-divider mx-auto mt-4 w-24" />
-					<p class="mx-auto mt-5 max-w-2xl font-body-lg text-body-lg text-secondary leading-relaxed">
-						Des hauts plateaux aux côtes sauvages, chaque destination révèle un Madagascar différent. Sélectionnés pour leur richesse naturelle et leur authenticité culturelle.
-					</p>
+				
+				{/* ── Header ── */}
+				<div class="mb-16 grid lg:grid-cols-[1fr_auto] items-end gap-10">
+					<div class="max-w-2xl">
+						<Reveal animation="fadeUp">
+							<div class="flex items-center gap-3 mb-6">
+								<span class="h-px w-12 bg-primary/40" />
+								<span class="font-label-caps text-label-caps tracking-[0.3em] text-primary font-bold uppercase">Mapping des Régions</span>
+							</div>
+							<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none">
+								Destinations <span class="text-primary">Phares</span>
+							</h2>
+							<p class="mt-8 font-body-lg text-white/50 leading-relaxed">
+								Chaque coordonnée est une porte d'entrée vers une facette unique de l'Île Rouge. 
+								Exploration cartographiée pour une immersion totale.
+							</p>
+						</Reveal>
+					</div>
+					
+					<div class="hidden lg:flex flex-col items-end gap-2 border-l border-white/10 pl-10">
+						<p class="font-mono text-[10px] text-white/20 tracking-widest">MAP VERSION 2.6.0</p>
+						<p class="font-mono text-[10px] text-primary tracking-widest font-bold">ACTIVE SCANNING...</p>
+					</div>
 				</div>
-			</Reveal>
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-				<Reveal animation="fadeLeft" duration={700}>
-					<div class="relative h-[400px] lg:h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-						<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg1}`}></div>
-						<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/95 via-on-secondary-fixed/35 to-transparent transition-opacity duration-300 group-hover:opacity-90"></div>
-						<div class="absolute bottom-0 left-0 right-0 p-8 text-on-primary transition-transform duration-300">
-							<span class="inline-block bg-primary-container text-on-primary px-3 py-1.5 font-label-caps text-label-caps mb-3 uppercase rounded-md shadow-md">RÉGION CENTRE-SUD</span>
-							<h3 class="font-h1-mobile text-h1-mobile font-black mb-2 uppercase tracking-tight">Fianarantsoa</h3>
-							<p class="font-body-lg text-on-primary/80 max-w-md">Plongez au coeur de la capitale du Betsileo, entre vignobles en terrasses, architecture historique et artisanat traditionnel.</p>
+
+				{/* ── Exploration Grid ── */}
+				<div class="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-auto lg:h-[700px]">
+					{sectors.map((s, i) => (
+						<Reveal key={i} animation="fadeUp" delay={i * 100} className={`${s.span} h-full`}>
+							<article class="group relative h-full w-full overflow-hidden rounded-2xl bg-stone-900 shadow-2xl transition-all duration-700 cursor-pointer isolate">
+								
+								{/* Background Image with Ken Burns effect on hover */}
+								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />
+								
+								{/* Technical Overlays */}
+								<div class="absolute inset-0 z-10 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent transition-opacity duration-500 group-hover:opacity-80" />
+								
+								{/* Scanner Crosshairs (visible on hover) */}
+								<div class="absolute inset-4 z-20 border border-white/0 transition-all duration-500 group-hover:border-white/10 group-hover:inset-6">
+									<div class="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+									<div class="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+									<div class="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+									<div class="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+								</div>
+
+								{/* Content Wrapper */}
+								<div class="absolute inset-0 z-30 p-8 flex flex-col justify-between">
+									<div class="flex justify-between items-start translate-y-[-10px] opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+										<div class="flex flex-col gap-1">
+											<span class="font-mono text-[9px] text-primary font-black tracking-widest">{s.id}</span>
+											<span class="font-mono text-[9px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
+										</div>
+										<div class="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center">
+											<span class="material-symbols-outlined text-sm text-white/40">radar</span>
+										</div>
+									</div>
+
+									<div>
+										<span class="inline-block bg-primary text-white text-[10px] font-bold tracking-[0.2em] px-3 py-1 mb-4 uppercase rounded-sm shadow-lg">
+											{s.region}
+										</span>
+										<h3 class="font-h1 text-h1 md:text-4xl text-white font-black uppercase tracking-tighter mb-4 leading-none">
+											{s.name}
+										</h3>
+										<p class="font-body-md text-white/70 max-w-sm line-clamp-2 transition-all duration-500 group-hover:line-clamp-none group-hover:text-white">
+											{s.desc}
+										</p>
+										
+										{/* Expanded Specs on Hover */}
+										<div class="mt-6 flex items-center gap-6 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0 border-t border-white/10 pt-6">
+											<div class="flex flex-col">
+												<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Elevation</span>
+												<span class="font-mono text-xs font-bold text-white">{s.elev}</span>
+											</div>
+											<div class="flex flex-col">
+												<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Status</span>
+												<span class="font-mono text-xs font-bold text-white uppercase">Explorable</span>
+											</div>
+											<div class="ml-auto h-10 w-10 rounded-full bg-white text-on-secondary-fixed flex items-center justify-center transition-transform hover:scale-110">
+												<span class="material-symbols-outlined text-sm">arrow_outward</span>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								{/* Shimmer Effect */}
+								<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+							</article>
+						</Reveal>
+					))}
+				</div>
+
+				{/* ── Grid Footer ── */}
+				<div class="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
+					<div class="flex items-center gap-6">
+						<div class="flex items-center gap-2">
+							<div class="h-1.5 w-1.5 rounded-full bg-primary" />
+							<span class="font-mono text-[9px] text-white/30 uppercase tracking-widest">Active Sectors: 03</span>
+						</div>
+						<div class="flex items-center gap-2">
+							<div class="h-1.5 w-1.5 rounded-full bg-white/10" />
+							<span class="font-mono text-[9px] text-white/30 uppercase tracking-widest">Pending Sync: 12</span>
 						</div>
 					</div>
-				</Reveal>
-				<div class="grid grid-rows-2 gap-8 min-h-[500px]">
-					<Reveal animation="fadeRight" delay={80} duration={700}>
-						<div class="relative h-full min-h-[200px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-							<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg2}`}></div>
-							<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
-							<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary">
-								<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Parc National de Ranomafana</h3>
-								<p class="font-body-md text-on-primary/80">Forêt tropicale, lémuriens et sources chaudes naturelles.</p>
-							</div>
-						</div>
-					</Reveal>
-					<Reveal animation="fadeRight" delay={140} duration={700}>
-						<div class="relative h-full rounded-2xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
-							<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={`background-image: ${bg3}`}></div>
-							<div class="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-on-secondary-fixed/25 to-transparent"></div>
-							<div class="absolute bottom-0 left-0 right-0 p-6 text-on-primary">
-								<h3 class="font-h2 text-h2 font-black mb-1 uppercase tracking-tight">Ambalavao &amp; Réserve d'Anja</h3>
-								<p class="font-body-md text-on-primary/80">Lémuriens catta et artisanat traditionnel Antaimoro.</p>
-							</div>
-						</div>
-					</Reveal>
+					
+					<p class="hidden md:block font-mono text-[9px] text-white/20 tracking-tighter">
+						RELIABILITY SCALE: HIGH (98.4%) — DATA SOURCE: GMT3 FIELD JOURNALS
+					</p>
 				</div>
-			</div>
 			</div>
 		</section>
 	);
