@@ -31,5 +31,5 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_API_BASE=http://gmt3_backend:3000
+      - VITE_API_BASE=http://localhost:3000
     restart: unless-stopped

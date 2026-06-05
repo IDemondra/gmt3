@@ -17,32 +17,27 @@ export function AdminLogin() {
 	const { handleSubmit, formState, errorMsg } = useLogin(route);
 
 	return (
-		<div class="relative min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#1a1a2e] to-[#16213e] overflow-hidden px-4">
-			{/* ── Decorative blobs ── */}
-			<div class="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-3xl pointer-events-none" />
-			<div class="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-blue-500/15 to-transparent blur-3xl pointer-events-none" />
-			<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-primary/5 to-blue-500/5 blur-3xl pointer-events-none" />
-
-			<div class="relative w-full max-w-[420px]">
+		<div class="min-h-screen flex items-center justify-center bg-[#f9fafb] px-4">
+			<div class="w-full max-w-[400px]">
 				{/* ── Logo ── */}
-				<div class="text-center mb-8">
-					<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 mb-4 shadow-xl">
-						<span class="material-symbols-outlined text-3xl text-primary-container">admin_panel_settings</span>
+				<div class="text-center mb-10">
+					<div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary text-white mb-6 shadow-sm">
+						<span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
 					</div>
-					<h1 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
-						GMT+3
+					<h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+						GMT+3 <span class="text-gray-400 font-medium">MADAGASCAR</span>
 					</h1>
-					<p class="mt-2 text-sm text-white/50 font-medium tracking-wide uppercase">
-						Administration
+					<p class="mt-2 text-sm text-gray-500 font-medium uppercase tracking-widest">
+						Espace Administration
 					</p>
 				</div>
 
 				{/* ── Card ── */}
-				<div class="rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 p-8 shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
-					<form onSubmit={handleSubmit} class="space-y-5">
+				<div class="rounded-xl bg-white border border-gray-100 p-8 shadow-sm">
+					<form onSubmit={handleSubmit} class="space-y-6">
 						{/* ── Email ── */}
 						<div>
-						<label for="username" class="block text-xs font-bold text-white/60 uppercase tracking-[0.12em] mb-2">
+							<label for="username" class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">
 								Nom d'utilisateur
 							</label>
 							<input
@@ -50,14 +45,15 @@ export function AdminLogin() {
 								name="username"
 								type="text"
 								placeholder="admin"
-								class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/25 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-primary-container/50 focus:ring-2 focus:ring-primary-container/20"
+								class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-100 text-gray-900 placeholder-gray-400 text-sm transition-all outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								autocomplete="username"
+								required
 							/>
 						</div>
 
 						{/* ── Password ── */}
 						<div>
-							<label for="password" class="block text-xs font-bold text-white/60 uppercase tracking-[0.12em] mb-2">
+							<label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">
 								Mot de passe
 							</label>
 							<input
@@ -65,16 +61,17 @@ export function AdminLogin() {
 								name="password"
 								type="password"
 								placeholder="••••••••"
-								class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/25 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-primary-container/50 focus:ring-2 focus:ring-primary-container/20"
+								class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-100 text-gray-900 placeholder-gray-400 text-sm transition-all outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
 								autocomplete="current-password"
+								required
 							/>
 						</div>
 
 						{/* ── Error ── */}
 						{errorMsg.value && (
-							<div class="flex items-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3">
-								<span class="material-symbols-outlined text-sm text-red-400">error</span>
-								<p class="text-sm text-red-300 font-medium">{errorMsg.value}</p>
+							<div class="flex items-center gap-2 rounded-lg bg-red-50 border border-red-100 px-4 py-3">
+								<span class="material-symbols-outlined text-sm text-red-500">error</span>
+								<p class="text-sm text-red-600 font-medium">{errorMsg.value}</p>
 							</div>
 						)}
 
@@ -82,7 +79,7 @@ export function AdminLogin() {
 						<button
 							type="submit"
 							disabled={formState.value === 'loading'}
-							class="w-full py-3 rounded-xl bg-primary-container text-white font-bold text-sm uppercase tracking-[0.08em] transition-all duration-300 hover:shadow-lg hover:shadow-primary-container/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+							class="w-full py-2.5 rounded-lg bg-primary text-white font-semibold text-sm transition-all hover:bg-primary-container disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
 						>
 							{formState.value === 'loading' ? (
 								<span class="inline-flex items-center gap-2">
@@ -97,8 +94,8 @@ export function AdminLogin() {
 				</div>
 
 				{/* ── Footer ── */}
-				<p class="mt-6 text-center text-xs text-white/25 font-medium">
-					&copy; {new Date().getFullYear()} GMT+3 Madagascar. Accès réservé.
+				<p class="mt-8 text-center text-[11px] text-gray-400 font-bold tracking-widest uppercase">
+					&copy; {new Date().getFullYear()} GMT+3 MADAGASCAR
 				</p>
 			</div>
 		</div>
