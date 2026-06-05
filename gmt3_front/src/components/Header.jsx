@@ -47,7 +47,7 @@ export function Header() {
 							<span class="material-symbols-outlined text-white text-2xl">travel_explore</span>
 						</div>
 						<span class={`font-h2 text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-on-primary'}`}>
-							GMT+3 <span class="text-primary-container">MADA</span>
+							GMT+3 <span class="text-primary-container">MADAGASCAR</span>
 						</span>
 					</a>
 
