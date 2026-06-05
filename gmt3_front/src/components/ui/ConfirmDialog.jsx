@@ -45,42 +45,36 @@ export function ConfirmDialog({
 
 	return (
 		<div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-			{/* Backdrop */}
 			<div
-				class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+				class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm"
 				onClick={onCancel}
 			/>
 
-			{/* Dialog */}
-			<div class="relative w-full max-w-sm rounded-2xl bg-surface border border-outline-variant/40 shadow-2xl p-6 animate-[scaleUp_200ms_ease-out]">
-				{/* Icon */}
-				<div class={`mx-auto mb-4 h-14 w-14 rounded-full flex items-center justify-center ${
-					isDanger ? 'bg-red-50' : 'bg-primary/5'
+			<div class="relative w-full max-w-sm rounded-xl bg-white shadow-xl p-6 border border-gray-100">
+				<div class={`mx-auto mb-4 h-12 w-12 rounded-full flex items-center justify-center ${
+					isDanger ? 'bg-red-50' : 'bg-blue-50'
 				}`}>
-					<span class={`material-symbols-outlined text-3xl ${
-						isDanger ? 'text-red-500' : 'text-primary-container'
+					<span class={`material-symbols-outlined text-2xl ${
+						isDanger ? 'text-red-500' : 'text-blue-500'
 					}`}>
 						{isDanger ? 'warning' : icon}
 					</span>
 				</div>
 
-				{/* Title */}
-				<h3 class="text-center font-h3 text-h3 text-on-background font-black mb-2">
+				<h3 class="text-center text-lg font-bold text-gray-900 mb-2">
 					{title}
 				</h3>
 
-				{/* Message */}
-				<p class="text-center font-body-md text-body-md text-secondary mb-6 leading-relaxed">
+				<p class="text-center text-sm text-gray-500 mb-6 leading-relaxed">
 					{message}
 				</p>
 
-				{/* Actions */}
-				<div class="flex flex-col-reverse sm:flex-row gap-3">
+				<div class="flex gap-3">
 					<button
 						type="button"
 						onClick={onCancel}
 						disabled={loading}
-						class="flex-1 px-5 py-3 rounded-xl border border-outline-variant/40 text-secondary font-button text-button hover:bg-surface-container transition-all duration-200 disabled:opacity-50"
+						class="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all"
 					>
 						{cancelLabel}
 					</button>
@@ -88,15 +82,12 @@ export function ConfirmDialog({
 						type="button"
 						onClick={handleConfirm}
 						disabled={loading}
-						class={`flex-1 px-5 py-3 rounded-xl font-button text-button transition-all duration-200 disabled:opacity-50 inline-flex items-center justify-center gap-2 ${
+						class={`flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm ${
 							isDanger
-								? 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20'
-								: 'bg-primary-container text-on-primary hover:shadow-lg hover:shadow-primary/20'
+								? 'bg-red-600 text-white hover:bg-red-700'
+								: 'bg-primary text-white hover:bg-primary-container'
 						}`}
 					>
-						{loading && (
-							<span class="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-						)}
 						{confirmLabel}
 					</button>
 				</div>
