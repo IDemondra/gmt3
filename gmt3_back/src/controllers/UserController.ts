@@ -6,7 +6,10 @@ import { formatDateToDDMMYYYY } from '../utils/date.js';
 
 const userService = new UserService(new UserRepository());
 
-const SET_COOKIE_OPTS = 'HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=604800';
+const IS_PRODUCTION = Bun.env.NODE_ENV === 'production';
+const secureFlag = IS_PRODUCTION ? '; Secure' : '';
+const SET_COOKIE_OPTS = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-Age=604800`;
+const SET_COOKIE_OPTS_LOGOUT = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-Age=0`;
 
 function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T {
 	return {
@@ -128,7 +131,7 @@ export const UserController = {
 			status: 200,
 			headers: {
 				'Content-Type': 'application/json',
-				'Set-Cookie': 'refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0',
+				'Set-Cookie': `refreshToken=; ${SET_COOKIE_OPTS_LOGOUT}`,
 			},
 		});
 	},

@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
  */
 export async function usersApi(token) {
 	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/api/utilisateurs`, { headers, credentials: 'include' });
+	const res = await fetch(`${API_BASE}/utilisateurs`, { headers, credentials: 'include' });
 	if (!res.ok) throw new Error('ERREUR_CHARGEMENT');
 	return res.json();
 }
