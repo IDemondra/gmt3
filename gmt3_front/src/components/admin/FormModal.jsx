@@ -14,29 +14,29 @@ export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, o
 
 	return (
 		<div class="fixed inset-0 z-50 flex items-center justify-center">
-			<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-			<div class="relative bg-surface rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-8 border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
-				<h3 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight mb-6">{title}</h3>
+			<div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onClick={onClose} />
+			<div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto">
+				<h3 class="text-xl font-extrabold text-gray-900 mb-6 tracking-tight">{title}</h3>
 				<form
 					encType={encType}
 					onSubmit={(e) => {
 						e.preventDefault();
 						onSubmit(new FormData(e.currentTarget));
 					}}
-					class="space-y-5"
+					class="space-y-6"
 				>
 					{children}
-					<div class="flex justify-end gap-3 pt-2">
+					<div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
 						<button
 							type="button"
 							onClick={onClose}
-							class="px-6 py-3 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all font-button text-button"
+							class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all"
 						>
 							Annuler
 						</button>
 						<button
 							type="submit"
-							class="px-6 py-3 rounded-xl bg-primary-container text-on-primary font-button text-button hover:shadow-xl hover:shadow-primary/20 transition-all font-bold"
+							class="px-5 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm"
 						>
 							{submitLabel}
 						</button>

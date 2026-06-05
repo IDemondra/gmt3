@@ -196,18 +196,17 @@ export function AdminReservations() {
 				</main>
 			</div>
 
-
-			<ConfirmDialog open={confirm?.type === 'logout'} title="Deconnexion" message="Etes-vous sur de vouloir vous deconnecter ?" confirmLabel="Se deconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
-			<ConfirmDialog open={confirm?.type === 'delete-reservation'} title="Supprimer la reservation" message="Cette action est irreversible." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />
+			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
+			<ConfirmDialog open={confirm?.type === 'delete-reservation'} title="Supprimer la réservation" message="Cette action est irréversible." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />
 
 			{showForm && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditing(null); }}>
-					<div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-2xl w-full max-w-md mx-4 p-6 md:p-8 overflow-visible" onClick={(e) => e.stopPropagation()}>
+					<div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
 						<div class="flex items-center justify-between mb-6">
-							<h3 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight">{editing ? "Modifier la reservation" : "Nouvelle reservation"}</h3>
-							<button onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all"><span class="material-symbols-outlined">close</span></button>
+							<h3 class="text-xl font-extrabold text-gray-900 tracking-tight">{editing ? "Modifier la réservation" : "Nouvelle réservation"}</h3>
+							<button onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all"><span class="material-symbols-outlined">close</span></button>
 						</div>
-						<form onSubmit={handleSubmit} class="space-y-5">
+						<form onSubmit={handleSubmit} class="space-y-6">
 							<div>
 								<SearchableSelect
 									id="clientId"
@@ -222,8 +221,8 @@ export function AdminReservations() {
 							<div>
 								<SearchableSelect
 									id="evenementId"
-									label="Evenement"
-									placeholder="Rechercher un evenement..."
+									label="Événement"
+									placeholder="Rechercher un événement..."
 									required
 									options={evenements.map((e) => ({ value: e.id, label: `${e.titre} — ${e.dateEvenement?.slice(0, 10) || ''}` }))}
 									value={formEvenementId}
@@ -231,13 +230,13 @@ export function AdminReservations() {
 								/>
 							</div>
 							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de places</label>
+								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de places</label>
 								<input
 									id="nombrePlaces"
 									name="nombrePlaces"
 									type="number"
 									min="1"
-									class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl"
+									class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
 									required
 									value={formPlaces}
 									onInput={(e) => setFormPlaces(Math.max(1, parseInt(e.currentTarget.value) || 1))}
@@ -246,9 +245,9 @@ export function AdminReservations() {
 							{formError && (
 								<p class="text-xs text-red-500 font-medium">{formError}</p>
 							)}
-							<div class="flex justify-end gap-3 pt-2">
-								<button type="button" onClick={() => { setShowForm(false); setEditing(null); }} class="px-6 py-3 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all font-button text-button">Annuler</button>
-								<button type="submit" class="px-6 py-3 rounded-xl bg-primary-container text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all font-button text-button font-bold">{editing ? 'Enregistrer' : 'Creer'}</button>
+							<div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+								<button type="button" onClick={() => { setShowForm(false); setEditing(null); }} class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all">Annuler</button>
+								<button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm">{editing ? 'Enregistrer' : 'Créer'}</button>
 							</div>
 						</form>
 					</div>

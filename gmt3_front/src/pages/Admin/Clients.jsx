@@ -184,22 +184,22 @@ export function AdminClients() {
 
 			{showForm && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditingClient(null); }}>
-					<div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-2xl w-full max-w-md mx-4 p-6 md:p-8" onClick={(e) => e.stopPropagation()}>
+					<div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
 						<div class="flex items-center justify-between mb-6">
-							<h3 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight">{editingClient ? "Modifier le client" : "Nouveau client"}</h3>
-							<button onClick={() => { setShowForm(false); setEditingClient(null); }} class="p-2 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all"><span class="material-symbols-outlined">close</span></button>
+							<h3 class="text-xl font-extrabold text-gray-900 tracking-tight">{editingClient ? "Modifier le client" : "Nouveau client"}</h3>
+							<button onClick={() => { setShowForm(false); setEditingClient(null); }} class="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all"><span class="material-symbols-outlined">close</span></button>
 						</div>
-						<form onSubmit={handleSubmit} class="space-y-5">
+						<form onSubmit={handleSubmit} class="space-y-6">
 							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="nom">Nom</label>
-								<input id="nom" name="nom" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="Nom du client" required defaultValue={editingClient?.nom || ''} />
+								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="nom">Nom</label>
+								<input id="nom" name="nom" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Nom du client" required defaultValue={editingClient?.nom || ''} />
 							</div>
 							<div>
-								<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="contact">Contact</label>
+								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="contact">Contact</label>
 								<input
 									id="contact"
 									name="contact"
-									class={`w-full px-4 py-3 bg-background border outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl ${contactError ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/10' : 'border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10'}`}
+									class={`w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${contactError ? 'border-red-500 focus:ring-red-500/10' : ''}`}
 									placeholder="10 chiffres requis"
 									inputmode="numeric"
 									pattern="[0-9]{10}"
@@ -213,9 +213,9 @@ export function AdminClients() {
 									<p class="mt-1.5 text-xs text-red-500 font-medium">{contactError}</p>
 								)}
 							</div>
-							<div class="flex justify-end gap-3 pt-2">
-								<button type="button" onClick={() => { setShowForm(false); setEditingClient(null); }} class="px-6 py-3 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all font-button text-button">Annuler</button>
-								<button type="submit" class="px-6 py-3 rounded-xl bg-primary-container text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all font-button text-button font-bold">{editingClient ? 'Enregistrer' : 'Créer'}</button>
+							<div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+								<button type="button" onClick={() => { setShowForm(false); setEditingClient(null); }} class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all">Annuler</button>
+								<button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm">{editingClient ? 'Enregistrer' : 'Créer'}</button>
 							</div>
 						</form>
 					</div>

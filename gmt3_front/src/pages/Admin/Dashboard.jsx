@@ -62,7 +62,6 @@ export function AdminDashboard() {
 			const detail = await evenementApi(accessToken.value, event.id);
 			setDetailEvent(detail);
 		} catch (error) {
-			// @ts-ignore
 			setDetailError(error?.message || 'Impossible de charger le détail de l’événement');
 		} finally {
 			setDetailLoading(false);
@@ -83,7 +82,6 @@ export function AdminDashboard() {
 				kpisApi(accessToken.value),
 			]);
 			if (Array.isArray(evtData)) {
-				// @ts-ignore
 				setEvents(evtData.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
 			}
 			if (kpiData && typeof kpiData.totalEvents === 'number') setKpis(kpiData);
@@ -92,7 +90,6 @@ export function AdminDashboard() {
 
 	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
 
-	// @ts-ignore
 	const handleEdit = (event) => {
 		setEditingEvent(event);
 		setPreviewSrc('');
@@ -101,7 +98,6 @@ export function AdminDashboard() {
 		setShowForm(true);
 	};
 
-	// @ts-ignore
 	const handleSubmit = async (data) => {
 		try {
 			setUploading(true);
@@ -138,368 +134,205 @@ export function AdminDashboard() {
 				const created = await createEvenementApi(accessToken.value, fd);
 				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
 			}
-				setShowForm(false);
-				setEditingEvent(null);
-				setGalleryFiles([]);
-				setGalleryPreviewSrcs([]);
-			} catch (e) {
-			// @ts-ignore
+			setShowForm(false);
+			setEditingEvent(null);
+			setGalleryFiles([]);
+			setGalleryPreviewSrcs([]);
+		} catch (e) {
 			alert(e.message);
 		} finally {
 			setUploading(false);
 		}
 	};
 
-// @ts-ignore
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
-	const r = new FileReader();
-	r.onload = () => resolve(r.result);
-	r.onerror = reject;
-	r.readAsDataURL(file);
-});
-
-	// @ts-ignore
 	const confirmDeleteEvent = async (eventId) => {
 		try {
 			await deleteEvenementApi(accessToken.value, eventId);
-			// @ts-ignore
 			setEvents((prev) => prev.filter((e) => e.id !== eventId));
 		} catch { /* ignore */ }
 		setConfirm(null);
 	};
 
-	// @ts-ignore
 	const filtered = search
-		// @ts-ignore
 		? events.filter((e) => e.title.toLowerCase().includes(search.toLowerCase()))
 		: events;
 
 	return (
-		<>
-			<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
-				<Navbar user={currentUser.value} onLogout={promptLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
+			<Navbar user={currentUser.value} onLogout={promptLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
-				<div class="flex flex-1 w-full overflow-hidden">
-					<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+			<div class="flex flex-1 w-full overflow-hidden">
+				<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-					<main class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
-						{/* ── Header ── */}
-						<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-							<div>
-								<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">
-									Événements
-								</h1>
-								<p class="text-gray-500 mt-2 text-base">
-									Gérez vos expéditions et destinations.
-								</p>
-							</div>
-							<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
-								<span class="material-symbols-outlined text-[20px]">add</span>
-								Nouveau
-							</button>
+				<main class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
+					{/* ── Header ── */}
+					<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+						<div>
+							<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">
+								Événements
+							</h1>
+							<p class="text-gray-500 mt-2 text-base">
+								Gérez vos expéditions et destinations.
+							</p>
 						</div>
+						<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
+							<span class="material-symbols-outlined text-[20px]">add</span>
+							Nouveau
+						</button>
+					</div>
 
-						<KpiCards totalEvents={kpis.totalEvents} totalReservations={kpis.totalReservations} limitedEvents={kpis.limitedEvents} />
+					<KpiCards totalEvents={kpis.totalEvents} totalReservations={kpis.totalReservations} limitedEvents={kpis.limitedEvents} />
 
-						{/* ── Table Container ── */}
-						<div class="mt-10 bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-							<div class="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-50">
-								<div class="flex items-center gap-3">
-									<h2 class="text-base font-bold text-gray-900">
-										Toutes les expéditions
-									</h2>
-									<span class="px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 text-[11px] font-bold border border-gray-100">{filtered.length}</span>
+					{/* ── Table Container ── */}
+					<div class="mt-10 bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+						<div class="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-gray-50">
+							<div class="flex items-center gap-3">
+								<h2 class="text-base font-bold text-gray-900">
+									Toutes les expéditions
+								</h2>
+								<span class="px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 text-[11px] font-bold border border-gray-100">{filtered.length}</span>
+							</div>
+							<div class="flex items-center gap-3 w-full sm:w-auto">
+								<div class="relative flex-1 sm:flex-initial">
+									<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
+									<input
+										class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg"
+										placeholder="Rechercher..."
+										type="text"
+										value={search}
+										onInput={(e) => setSearch(e.currentTarget.value)}
+									/>
 								</div>
-								<div class="flex items-center gap-3 w-full sm:w-auto">
-									<div class="relative flex-1 sm:flex-initial">
-										<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
-										<input
-											class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg"
-											placeholder="Rechercher..."
-											type="text"
-											value={search}
-											onInput={(e) => setSearch(e.currentTarget.value)}
-										/>
-									</div>
-									<button class="p-2 rounded-lg border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all">
-										<span class="material-symbols-outlined text-[20px]">filter_list</span>
-									</button>
-								</div>
-							</div>
-
-							<div class="overflow-x-auto custom-scrollbar">
-								<table class="w-full text-left border-collapse">
-									<thead>
-										<tr class="bg-gray-50/50 border-b border-gray-50">
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Référence</th>
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Titre</th>
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Calendrier</th>
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Prix</th>
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Statut</th>
-											<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
-										</tr>
-									</thead>
-									<tbody class="divide-y divide-gray-50">
-										{filtered.map((event, i) => (
-											<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} onViewDetails={handleViewDetails} />
-										))}
-									</tbody>
-								</table>
-							</div>
-
-							<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
-								<span class="text-xs text-gray-400 font-medium">Affichage de {filtered.length} résultats</span>
-								<div class="flex gap-2">
-									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
-										<span class="material-symbols-outlined text-[18px]">chevron_left</span>
-									</button>
-									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
-										<span class="material-symbols-outlined text-[18px]">chevron_right</span>
-									</button>
-								</div>
-							</div>
-						</div>
-
-						{/* ── Footer ── */}
-						<p class="mt-12 text-center text-[11px] text-gray-300 font-bold tracking-widest uppercase">
-							GMT+3 Admin Panel — Fianarantsoa
-						</p>
-					</main>
-				</div>
-
-				{/* ── Confirm dialogs ── */}
-				<ConfirmDialog
-					// @ts-ignore
-					open={confirm?.type === 'logout'}
-					title="Déconnexion"
-					message="Êtes-vous sûr de vouloir vous déconnecter ?"
-					confirmLabel="Se déconnecter"
-					icon="logout"
-					variant="danger"
-					onConfirm={confirmLogout}
-					onCancel={() => setConfirm(null)}
-				/>
-
-				<ConfirmDialog
-					// @ts-ignore
-					open={confirm?.type === 'delete-event'}
-					title="Supprimer l'événement"
-					message="Cette action est irréversible. L'événement sera définitivement supprimé."
-					confirmLabel="Supprimer"
-					icon="delete"
-					variant="danger"
-					// @ts-ignore
-					onConfirm={() => confirmDeleteEvent(confirm?.eventId)}
-					onCancel={() => setConfirm(null)}
-				/>
-
-					<FormModal
-					open={showForm}
-					title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
-					submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-			onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); }}
-					onSubmit={handleSubmit}
-					encType="multipart/form-data"
-				>
-					<div>
-						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="titre">Titre</label>
-						<input id="titre" name="titre" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="Nom de l'événement" required defaultValue={editingEvent?.
-	// @ts-ignore
-						title || ''} />
-					</div>
-					<div>
-						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="description">Description</label>
-						<div class="flex items-center gap-1 mb-2">
-							<button type="button" onClick={() => {
-								const ta = descRef.current;
-								if (!ta) return;
-								const start = ta.selectionStart;
-								const end = ta.selectionEnd;
-								const txt = ta.value;
-								const sel = txt.slice(start, end);
-								const wrap = sel ? `**${sel}**` : '****';
-								const pos = sel ? end + 4 : start + 2;
-								const next = txt.slice(0, start) + wrap + txt.slice(end);
-								if (next.length <= DESC_MAX) {
-									ta.value = next;
-									setDescText(next);
-									ta.focus();
-									ta.setSelectionRange(pos, pos);
-								}
-							}} class="p-1.5 rounded-lg border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all text-xs font-bold" title="Gras">B</button>
-							<button type="button" onClick={() => {
-								const ta = descRef.current;
-								if (!ta) return;
-								const start = ta.selectionStart;
-								const end = ta.selectionEnd;
-								const txt = ta.value;
-								const sel = txt.slice(start, end);
-								const wrap = sel ? `*${sel}*` : '**';
-								const pos = sel ? end + 2 : start + 1;
-								const next = txt.slice(0, start) + wrap + txt.slice(end);
-								if (next.length <= DESC_MAX) {
-									ta.value = next;
-									setDescText(next);
-									ta.focus();
-									ta.setSelectionRange(pos, pos);
-								}
-							}} class="p-1.5 rounded-lg border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all text-xs italic font-serif" title="Italique">I</button>
-							<span class="ml-auto text-xs text-secondary">{descText.length}/{DESC_MAX}</span>
-						</div>
-						<textarea id="description" name="description" ref={descRef}
-							class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl resize-none"
-	// @ts-ignore
-							rows="3" placeholder="Description courte..." maxLength={DESC_MAX}
-							onInput={(e) => { setDescText(e.currentTarget.value); }}
-							defaultValue={editingEvent?.description || ''} />
-					</div>
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
-							<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" min={todayStr} defaultValue={editingEvent?.
-	// @ts-ignore
-							dateDepart || todayStr} />
-						</div>
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
-							<input id="heureDepart" name="heureDepart" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
-	// @ts-ignore
-							heureDepart || currentTimeStr} />
-						</div>
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="dateRetour">Date retour</label>
-							<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" min={todayStr} defaultValue={editingEvent?.
-	// @ts-ignore
-							dateRetour || todayStr} />
-						</div>
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="heureRetour">Heure retour</label>
-							<input id="heureRetour" name="heureRetour" type="time" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" defaultValue={editingEvent?.
-	// @ts-ignore
-							heureRetour || currentTimeStr} />
-						</div>
-					</div>
-					<div>
-						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
-						<input id="lieu" name="lieu" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.
-	// @ts-ignore
-						lieu || ''} />
-					</div>
-					<div>
-						<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
-						<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-3 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary rounded-xl" placeholder="ex: 150000" defaultValue={editingEvent?.
-	// @ts-ignore
-							prix ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
-					</div>
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="imagePrincipale">
-								Image principale (jpg, jpeg, png) {uploading && <span class="ml-2 text-primary-container animate-pulse">Uploading…</span>}
-						</label>
-						<input
-							id="imagePrincipale"
-							name="imagePrincipale"
-							type="file"
-							accept=".jpg,.jpeg,.png"
-							class="w-full px-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary-container file:text-on-primary file:font-button file:text-button file:cursor-pointer hover:file:brightness-110"
-							onInput={(e) => {
-								const f = e.currentTarget.files?.[0];
-								if (f) setPreviewSrc(URL.createObjectURL(f));
-							}}
-						/>
-						{previewSrc && (
-							<div class="mt-3 relative rounded-xl overflow-hidden border border-outline-variant/30">
-								<img src={previewSrc} alt="Aperçu" class="w-full h-40 object-cover" />
-								<button type="button" onClick={() => { setPreviewSrc(''); const inp = document.getElementById('imagePrincipale'); if (inp) inp.
-	// @ts-ignore
-								value = ''; }} class="absolute top-2 right-2 p-1.5 rounded-lg bg-black/50 text-white hover:bg-black/70 transition-all" title="Supprimer">
-									<span class="material-symbols-outlined text-[18px]">close</span>
+								<button class="p-2 rounded-lg border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all">
+									<span class="material-symbols-outlined text-[20px]">filter_list</span>
 								</button>
 							</div>
-							)}
 						</div>
-						<div>
-							<label class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block mb-2" for="photosEvenement">
-								Galerie photos
-							</label>
-							<input
-								id="photosEvenement"
-								name="photosEvenement"
-								type="file"
-								multiple
-								accept=".jpg,.jpeg,.png"
-								class="w-full px-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background rounded-xl file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary-container file:text-on-primary file:font-button file:text-button file:cursor-pointer hover:file:brightness-110"
-								onChange={(e) => {
-									const nextFiles = Array.from(e.currentTarget.files || []);
-									if (nextFiles.length === 0) return;
-									setGalleryFiles((current) => {
-										const merged = [...current, ...nextFiles];
-										const unique = merged.filter((file, index, list) => {
-											const key = `${file.name}:${file.size}:${file.lastModified}`;
-											return index === list.findIndex((candidate) => `${candidate.name}:${candidate.size}:${candidate.lastModified}` === key);
-										});
-										const limited = unique.slice(0, 10);
-										setGalleryPreviewSrcs(limited.map((file) => URL.createObjectURL(file)));
-										return limited;
-									});
-									e.currentTarget.value = '';
-								}}
-							/>
-							<p class="mt-2 text-sm text-secondary">Ajoute jusqu'a 10 images. Tu peux les ajouter en plusieurs selections successives, puis retirer celle a changer.</p>
-							{galleryPreviewSrcs.length > 0 && (
-								<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-									{galleryPreviewSrcs.map((src, index) => (
-										<div key={`${src}-${index}`} class="group relative overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container">
-											<img src={src} alt={`Aperçu galerie ${index + 1}`} class="h-24 w-full object-cover" />
-											<button
-												type="button"
-												class="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/65 text-white opacity-100 transition-all duration-200 hover:bg-black/80"
-												onClick={() => removeGalleryItem(index)}
-												title="Retirer cette image"
-											>
-												<span class="material-symbols-outlined text-[18px]">close</span>
-											</button>
-											<div class="absolute inset-x-0 bottom-0 bg-black/45 px-2 py-1 text-center text-[11px] font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-												Modifier = retirer puis ajouter une nouvelle image
-											</div>
-										</div>
+
+						<div class="overflow-x-auto custom-scrollbar">
+							<table class="w-full text-left border-collapse">
+								<thead>
+									<tr class="bg-gray-50/50 border-b border-gray-50">
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Référence</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Titre</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Calendrier</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Prix</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Statut</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-50">
+									{filtered.map((event, i) => (
+										<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} onViewDetails={handleViewDetails} />
 									))}
-								</div>
-							)}
-							{galleryFiles.length > 0 && (
-								<p class="mt-2 text-xs text-secondary">{galleryFiles.length} photo{galleryFiles.length > 1 ? 's' : ''} selectionnee{galleryFiles.length > 1 ? 's' : ''}</p>
-							)}
+								</tbody>
+							</table>
 						</div>
-						<div>
-							<label class="group flex items-center justify-between gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container/40 px-4 py-3 cursor-pointer transition-all duration-200 hover:border-primary-container/45 hover:bg-surface-container/70">
-							<span class="flex flex-col">
-								<span class="font-body-md text-body-md text-on-background font-semibold">Publier immédiatement</span>
-								<span class="text-sm text-secondary">Active la visibilité publique dès l'enregistrement.</span>
-							</span>
-							<span class="relative inline-flex h-8 w-14 shrink-0 items-center">
-								<input id="estPublie" name="estPublie" type="checkbox" role="switch" class="peer sr-only" defaultChecked={editingEvent ? editingEvent.
-	// @ts-ignore
-								published : true} />
-								<span class="absolute inset-0 rounded-full bg-outline-variant/40 shadow-inner transition-all duration-300 peer-checked:bg-primary-container peer-focus-visible:ring-2 peer-focus-visible:ring-primary-container/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface" />
-								<span class="absolute left-1 h-6 w-6 rounded-full bg-white shadow-[0_6px_16px_rgba(0,0,0,0.24)] transition-all duration-300 peer-checked:translate-x-6 peer-checked:shadow-[0_8px_20px_rgba(0,0,0,0.32)]" />
-								<span class="material-symbols-outlined pointer-events-none absolute right-2 text-[14px] text-on-primary opacity-0 transition-opacity duration-200 peer-checked:opacity-100">check</span>
-							</span>
-						</label>
-					</div>
-					</FormModal>
+
+						<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
+							<span class="text-xs text-gray-400 font-medium">Affichage de {filtered.length} résultats</span>
+							<div class="flex gap-2">
+								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
+									<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+								</button>
+								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
+									<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+								</button>
+							</div>
+						</div>
 					</div>
 
-					{/* ── Image preview modal ── */}
-					<ImagePreview image={previewImage} onClose={() => setPreviewImage(null)} />
+					{/* ── Footer ── */}
+					<p class="mt-12 text-center text-[11px] text-gray-300 font-bold tracking-widest uppercase">
+						GMT+3 Admin Panel — Fianarantsoa
+					</p>
+				</main>
+			</div>
 
-					<EventDetailModal
-						open={Boolean(detailEvent)}
-						loading={detailLoading}
-						error={detailError}
-						event={detailEvent}
-						onClose={() => { setDetailEvent(null); setDetailError(null); setDetailLoading(false); }}
-						onEdit={() => { if (detailEvent) { setShowForm(true); setEditingEvent(detailEvent); setDetailEvent(null); } }}
-						onPreviewImage={(image) => setPreviewImage(image)}
-					/>
-				</>
-			);
-		}
+			{/* ── Confirm dialogs ── */}
+			<ConfirmDialog
+				open={confirm?.type === 'logout'}
+				title="Déconnexion"
+				message="Êtes-vous sûr de vouloir vous déconnecter ?"
+				confirmLabel="Se déconnecter"
+				icon="logout"
+				variant="danger"
+				onConfirm={confirmLogout}
+				onCancel={() => setConfirm(null)}
+			/>
+
+			<ConfirmDialog
+				open={confirm?.type === 'delete-event'}
+				title="Supprimer l'événement"
+				message="Cette action est irréversible. L'événement sera définitivement supprimé."
+				confirmLabel="Supprimer"
+				icon="delete"
+				variant="danger"
+				onConfirm={() => confirmDeleteEvent(confirm?.eventId)}
+				onCancel={() => setConfirm(null)}
+			/>
+
+			<FormModal
+				open={showForm}
+				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
+				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
+				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); }}
+				onSubmit={handleSubmit}
+				encType="multipart/form-data"
+			>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="titre">Titre</label>
+					<input id="titre" name="titre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Nom de l'événement" required defaultValue={editingEvent?.title || ''} />
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="description">Description</label>
+					<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" rows="3" placeholder="Description courte..." maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} defaultValue={editingEvent?.description || ''} />
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
+						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateDepart || todayStr} />
+					</div>
+					<div>
+						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
+						<input id="heureDepart" name="heureDepart" type="time" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" defaultValue={editingEvent?.heureDepart || currentTimeStr} />
+					</div>
+					<div>
+						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="dateRetour">Date retour</label>
+						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateRetour || todayStr} />
+					</div>
+					<div>
+						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="heureRetour">Heure retour</label>
+						<input id="heureRetour" name="heureRetour" type="time" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" defaultValue={editingEvent?.heureRetour || currentTimeStr} />
+					</div>
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
+					<input id="lieu" name="lieu" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.lieu || ''} />
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
+					<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: 150000" defaultValue={editingEvent?.prix ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="imagePrincipale">
+						Image principale (jpg, jpeg, png)
+					</label>
+					<input id="imagePrincipale" name="imagePrincipale" type="file" accept=".jpg,.jpeg,.png" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => { const f = e.currentTarget.files?.[0]; if (f) setPreviewSrc(URL.createObjectURL(f)); }} />
+				</div>
+			</FormModal>
+
+			<ImagePreview image={previewImage} onClose={() => setPreviewImage(null)} />
+
+			<EventDetailModal
+				open={Boolean(detailEvent)}
+				loading={detailLoading}
+				error={detailError}
+				event={detailEvent}
+				onClose={() => { setDetailEvent(null); setDetailError(null); setDetailLoading(false); }}
+				onEdit={() => { if (detailEvent) { setShowForm(true); setEditingEvent(detailEvent); setDetailEvent(null); } }}
+				onPreviewImage={(image) => setPreviewImage(image)}
+			/>
+		</div>
+	);
+}
