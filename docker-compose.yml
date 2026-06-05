@@ -1,12 +1,21 @@
 services:
+  # ── Reverse Proxy (Nginx) ──
+  gmt3_nginx:
+    image: nginx:alpine
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - gmt3_backend
+      - gmt3_frontend
+
   # ── Back-end (Bun) ──
   gmt3_backend:
     build:
       context: ./gmt3_back
       dockerfile: Dockerfile
     container_name: gmt3_backend
-    ports:
-      - "3000:3000"
     volumes:
       - ./gmt3_back:/app
       - /app/node_modules
@@ -24,12 +33,10 @@ services:
       context: ./gmt3_front
       dockerfile: Dockerfile
     container_name: gmt3_frontend
-    ports:
-      - "5173:5173"
     volumes:
       - ./gmt3_front:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_API_BASE=http://localhost:3000
+      - VITE_API_BASE=/api
     restart: unless-stopped
