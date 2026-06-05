@@ -1,14 +1,24 @@
+import { Reveal } from '../../../components/ui/Reveal.jsx';
+
 export function BannerSection() {
 	return (
-		<section class="bg-primary-container text-on-primary w-full border-y-4 border-on-secondary-fixed">
-			<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8">
-				<div class="max-w-3xl">
-					<h2 class="font-h1-mobile text-h1-mobile md:font-h2 md:text-h2 font-black uppercase mb-4 tracking-tighter">VOYAGE SUR MESURE</h2>
-					<p class="font-body-lg text-body-lg text-on-primary/90">Organisez votre aventure personnalisée. Laissez nos experts concevoir un itinéraire qui correspond exactement à votre soif de découverte.</p>
-				</div>
-				<button class="shrink-0 font-button text-button bg-on-secondary-fixed text-on-primary px-8 py-4 rounded-lg hover:shadow-lg transition-all duration-300 uppercase w-full md:w-auto text-center">
-					NOUS CONTACTER
-				</button>
+		<section class="relative bg-primary-container text-on-primary w-full overflow-hidden">
+			<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent_60%)]" />
+			<div class="relative w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-20 md:py-24 flex flex-col md:flex-row items-center justify-between gap-10">
+				<Reveal animation="fadeLeft" duration={650}>
+					<div class="max-w-3xl">
+						<h2 class="font-h1-mobile text-h1-mobile md:font-h2 md:text-h2 font-black uppercase mb-5 tracking-tighter">VOYAGE SUR MESURE</h2>
+						<p class="font-body-lg text-body-lg text-on-primary/85 leading-relaxed">Organisez votre aventure personnalisee. Laissez nos experts concevoir un itineraire qui correspond exactement a votre soif de decouverte.</p>
+					</div>
+				</Reveal>
+				<Reveal animation="driftRight" delay={100} duration={650}>
+					<a
+						href="#contact"
+						class="shrink-0 font-button text-button bg-on-primary text-primary px-6 sm:px-10 py-4 rounded-xl hover:shadow-xl hover:shadow-black/20 hover:brightness-95 transition-all duration-300 uppercase w-full sm:w-auto text-center font-bold whitespace-nowrap cursor-pointer"
+					>
+						NOUS CONTACTER
+					</a>
+				</Reveal>
 			</div>
 		</section>
 	);

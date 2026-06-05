@@ -32,3 +32,10 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+cookies.txt
+uploads
+data
+
+# Drizzle migrations are source artifacts and must stay versioned.
+!drizzle/
+!drizzle/**

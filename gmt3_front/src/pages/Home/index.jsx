@@ -1,26 +1,26 @@
-import { Reveal } from '../../components/ui/Reveal.jsx';
-import { HeroSection } from './components/HeroSection';
-import { ActivitiesSection } from './components/ActivitiesSection';
-import { DestinationsSection } from './components/DestinationsSection';
-import { ToursSection } from './components/ToursSection';
-import { AboutSection } from './components/AboutSection';
-import { OffersSection } from './components/OffersSection';
-import { GallerySection } from './components/GallerySection';
-import { BannerSection } from './components/BannerSection';
+import { HeroSection } from './components/HeroSection.jsx';
+import { ActivitiesSection } from './components/ActivitiesSection.jsx';
+import { DestinationsSection } from './components/DestinationsSection.jsx';
+import { ToursSection } from './components/ToursSection.jsx';
+import { AboutSection } from './components/AboutSection.jsx';
+import { OffersSection } from './components/OffersSection.jsx';
+import { GallerySection } from './components/GallerySection.jsx';
+import { BannerSection } from './components/BannerSection.jsx';
+import { ContactSection } from './components/ContactSection.jsx';
 import { Footer } from '../../components/Footer.jsx';
-// NOTE: No changes needed here for the new page.
 
 export function Home() {
 	return (
 		<div class="home">
 			<HeroSection />
-			<Reveal animation="fadeUp"><ActivitiesSection /></Reveal>
-			<Reveal animation="fadeLeft"><DestinationsSection /></Reveal>
-			<Reveal animation="fadeUp"><ToursSection /></Reveal>
-			<Reveal animation="fadeRight"><AboutSection /></Reveal>
-			<Reveal animation="fadeUp"><OffersSection /></Reveal>
-			<Reveal animation="scaleUp"><GallerySection /></Reveal>
-			<Reveal animation="fadeUp"><BannerSection /></Reveal>
+			<ActivitiesSection />
+			<DestinationsSection />
+			<ToursSection />
+			<AboutSection />
+			<OffersSection />
+			<GallerySection />
+			<BannerSection />
+			<ContactSection />
 			<Footer />
 		</div>
 	);
