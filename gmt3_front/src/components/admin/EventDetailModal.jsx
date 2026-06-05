@@ -30,12 +30,12 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 
 	return (
 		<div class="fixed inset-0 z-[120] flex items-center justify-center p-4">
-			<div class="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={onClose} />
-			<div class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-3xl border border-outline-variant/30 bg-surface shadow-2xl">
-				<div class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-outline-variant/20 bg-surface/95 px-6 py-5 backdrop-blur">
+			<div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onClick={onClose} />
+			<div class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-xl bg-white shadow-xl border border-gray-100">
+				<div class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-gray-50 bg-white/95 px-8 py-6 backdrop-blur">
 					<div>
-						<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Détail de l’événement</p>
-						<h3 class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
+						<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Détail de l’événement</p>
+						<h3 class="mt-2 text-2xl font-extrabold text-gray-900 tracking-tight">
 							{loading ? 'Chargement…' : event?.titre || event?.title || 'Événement'}
 						</h3>
 					</div>
@@ -44,7 +44,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 							<button
 								type="button"
 								onClick={onEdit}
-								class="inline-flex items-center gap-2 rounded-xl border border-outline-variant/30 px-4 py-2 font-button text-button text-primary transition-all hover:bg-primary/5"
+								class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-all"
 							>
 								<span class="material-symbols-outlined text-[18px]">edit</span>
 								Modifier
@@ -53,7 +53,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 						<button
 							type="button"
 							onClick={onClose}
-							class="grid h-10 w-10 place-items-center rounded-xl border border-outline-variant/30 text-secondary transition-all hover:bg-surface-container hover:text-on-background"
+							class="grid h-10 w-10 place-items-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
 							aria-label="Fermer"
 						>
 							<span class="material-symbols-outlined text-[20px]">close</span>
@@ -61,22 +61,22 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 					</div>
 				</div>
 
-				<div class="px-6 py-6">
+				<div class="px-8 py-8">
 					{error ? (
-						<div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
-							<p class="font-body-md text-body-md font-semibold">{error}</p>
+						<div class="rounded-lg border border-red-200 bg-red-50 p-5 text-red-700">
+							<p class="text-sm font-semibold">{error}</p>
 						</div>
 					) : loading ? (
 						<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 							{Array.from({ length: 4 }).map((_, index) => (
-								<div key={index} class="h-28 animate-pulse rounded-2xl bg-surface-container" />
+								<div key={index} class="h-28 animate-pulse rounded-lg bg-gray-100" />
 							))}
 						</div>
 					) : event ? (
-						<div class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+						<div class="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
 							<section class="space-y-6">
-								<div class="overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface-container shadow-sm">
-									<div class="aspect-[16/9] bg-black/5">
+								<div class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+									<div class="aspect-[16/9] bg-gray-50">
 										{event.imagePrincipale ? (
 											<img
 												src={resolveUrl(event.imagePrincipale)}
@@ -87,53 +87,42 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 											/>
 										) : (
 											<div class="flex h-full items-center justify-center">
-												<span class="material-symbols-outlined text-6xl text-secondary/40">image</span>
+												<span class="material-symbols-outlined text-6xl text-gray-300">image</span>
 											</div>
 										)}
 									</div>
-									<div class="flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/20 px-5 py-4">
+									<div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-50 px-6 py-4">
 										<div class="flex flex-wrap items-center gap-2">
-											<span class="rounded-full bg-primary-container px-3 py-1.5 font-label-caps text-label-caps text-on-primary">
+											<span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold text-primary uppercase">
 												{event.estPublie || event.published ? 'Publié' : 'Brouillon'}
 											</span>
-											<span class="rounded-full border border-outline-variant/30 px-3 py-1.5 font-label-caps text-label-caps text-secondary">
+											<span class="rounded-full border border-gray-200 px-3 py-1 text-[11px] font-bold text-gray-500 uppercase">
 												ID #{event.id}
 											</span>
 										</div>
-										<p class="font-body-md text-body-md text-secondary">
+										<p class="text-sm text-gray-500 font-medium">
 											{formatDate(event.dateCreation || event.dateEvenement || event.date)}
 										</p>
 									</div>
 								</div>
 
 								<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-									<div class="rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-4">
-										<p class="font-label-caps text-label-caps text-secondary">Lieu</p>
-										<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">{event.lieu || '—'}</p>
-									</div>
-									<div class="rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-4">
-										<p class="font-label-caps text-label-caps text-secondary">Prix</p>
-										<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">{event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—'}</p>
-									</div>
-									<div class="rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-4">
-										<p class="font-label-caps text-label-caps text-secondary">Départ</p>
-										<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">
-											{formatDate(event.dateDepart || event.dateEvenement || event.date)}
-											{event.heureDepart ? ` ${event.heureDepart}` : ''}
-										</p>
-									</div>
-									<div class="rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-4">
-										<p class="font-label-caps text-label-caps text-secondary">Retour</p>
-										<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">
-											{formatDate(event.dateRetour)}
-											{event.heureRetour ? ` ${event.heureRetour}` : ''}
-										</p>
-									</div>
+									{[
+										{ label: 'Lieu', value: event.lieu || '—' },
+										{ label: 'Prix', value: event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—' },
+										{ label: 'Départ', value: `${formatDate(event.dateDepart || event.dateEvenement || event.date)} ${event.heureDepart || ''}` },
+										{ label: 'Retour', value: `${formatDate(event.dateRetour)} ${event.heureRetour || ''}` }
+									].map((item, idx) => (
+										<div key={idx} class="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+											<p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{item.label}</p>
+											<p class="mt-2 text-sm font-semibold text-gray-900">{item.value}</p>
+										</div>
+									))}
 								</div>
 
-								<div class="rounded-3xl border border-outline-variant/30 bg-surface-container/30 p-5">
-									<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Description</p>
-									<p class="mt-3 font-body-md text-body-md leading-relaxed text-on-background/85">
+								<div class="rounded-xl border border-gray-100 bg-gray-50/30 p-6">
+									<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Description</p>
+									<p class="mt-3 text-sm text-gray-700 leading-relaxed">
 										{event.description || '—'}
 									</p>
 								</div>
@@ -142,13 +131,13 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 							<section class="space-y-4">
 								<div class="flex items-end justify-between gap-3">
 									<div>
-										<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Galerie</p>
-										<h4 class="mt-2 font-h3 text-h3 font-black uppercase tracking-tight text-on-background">
+										<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Galerie</p>
+										<h4 class="mt-2 text-lg font-bold text-gray-900">
 											{photos.length} photo{photos.length > 1 ? 's' : ''}
 										</h4>
 									</div>
 									{photos.length > 0 && (
-										<span class="rounded-full border border-outline-variant/30 px-3 py-1.5 font-label-caps text-label-caps text-secondary">
+										<span class="rounded-full border border-gray-200 px-3 py-1 text-[11px] font-bold text-gray-500 uppercase">
 											Clique pour agrandir
 										</span>
 									)}
@@ -159,7 +148,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 										<button
 											key={photo.id || `${photo.url}-${index}`}
 											type="button"
-											class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface-container shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+											class="group relative aspect-[4/3] overflow-hidden rounded-lg border border-gray-100 bg-gray-100 shadow-sm transition-all hover:shadow-md"
 											onClick={() => onPreviewImage?.({ url: resolveUrl(photo.url), title: `${event.titre || event.title || 'Événement'} - photo ${index + 1}` })}
 										>
 											<img
@@ -169,16 +158,10 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 												loading="lazy"
 												referrerPolicy="no-referrer"
 											/>
-											<div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-											{photo.ordre != null && (
-												<div class="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white">
-													{photo.ordre}
-												</div>
-											)}
 										</button>
 									)) : (
-										<div class="col-span-full rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-6 text-center text-secondary">
-											Aucune photo de galerie disponible.
+										<div class="col-span-full rounded-lg border border-gray-100 bg-gray-50 p-6 text-center text-gray-500 text-sm">
+											Aucune photo disponible.
 										</div>
 									)}
 								</div>

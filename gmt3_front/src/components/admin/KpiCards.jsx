@@ -11,27 +11,18 @@ export function KpiCards({ totalEvents = 0, totalReservations = 0, limitedEvents
 			label: 'Expéditions',
 			value: String(totalEvents),
 			unit: 'Actives',
-			gradient: 'from-primary/5 via-primary/5 to-transparent',
-			iconBg: 'bg-primary-container',
-			iconText: 'text-on-primary',
 		},
 		{
 			icon: 'confirmation_number',
 			label: 'Réservations',
 			value: String(totalReservations),
-			unit: 'Cette semaine',
-			gradient: 'from-primary-container/5 via-primary-container/10 to-transparent',
-			iconBg: 'bg-primary-container',
-			iconText: 'text-on-primary',
+			unit: 'Au total',
 		},
 		{
 			icon: 'warning',
 			label: 'Places limitées',
 			value: String(limitedEvents),
 			unit: 'Événements',
-			gradient: 'from-surface-container via-surface-container to-transparent',
-			iconBg: 'bg-surface-container-high',
-			iconText: 'text-on-background',
 		},
 	];
 
@@ -40,27 +31,19 @@ export function KpiCards({ totalEvents = 0, totalReservations = 0, limitedEvents
 			{kpis.map((kpi) => (
 				<div
 					key={kpi.label}
-					class={`relative overflow-hidden rounded-2xl bg-surface border border-outline-variant/30 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 group`}
+					class="relative p-6 rounded-xl bg-white border border-gray-100 shadow-sm transition-all hover:border-primary/20 hover:shadow-md"
 				>
-					<div class={`absolute inset-0 bg-gradient-to-br ${kpi.gradient} opacity-60`} />
-					<div class="relative z-10 flex items-start justify-between mb-5">
-						<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">
+					<div class="flex items-start justify-between mb-4">
+						<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
 							{kpi.label}
 						</p>
-						<div class={`h-10 w-10 rounded-xl ${kpi.iconBg} flex items-center justify-center shadow-md shadow-black/10`}>
-							<span class={`material-symbols-outlined ${kpi.iconText} text-xl`}>{kpi.icon}</span>
+						<div class="h-8 w-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+							<span class="material-symbols-outlined text-lg">{kpi.icon}</span>
 						</div>
 					</div>
-					<div class="relative z-10 flex items-baseline gap-2">
-						<span class="font-h1 text-h1 text-on-background font-black">{kpi.value}</span>
-						<span class="font-body-md text-body-md text-secondary">{kpi.unit}</span>
-					</div>
-					<div class="relative z-10 mt-4 flex items-center gap-2">
-						<span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-							<span class="material-symbols-outlined text-[14px]">trending_up</span>
-							+12%
-						</span>
-						<span class="text-xs text-secondary">vs mois dernier</span>
+					<div class="flex items-baseline gap-2">
+						<span class="text-3xl font-extrabold text-gray-900 tracking-tight">{kpi.value}</span>
+						<span class="text-xs font-medium text-gray-400">{kpi.unit}</span>
 					</div>
 				</div>
 			))}
