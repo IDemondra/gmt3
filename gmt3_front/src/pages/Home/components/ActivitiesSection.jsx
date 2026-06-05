@@ -45,72 +45,118 @@ export function ActivitiesSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-surface-variant py-section-gap">
-			{/* Decorative blobs */}
-			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
-			<div class="absolute bottom-[-6rem] left-[-4rem] h-72 w-72 rounded-full bg-white/50 blur-2xl pointer-events-none" />
+		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="specialites">
+			{/* Technical Bridge from Hero */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Incursion Ready</span>
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Mode: TECH-BLUEPRINT</span>
+				</div>
+			</div>
+
+			{/* Technical Background Accents */}
+			<div class="absolute inset-0 opacity-[0.03] pointer-events-none" 
+				style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;" />
+			<div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent" />
+			<div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent" />
 
 			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
 
 				{/* ── Header ── */}
-				<div class="mx-auto mb-14 max-w-3xl text-center">
-					<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/70 px-4 py-2 font-label-caps text-label-caps text-on-background/70 backdrop-blur-sm">
-						<span class="h-2 w-2 rounded-full bg-primary-container" />
-						EXPERTISES CLÉS
-					</span>
-					<h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.5rem)] text-on-background font-black uppercase tracking-tighter leading-[1.05]">
-						Nos Spécialités
-					</h2>
-					<div class="section-divider mx-auto mt-4 w-24" />
-					<p class="mx-auto mt-5 max-w-2xl font-body-lg text-body-lg text-secondary leading-relaxed">
-						Conçu pour l'aventure, orchestré avec précision. Chaque spécialité s'appuie sur une logique terrain claire, rapide à comprendre et simple à réserver.
-					</p>
+				<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+					<div class="max-w-2xl">
+						<div class="flex items-center gap-3 mb-4">
+							<div class="h-2 w-2 bg-primary animate-pulse" />
+							<span class="font-label-caps text-[10px] tracking-[0.4em] text-primary font-bold">CORE CAPABILITIES</span>
+						</div>
+						<h2 class="font-h2 text-h2 md:text-5xl text-white font-black uppercase tracking-tighter leading-none">
+							Nos <span class="text-primary">Spécialités</span>
+						</h2>
+						<p class="mt-6 font-body-lg text-white/50 leading-relaxed max-w-xl">
+							Des modules d'exploration conçus pour l'efficacité brute. Chaque spécialité est une brique de votre aventure, calibrée pour le terrain malgache.
+						</p>
+					</div>
+					
+					<div class="hidden md:block text-right">
+						<p class="font-mono text-[10px] text-white/20 tracking-widest uppercase">System Status: Optimal</p>
+						<p class="font-mono text-[10px] text-white/20 tracking-widest uppercase">Coord: 20.0000° S, 47.0000° E</p>
+					</div>
 				</div>
 
-				{/* ── Grid ── */}
-				{/* Mobile: 1 col, sm: 2 col, lg: 3+2 split (first 3 span a row, last 2 share a row) */}
-				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:[&>*:nth-child(4)]:col-span-2">
-					{activities.map((activity, index) => (
-						<Reveal key={index} animation="fadeUp" delay={index * 80} duration={600}>
-							<article class="group relative h-full overflow-hidden rounded-2xl bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md shadow-sm shadow-black/[0.04] border border-white/20 transition-all duration-300 hover:shadow-md hover:shadow-black/8 cursor-pointer">
+				{/* ── Bento Grid ── */}
+				<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[240px]">
+					{activities.map((activity, index) => {
+						// Bento logic: 1st is large, 2nd & 3rd are medium, 4th & 5th are wide
+						const spanClass = index === 0 
+							? "md:col-span-2 md:row-span-2" 
+							: index === 1 || index === 2
+							? "md:col-span-2 md:row-span-1"
+							: "md:col-span-2 lg:col-span-3 md:row-span-1";
 
-								{/* Color accent bar */}
-								<div class={`h-1.5 w-full bg-gradient-to-r ${activity.gradient}`} />
+						return (
+							<Reveal key={index} animation="fadeUp" delay={index * 100} className={spanClass}>
+								<article class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate">
+									
+									{/* Corner Accents */}
+									<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-primary transition-colors" />
+									<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-primary transition-colors" />
+									<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-primary transition-colors" />
+									<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-primary transition-colors" />
 
-								<div class="flex flex-col p-5 md:p-6">
-									{/* Top row: icon + index */}
-									<div class="flex items-center justify-between">
-										<div class={`flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-xl ${activity.iconBg} shadow-sm`}>
-											<span class="material-symbols-outlined text-[1.5rem] md:text-[1.75rem]">
+									{/* Header: Icon + Serial */}
+									<div class="flex items-start justify-between mb-auto">
+										<div class={`flex h-12 w-12 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-white`}>
+											<span class="material-symbols-outlined text-2xl">
 												{activity.icon}
 											</span>
 										</div>
-										<span class="font-mono text-[2rem] md:text-[2.5rem] font-black leading-none text-on-background/[0.06] select-none">
-											{String(index + 1).padStart(2, '0')}
-										</span>
+										<div class="text-right">
+											<p class="font-mono text-[10px] text-white/20 tracking-tighter">MOD-0{index + 1}</p>
+											<div class="flex gap-1 justify-end mt-1">
+												<div class="h-1 w-1 bg-primary rounded-full" />
+												<div class="h-1 w-1 bg-white/10 rounded-full" />
+												<div class="h-1 w-1 bg-white/10 rounded-full" />
+											</div>
+										</div>
 									</div>
 
-									{/* Title */}
-									<h3 class="mt-4 md:mt-5 font-h3 text-h3 md:text-[clamp(1.25rem,2vw,1.5rem)] text-on-background font-black uppercase tracking-tight transition-colors duration-300 group-hover:text-primary">
-										{activity.title}
-									</h3>
-
-									{/* Description */}
-									<p class="mt-2.5 md:mt-3 font-body-md text-body-md text-secondary leading-relaxed flex-1">
-										{activity.description}
-									</p>
-
-									{/* CTA */}
-									<div class="mt-5 md:mt-6 inline-flex items-center gap-2 text-primary/80 font-button text-button transition-all duration-300 group-hover:gap-3 group-hover:text-primary cursor-pointer">
-										<span>Voir le détail</span>
-										<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+									{/* Content */}
+									<div class="relative z-10 mt-4">
+										<h3 class="font-h3 text-xl font-bold uppercase tracking-tight text-white transition-colors group-hover:text-primary">
+											{activity.title}
+										</h3>
+										<p class="mt-2 text-sm text-white/40 leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all">
+											{activity.description}
+										</p>
 									</div>
-								</div>
 
-								{/* Bottom hover glow */}
-								<div class="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-primary/[0.04] blur-2xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/[0.08] pointer-events-none" />
-							</article>
-						</Reveal>
+									{/* Footer: Tech specs / Status */}
+									<div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+										<span class="text-[9px] font-bold tracking-widest text-primary uppercase">Module Active</span>
+										<span class="material-symbols-outlined text-sm text-white/20">sensors</span>
+									</div>
+
+									{/* Background Glow */}
+									<div class="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+								</article>
+							</Reveal>
+						);
+					})}
+				</div>
+
+				{/* ── Expertise footer ── */}
+				<div class="mt-16 flex flex-wrap justify-center gap-8 border-t border-white/5 pt-12">
+					{[
+						{ label: "LOGISTICS", val: "L-24" },
+						{ label: "EXPLORATION", val: "E-12" },
+						{ label: "SECURITY", val: "S-01" },
+						{ label: "PROTOCOL", val: "P-09" }
+					].map((tag, i) => (
+						<div key={i} class="flex items-center gap-3">
+							<span class="text-[10px] font-bold text-white/20 tracking-[0.3em]">{tag.label}</span>
+							<span class="font-mono text-xs text-primary">{tag.val}</span>
+						</div>
 					))}
 				</div>
 			</div>

@@ -73,107 +73,174 @@ export function AboutSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
-			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
-			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-2xl pointer-events-none" />
+			{/* Progressive Transition from Previous Light Section */}
+			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#faf9f6] to-transparent pointer-events-none z-10" />
+			
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Personnel Sync: Active</span>
+					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Protocol: HUMAN-ELEMENT-01</span>
+				</div>
+			</div>
+
+			{/* Decorative background elements */}
+			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-3xl pointer-events-none" />
+			<div class="absolute top-1/4 right-10 h-64 w-64 rounded-full bg-primary/5 blur-[100px] pointer-events-none animate-pulse" />
 
 			<div class="relative mx-auto max-w-container-max">
 				{/* ── Header ── */}
-				<div class="mb-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+				<div class="mb-16 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
 					<div class="max-w-2xl">
-						<span class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-white/75 px-4 py-2 font-label-caps text-label-caps text-on-background/70">
-							<span class="relative flex h-2 w-2">
-								<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-container opacity-75" />
-								<span class="relative inline-flex h-2 w-2 rounded-full bg-primary-container" />
-							</span>
-							ACCOMPAGNEMENT TERRAIN
-						</span>
-						<h2 class="mt-5 font-h2 text-h2 md:text-[clamp(2.25rem,3vw,3.5rem)] text-on-background font-black uppercase tracking-tighter leading-[1.05]">
-							Nos Équipes
+						<div class="flex items-center gap-3">
+							<span class="h-px w-12 bg-primary/40" />
+							<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary">L'ÂME DE GMT+3</span>
+						</div>
+						<h2 class="mt-4 font-h2 text-h2 md:text-[clamp(2.5rem,4vw,4rem)] text-on-background font-black uppercase tracking-tighter leading-[0.95]">
+							Passeurs <br class="hidden md:block" /> d'Horizons
 						</h2>
-						<div class="section-divider mt-4 w-24" />
-						<p class="font-body-lg text-body-lg text-secondary mt-5 max-w-xl leading-relaxed">
-							Chaque itinéraire GMT+3 est porté par une équipe soudée de locaux qui connaissent chaque relief, chaque usage et chaque silence du terrain. Pas de simples accompagnateurs&nbsp;: des passeurs de sens.
+						<p class="font-body-lg text-body-lg text-secondary mt-6 max-w-xl leading-relaxed">
+							Plus que des guides, ils sont les gardiens des secrets de l'île. Chaque membre de notre équipe est un expert du terrain, choisi pour son lien viscéral avec sa terre.
 						</p>
 					</div>
 
-					{/* Stats strip */}
-					<div class="grid gap-3 sm:grid-cols-3">
-						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
-							<p class="font-h3 text-h3 text-on-background">12+</p>
-							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Années d'expérience</p>
-						</div>
-						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
-							<p class="font-h3 text-h3 text-on-background">06</p>
-							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Membres clés</p>
-						</div>
-						<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-4 py-3 shadow-md shadow-black/5">
-							<p class="font-h3 text-h3 text-on-background">100%</p>
-							<p class="mt-1 font-label-caps text-label-caps uppercase tracking-[0.22em] text-on-background/55">Originaires de Mada</p>
+					{/* Mission Log Stats */}
+					<div class="relative">
+						<div class="absolute -inset-4 rounded-[2rem] bg-white/40 blur-xl pointer-events-none" />
+						<div class="relative grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
+							{[
+								{ label: "Expertise", val: "12+", sub: "Années d'aventure", icon: "military_tech" },
+								{ label: "Équipe", val: "06", sub: "Membres racines", icon: "group" },
+								{ label: "Origine", val: "100%", sub: "Madagascar native", icon: "location_on" }
+							].map((s, idx) => (
+								<div key={idx} class="group flex items-center gap-4 rounded-2xl border border-white/40 bg-white/60 p-4 shadow-sm backdrop-blur-md transition-all hover:translate-x-2 hover:bg-white/80">
+									<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+										<span class="material-symbols-outlined">{s.icon}</span>
+									</div>
+									<div>
+										<div class="flex items-baseline gap-2">
+											<span class="font-h3 text-2xl font-bold text-on-background">{s.val}</span>
+											<span class="text-[10px] font-bold uppercase tracking-wider text-primary/70">{s.label}</span>
+										</div>
+										<p class="text-xs text-secondary font-medium">{s.sub}</p>
+									</div>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
 
-				{/* ── Polaroid team cards: 3-column grid, 2 rows ── */}
-				<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+				{/* ── Field Journal Grid (Staggered) ── */}
+				<div class="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 md:pt-10">
 					{team.map((member, i) => (
-						<Reveal key={member.name} animation={i % 2 === 0 ? 'fadeUp' : 'fadeRight'} delay={i * 70} duration={650}>
-							<article class="group relative h-full w-full cursor-pointer">
-								{/* Outer polaroid wrapper */}
-								<div class={`relative flex h-full flex-col rounded-[1.6rem] bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md border border-white/20 p-4 shadow-lg shadow-black/8 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-black/12 overflow-hidden isolate transform-gpu ${member.accent}`}>
-									{/* Tape pieces */}
-									<div class="absolute left-3 md:left-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 -rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
-									<div class="absolute right-3 md:right-6 top-2 md:top-3 h-8 w-12 md:h-10 md:w-16 rotate-12 rounded-[0.5rem] bg-stone-200/80 backdrop-blur-sm border border-stone-300/50 shadow-sm z-10" />
-
-									{/* Inner container */}
-									<div class="flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-stone-100 border border-stone-200/60 flex-1 shadow-inner isolate">
-										{/* Photo area */}
-										<div class="relative flex-1 min-h-[240px] md:min-h-[280px] overflow-hidden rounded-t-[1.15rem]">
-											<img
-												alt={`${member.name} – ${member.role}`}
-												class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-												loading="lazy"
-												src={img(member.src)}
-											/>
-											<div class="absolute inset-0 bg-gradient-to-t from-black/75 from-0% via-black/10 via-50% to-transparent to-100% opacity-90 transition-opacity duration-300 group-hover:opacity-100 z-10" />
-											<div class="absolute bottom-4 left-4 z-20 rounded-full border border-white/20 bg-black/50 backdrop-blur-md px-4 py-2 font-label-caps text-label-caps text-white/95 shadow-lg">
-												{member.name}
-											</div>
-										</div>
-
-										{/* Info area */}
-										<div class="border-t border-stone-200 bg-white/60 px-3 py-4 sm:px-5 sm:py-5 shrink-0">
-											<div class="flex flex-wrap items-center gap-2">
-												<span class="rounded-full border border-outline-variant/60 bg-white px-3 py-1.5 font-label-caps text-label-caps text-on-background/80 shadow-sm">
-													{member.role}
-												</span>
-												<span class="rounded-full border border-outline-variant/40 bg-stone-100 px-2.5 py-1 font-label-caps text-[11px] text-on-background/45">
-													{member.meta}
-												</span>
-											</div>
-											<p class="mt-2 md:mt-3 font-body-md text-body-md md:text-body-md text-[14px] leading-relaxed text-secondary italic break-words hyphens-auto">
-												{member.note}
-											</p>
+						<Reveal
+							key={member.name}
+							animation="fadeUp"
+							delay={i * 100}
+							className={i % 2 !== 0 ? 'lg:translate-y-16' : ''}
+						>
+							<article class="group relative">
+								{/* The "Notebook Page" Card */}
+								<div class={`relative flex flex-col rounded-[0.5rem] bg-[#fdfcf8] p-4 pt-12 shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:rotate-0 isolate ${member.accent} border-b-4 border-stone-300/50`}>
+									
+									{/* Top decoration: Binder holes or Clip */}
+									<div class="absolute top-4 left-0 right-0 flex justify-center gap-4 opacity-30">
+										{[1, 2, 3, 4, 5].map(n => <div key={n} class="h-3 w-3 rounded-full bg-stone-800" />)}
+									</div>
+									
+									{/* Bio-Stamp / Badge */}
+									<div class="absolute -right-3 -top-3 z-30 flex h-16 w-16 rotate-12 items-center justify-center rounded-full border-2 border-dashed border-primary/30 bg-white p-1 shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-0">
+										<div class="flex h-full w-full items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-primary">
+											<span class="material-symbols-outlined text-2xl">
+												{i % 3 === 0 ? 'eco' : i % 3 === 1 ? 'explore' : 'camera'}
+											</span>
 										</div>
 									</div>
+
+									{/* Main Photo area: Inset and slightly aged */}
+									<div class="relative aspect-[4/5] overflow-hidden rounded-sm bg-stone-200 shadow-inner">
+										<img
+											alt={member.name}
+											class="h-full w-full object-cover grayscale-[0.2] sepia-[0.1] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 group-hover:scale-105"
+											src={img(member.src)}
+										/>
+										{/* Overlay vignette */}
+										<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+										
+										{/* Tag / Role label */}
+										<div class="absolute bottom-3 left-3 flex flex-col gap-1">
+											<span class="w-fit bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-lg">
+												{member.role}
+											</span>
+											<span class="w-fit bg-on-background px-2 py-0.5 text-[9px] font-medium text-white/80">
+												EXP: {member.meta.split('&')[0].trim()}
+											</span>
+										</div>
+									</div>
+
+									{/* Handwritten-style Name & Note */}
+									<div class="mt-6 flex flex-col">
+										<h3 class="text-xl font-bold tracking-tight text-on-background underline decoration-primary/20 decoration-2 underline-offset-4">
+											{member.name}
+										</h3>
+										
+										<div class="relative mt-4">
+											<span class="absolute -left-2 -top-2 text-4xl text-primary/10 font-serif">"</span>
+											<p class="relative font-serif italic text-secondary text-sm leading-relaxed pl-2 border-l-2 border-stone-100">
+												{member.note.replace(/[«»]/g, '')}
+											</p>
+										</div>
+										
+										{/* Bottom details: Coordinates or fake ID */}
+										<div class="mt-6 flex items-center justify-between border-t border-dashed border-stone-200 pt-4">
+											<div class="flex gap-1">
+												{[1, 2, 3, 4, 5].map(s => (
+													<span key={s} class="h-1.5 w-1.5 rounded-full bg-primary/30" />
+												))}
+											</div>
+											<span class="text-[9px] font-bold tracking-tighter text-stone-400 uppercase">
+												Ref. GMT3-MADA-{i + 10}
+											</span>
+										</div>
+									</div>
+
+									{/* "Tape" piece at bottom */}
+									<div class="absolute -bottom-2 right-10 h-6 w-16 bg-white/60 backdrop-blur-sm border border-stone-200/50 -rotate-2 opacity-0 transition-opacity group-hover:opacity-100" />
 								</div>
 							</article>
 						</Reveal>
 					))}
 				</div>
 
-				{/* ── Expertise pills ── */}
-				<div class="mt-10 md:mt-12 flex flex-wrap justify-center gap-2 md:gap-3">
-					{expertise.map((item) => (
-						<div class="flex items-center gap-2 md:gap-3 rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md px-3 py-2.5 md:px-5 md:py-3.5 shadow-md shadow-black/5 transition-all duration-300 hover:shadow-lg hover:shadow-primary/8 cursor-pointer w-full sm:w-auto">
-							<div class="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container/15 text-primary">
-								<span class="material-symbols-outlined text-[18px] md:text-[22px]">{item.icon}</span>
-							</div>
-							<div class="min-w-0">
-								<p class="font-body-md text-[14px] md:text-body-md font-semibold text-on-background leading-tight">{item.title}</p>
-								<p class="text-[12px] md:text-sm text-secondary mt-0.5">{item.detail}</p>
+				{/* ── Call to Action: Join the Expedition ── */}
+				<div class="mt-24 rounded-[2.5rem] bg-on-background p-8 md:p-12 text-center text-white relative overflow-hidden">
+					<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] pointer-events-none" />
+					<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none" />
+					
+					<Reveal animation="fadeUp">
+						<div class="max-w-2xl mx-auto relative z-10">
+							<span class="text-primary font-bold tracking-[0.3em] text-xs uppercase">Immersion Totale</span>
+							<h3 class="mt-4 text-3xl md:text-5xl font-black uppercase leading-tight">Envie de les rencontrer sur le terrain ?</h3>
+							<p class="mt-6 text-white/70 font-body-md">
+								Nos expéditions sont limitées à 8 participants pour garantir une interaction réelle avec nos équipes et les communautés locales.
+							</p>
+							<div class="mt-10 flex flex-wrap justify-center gap-4">
+								<a href="#contact" class="px-8 py-4 bg-primary text-white font-bold uppercase tracking-widest text-sm rounded-full transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-primary/20">
+									Rejoindre l'aventure
+								</a>
+								<div class="flex -space-x-3 items-center">
+									{team.slice(0, 4).map((m, idx) => (
+										<img key={idx} src={img(m.src)} class="h-10 w-10 rounded-full border-2 border-on-background object-cover" />
+									))}
+									<div class="h-10 w-10 rounded-full border-2 border-on-background bg-stone-800 flex items-center justify-center text-[10px] font-bold">
+										+2
+									</div>
+								</div>
 							</div>
 						</div>
-					))}
+					</Reveal>
 				</div>
 			</div>
 		</section>

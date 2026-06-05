@@ -3,6 +3,15 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 export function OffersSection() {
 	return (
 		<section class="relative overflow-hidden bg-surface-variant py-section-gap" id="offers">
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-on-background/10 tracking-[0.2em] uppercase">Commitment Sync: Ready</span>
+					<span class="font-mono text-[8px] text-on-background/10 tracking-[0.2em] uppercase">Type: SUSTAINABLE-OPS</span>
+				</div>
+			</div>
+
 			<div class="absolute -top-20 right-[-5rem] h-64 w-64 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
 			<div class="absolute bottom-[-5rem] left-[-4rem] h-72 w-72 rounded-full bg-white/50 blur-2xl pointer-events-none" />
 			<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />

@@ -41,179 +41,146 @@ export function Footer() {
 	const currentYear = new Date().getFullYear();
 
 	return (
-		<footer class="relative bg-on-secondary-fixed overflow-hidden">
-			{/* Decorative ambient orbs (Aurora UI effect) */}
-			<div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
-				<div class="absolute -top-40 -right-32 w-[500px] h-[500px] rounded-full bg-primary/4 blur-[80px]" />
-				<div class="absolute -bottom-32 -left-32 w-[450px] h-[450px] rounded-full bg-primary-container/4 blur-[80px]" />
+		<footer class="relative bg-[#1c1b1b] overflow-hidden text-white">
+			{/* Technical Bridge from Previous Section (Contact or Banner) */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase animate-pulse">Operational HQ Uplink</span>
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Status: SECURE-IDLE</span>
+				</div>
 			</div>
 
-			{/* Top accent line (Aurora UI gradient border) */}
-			<div aria-hidden="true" class="h-[2px] w-full bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+			{/* Decorative ambient orbs */}
+			<div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
+				<div class="absolute -top-40 -right-32 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[100px]" />
+				<div class="absolute bottom-0 left-1/4 w-[300px] h-[300px] rounded-full bg-primary/5 blur-[80px] animate-pulse" />
+			</div>
 
-			<div class="relative z-10 px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto">
-				{/* ── Brand + Social ── */}
-				<Reveal animation="fadeUp" duration={650}>
-					<div class="pt-20 md:pt-24">
-						<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8">
-							<div>
-								<div class="flex items-center gap-4 mb-5">
-									<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-lg shadow-primary/25">
-										<span class="text-on-primary font-h3 text-h3 font-extrabold leading-none">G</span>
-									</div>
-									<span class="font-h3 text-h3 md:text-h2 md:font-bold font-extrabold text-primary uppercase tracking-tight">
-										GMT+3 Madagascar
-									</span>
+			{/* Grid Pattern */}
+			<div class="absolute inset-0 opacity-[0.02] pointer-events-none" 
+				 style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 40px 40px;" />
+
+			<div class="relative z-10 px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto pt-24 pb-12">
+				
+				<div class="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr_1fr] gap-16 lg:gap-24 mb-20">
+					
+					{/* ── Column 1: Brand & Intel ── */}
+					<div>
+						<Reveal animation="fadeUp">
+							<div class="flex items-center gap-4 mb-8">
+								<div class="h-12 w-12 rounded-lg bg-primary flex items-center justify-center shadow-2xl shadow-primary/20">
+									<span class="material-symbols-outlined text-white text-2xl">radar</span>
 								</div>
-								<p class="font-body-md text-body-md text-on-primary/45 max-w-md leading-relaxed">
-									Spécialistes de l'aventure et de l'exploration à Madagascar.
-									Nous créons des expériences brutes et inoubliables.
-								</p>
+								<div>
+									<h2 class="font-h3 text-xl font-black uppercase tracking-tighter leading-none">
+										GMT+3 <span class="text-primary-container">MADAGASCAR</span>
+									</h2>
+									<p class="font-mono text-[9px] text-primary font-bold tracking-widest mt-1">FIANARANTSOA, MG</p>
+								</div>
 							</div>
-							<div class="flex gap-4">
-								{socialLinks.map(({ label, href, viewBox, path }) => (
-									<a
-										key={label}
-										href={href}
-										aria-label={label}
-										target={href.startsWith('http') ? '_blank' : undefined}
-										rel={href.startsWith('http') ? 'noreferrer' : undefined}
-										class="group w-12 h-12 rounded-xl bg-white/[0.06] flex items-center justify-center border border-white/[0.08] hover:bg-primary hover:border-primary transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/25"
-									>
-										<svg
-											class="w-5 h-5 text-on-primary/35 group-hover:text-on-primary transition-colors duration-300"
-											viewBox={viewBox}
-											fill="currentColor"
-										>
-											<path d={path} />
-										</svg>
-									</a>
-								))}
+							<p class="font-body-md text-white/40 max-w-sm leading-relaxed mb-10 italic">
+								"L'exploration n'est pas une destination, c'est un état d'esprit. Nous cartographions l'invisible au cœur de la Grande Île."
+							</p>
+							
+							<div class="space-y-4">
+								<p class="font-mono text-[10px] text-white/20 uppercase tracking-widest border-b border-white/5 pb-2">Operational Metrics</p>
+								<div class="flex items-center justify-between">
+									<span class="text-[10px] text-white/50 uppercase tracking-tighter">Expedition Success</span>
+									<span class="font-mono text-xs text-primary font-bold">99.8%</span>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-[10px] text-white/50 uppercase tracking-tighter">Field Personnel</span>
+									<span class="font-mono text-xs text-white">06 ACTIVE</span>
+								</div>
 							</div>
-						</div>
+						</Reveal>
 					</div>
-				</Reveal>
 
-				{/* ── Divider ── */}
-				<Reveal animation="fadeUp" delay={100} duration={650}>
-					<div aria-hidden="true" class="my-14 md:my-16 h-px w-full bg-gradient-to-r from-transparent via-white/8 to-transparent" />
-				</Reveal>
+					{/* ── Column 2: Navigation Hub ── */}
+					<div class="grid grid-cols-2 gap-8">
+						<Reveal animation="fadeUp" delay={100}>
+							<div>
+								<h4 class="font-mono text-[10px] text-primary mb-8 uppercase tracking-[0.4em] font-black">Links</h4>
+								<ul class="space-y-4">
+									{navLinks.map(({ label, href }) => (
+										<li key={label}>
+											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group">
+												<span class="h-1 w-1 bg-white/10 group-hover:bg-primary rounded-full transition-colors" />
+												{label.toUpperCase()}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						</Reveal>
+						<Reveal animation="fadeUp" delay={150}>
+							<div>
+								<h4 class="font-mono text-[10px] text-primary mb-8 uppercase tracking-[0.4em] font-black">Intel</h4>
+								<ul class="space-y-4">
+									{infoLinks.map(({ label, href }) => (
+										<li key={label}>
+											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group">
+												<span class="h-1 w-1 bg-white/10 group-hover:bg-primary rounded-full transition-colors" />
+												{label.toUpperCase()}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						</Reveal>
+					</div>
 
-				{/* ── Links Grid ── */}
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-y-14 md:gap-x-16">
-					{/* Navigation */}
-					<Reveal animation="fadeUp" delay={120} duration={650}>
-						<div>
-							<h4 class="font-label-caps text-label-caps text-primary mb-8 uppercase tracking-widest font-extrabold">
-								Navigation
-							</h4>
-							<ul class="space-y-5">
-								{navLinks.map(({ label, href }) => (
-									<li key={label}>
-										<a
-											href={href}
-											class="group inline-flex items-center gap-3 font-body-md text-body-md text-on-primary/45 font-medium hover:text-primary transition-colors duration-300"
-										>
-											<span aria-hidden="true" class="w-0 group-hover:w-5 h-px bg-primary transition-all duration-300 ease-out" />
-											{label}
-										</a>
-									</li>
-								))}
-							</ul>
-						</div>
-					</Reveal>
-
-					{/* Informations */}
-					<Reveal animation="fadeUp" delay={160} duration={650}>
-						<div>
-							<h4 class="font-label-caps text-label-caps text-primary mb-8 uppercase tracking-widest font-extrabold">
-								Informations
-							</h4>
-							<ul class="space-y-5">
-								{infoLinks.map(({ label, href }) => (
-									<li key={label}>
-										<a
-											href={href}
-											class="group inline-flex items-center gap-3 font-body-md text-body-md text-on-primary/45 font-medium hover:text-primary transition-colors duration-300"
-										>
-											<span aria-hidden="true" class="w-0 group-hover:w-5 h-px bg-primary transition-all duration-300 ease-out" />
-											{label}
-										</a>
-									</li>
-								))}
-							</ul>
-						</div>
-					</Reveal>
-
-					{/* Newsletter + Contact */}
-					<Reveal animation="fadeUp" delay={200} duration={650}>
-						<div class="space-y-8">
-							{/* Newsletter */}
-							<div class="p-6 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
-								<h4 class="font-label-caps text-label-caps text-primary mb-2 uppercase tracking-widest font-extrabold">
-									Restez informé
-								</h4>
-								<p class="font-body-md text-body-md text-on-primary/45 leading-relaxed mb-5">
-									Recevez nos dernières expéditions et offres exclusives.
-								</p>
-								<form
-									onSubmit={(e) => e.preventDefault()}
-									class="flex flex-col gap-3"
-								>
-									<input
-										type="email"
-										placeholder="votre@email.com"
-										class="w-full px-5 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-on-primary font-body-md text-body-md placeholder:text-on-primary/20 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all duration-300"
-									/>
-									<button
-										type="submit"
-										class="w-full px-5 py-3.5 rounded-xl bg-primary text-on-primary font-button text-button font-bold hover:bg-primary-container hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-primary/20"
-									>
-										S'abonner
+					{/* ── Column 3: Secure Dispatch ── */}
+					<div>
+						<Reveal animation="fadeUp" delay={200}>
+							<div class="bg-white/[0.03] border border-white/5 rounded-2xl p-8 backdrop-blur-md relative overflow-hidden group">
+								<div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+									<span class="material-symbols-outlined text-6xl text-white">mail</span>
+								</div>
+								
+								<h4 class="font-h3 text-lg font-bold text-white mb-2 uppercase tracking-tight">Mission Briefings</h4>
+								<p class="text-xs text-white/40 leading-relaxed mb-6">Inscrivez-vous pour recevoir les rapports d'exploration et les créneaux d'expédition prioritaires.</p>
+								
+								<form onSubmit={(e) => e.preventDefault()} class="space-y-3">
+									<div class="relative">
+										<input
+											type="email"
+											placeholder="ENTER MISSION EMAIL"
+											class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono tracking-widest text-white placeholder:text-white/10 focus:outline-none focus:border-primary transition-colors uppercase"
+										/>
+									</div>
+									<button class="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all hover:shadow-2xl hover:shadow-primary/20 active:scale-95">
+										JOIN NETWORK
 									</button>
 								</form>
 							</div>
-
-							{/* Quick contact */}
-							<div class="p-5 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
-								<p class="font-label-caps text-label-caps text-primary mb-2">Une question ?</p>
-								<a
-									href="mailto:contact@gmt3.mg"
-									class="font-body-md text-body-md text-on-primary/45 hover:text-primary transition-colors"
-								>
-									contact@gmt3.mg
-								</a>
-							</div>
-						</div>
-					</Reveal>
+						</Reveal>
+					</div>
 				</div>
 
-				{/* ── Bottom Bar ── */}
-				<Reveal animation="fadeUp" delay={240} duration={650}>
-					<div class="mt-16 md:mt-20 pt-7 pb-8 border-t border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-5">
-						<p class="font-label-caps text-label-caps text-on-primary/25 text-center md:text-left">
-							&copy; {currentYear}{' '}
-							<a
-								class="text-on-primary/40 hover:text-primary transition-colors"
-								href="https://www.facebook.com/hajarison.raphael"
-								target="_blank"
-								rel="noreferrer"
-							>
-								DEMONDRA
-							</a>
-							. Tous droits réservés.
+				{/* ── Technical Footer Bar ── */}
+				<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+					<div class="flex flex-col md:items-start gap-1">
+						<p class="font-mono text-[9px] text-white/20 uppercase tracking-widest">
+							&copy; {currentYear} GMT+3 OPERATIONAL HQ / DESIGNED BY <a href="https://www.facebook.com/hajarison.raphael" target="_blank" class="text-white/40 hover:text-primary transition-colors">DEMONDRA</a>
 						</p>
-						<div class="flex items-center gap-6">
-							<a class="font-label-caps text-label-caps text-on-primary/25 hover:text-primary transition-colors" href="#">
-								Mentions légales
+						<p class="font-mono text-[8px] text-white/10">ENCRYPTION: AES-256-GCM / DATA REGION: MG-CENTRAL</p>
+					</div>
+
+					<div class="flex items-center gap-6">
+						{socialLinks.map(({ label, href, viewBox, path }) => (
+							<a key={label} href={href} class="text-white/20 hover:text-primary transition-all duration-300 hover:scale-110">
+								<svg class="w-4 h-4 fill-current" viewBox={viewBox}><path d={path} /></svg>
 							</a>
-							<span aria-hidden="true" class="text-white/[0.06]">|</span>
-							<p class="font-label-caps text-label-caps text-on-primary/15 text-center">
-								Conçu avec passion pour Madagascar
-							</p>
+						))}
+						<div class="h-8 w-px bg-white/5 hidden md:block" />
+						<div class="hidden md:flex flex-col items-end">
+							<span class="font-mono text-[8px] text-white/30 uppercase tracking-[0.2em]">Satellite Link</span>
+							<span class="font-mono text-[9px] text-green-500 font-bold uppercase tracking-tighter">Connected</span>
 						</div>
 					</div>
-				</Reveal>
+				</div>
 			</div>
 		</footer>
 	);
