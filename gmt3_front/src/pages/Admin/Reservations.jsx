@@ -119,82 +119,83 @@ export function AdminReservations() {
 	const paged = filtered.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
 	return (
-		<div class="h-screen flex flex-col bg-background text-on-background font-body-md antialiased overflow-hidden">
+		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
 			<Navbar user={currentUser.value} onLogout={promptLogout} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 			<div class="flex flex-1 w-full overflow-hidden">
 				<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-				<main class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
-					<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+				<main class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
+					<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
 						<div>
-							<h1 class="font-h1 text-h1 text-on-background font-black uppercase tracking-tighter leading-none">Reservations</h1>
-							<p class="font-body-lg text-body-lg text-secondary mt-1.5">Gerer les reservations clients par evenement.</p>
+							<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">Réservations</h1>
+							<p class="text-gray-500 mt-2 text-base">Gérez les réservations clients.</p>
 						</div>
-						<button onClick={handleCreate} class="bg-primary-container text-on-primary font-button text-button px-6 py-3.5 rounded-xl hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex items-center gap-2 cursor-pointer font-bold">
-							<span class="material-symbols-outlined">add</span> Ajouter
+						<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
+							<span class="material-symbols-outlined text-[20px]">add</span> Ajouter
 						</button>
 					</div>
 
-					<div class="rounded-2xl bg-surface border border-outline-variant/30 overflow-hidden shadow-sm">
-						<div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant/20">
-							<div>
-								<h2 class="font-h3 text-h3 text-on-background font-black uppercase tracking-tight">Toutes les reservations</h2>
-								<p class="text-sm text-secondary mt-0.5">{filtered.length} resultat{filtered.length !== 1 ? 's' : ''}</p>
+					<div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+						<div class="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-gray-50">
+							<div class="flex items-center gap-3">
+								<h2 class="text-base font-bold text-gray-900">Toutes les réservations</h2>
+								<span class="px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 text-[11px] font-bold border border-gray-100">{filtered.length}</span>
 							</div>
-							<div class="relative">
-								<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
-								<input class="pl-10 pr-4 py-2.5 bg-background border border-outline-variant/30 focus:border-primary-container/40 focus:ring-2 focus:ring-primary-container/10 outline-none transition-all font-body-md text-body-md text-on-background placeholder-secondary w-full sm:w-64 rounded-xl" placeholder="Rechercher..." type="text" value={search} onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }} />
+							<div class="relative w-full sm:w-auto">
+								<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
+								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" placeholder="Rechercher..." type="text" value={search} onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }} />
 							</div>
 						</div>
 
 						<div class="overflow-x-auto custom-scrollbar">
 							<table class="w-full text-left border-collapse">
 								<thead>
-									<tr class="border-b border-outline-variant/20 bg-surface-container/30">
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">#</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Client</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Evenement</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Places</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest">Date reservation</th>
-										<th class="px-6 py-4 font-label-caps text-label-caps text-secondary uppercase tracking-widest text-right">Actions</th>
+									<tr class="bg-gray-50/50 border-b border-gray-50">
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">#</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Client</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Événement</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Places</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Date</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody class="divide-y divide-gray-50">
 									{paged.map((r, i) => (
-										<tr key={r.id} class={`border-b border-outline-variant/30 transition-colors duration-150 ${i % 2 === 0 ? 'bg-transparent' : 'bg-surface-container/40'} hover:bg-primary/5`}>
-											<td class="px-6 py-4"><span class="font-mono text-xs text-secondary bg-surface-container px-2.5 py-1 rounded-lg font-semibold">{page * ROWS_PER_PAGE + i + 1}</span></td>
-											<td class="px-6 py-4"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary-container text-[18px]">person</span></div><span class="font-body-md text-body-md text-on-background font-semibold">{clientMap[r.clientId] || '—'}</span></div></td>
-											<td class="px-6 py-4 text-sm text-secondary">{evenementMap[r.evenementId] || '—'}</td>
-											<td class="px-6 py-4"><span class="font-mono text-sm font-semibold text-on-background bg-surface-container px-3 py-1 rounded-lg">{r.nombrePlaces}</span></td>
-											<td class="px-6 py-4 text-sm text-secondary">{r.dateReservation?.slice(0, 10) || '—'}</td>
+										<tr key={r.id} class="hover:bg-gray-50/50 transition-colors">
+											<td class="px-6 py-4 text-xs text-gray-500 font-medium">{page * ROWS_PER_PAGE + i + 1}</td>
+											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{clientMap[r.clientId] || '—'}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">{evenementMap[r.evenementId] || '—'}</td>
+											<td class="px-6 py-4 text-sm font-mono text-gray-900">{r.nombrePlaces}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">{r.dateReservation?.slice(0, 10) || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
-													<button onClick={() => handleEdit(r)} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier"><span class="material-symbols-outlined text-[20px]">edit</span></button>
-													<button onClick={() => setConfirm({ type: 'delete-reservation', id: r.id })} class="p-2.5 rounded-xl text-secondary hover:text-red-600 hover:bg-red-50 transition-all duration-150" title="Supprimer"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+													<button onClick={() => handleEdit(r)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+													<button onClick={() => setConfirm({ type: 'delete-reservation', id: r.id })} class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
 												</div>
 											</td>
 										</tr>
 									))}
 									{paged.length === 0 && (
-										<tr><td colspan="6" class="px-6 py-12 text-center text-secondary/60 font-body-md">Aucune reservation trouvee.</td></tr>
+										<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">Aucune réservation trouvée.</td></tr>
 									)}
 								</tbody>
 							</table>
 						</div>
 
 						{totalPages > 1 && (
-							<div class="p-4 border-t border-outline-variant/20 flex justify-between items-center gap-4">
-								<span class="text-sm text-secondary">{page * ROWS_PER_PAGE + 1}-{Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur {filtered.length}</span>
+							<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
+								<span class="text-xs text-gray-400 font-medium">{page * ROWS_PER_PAGE + 1}-{Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur {filtered.length}</span>
 								<div class="flex gap-2">
-									<button class="p-2.5 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all disabled:opacity-30 disabled:cursor-not-allowed" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
-									<button class="p-2.5 rounded-xl border border-outline-variant/30 text-secondary hover:text-on-background hover:bg-surface-container transition-all disabled:opacity-30 disabled:cursor-not-allowed" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
 								</div>
 							</div>
 						)}
 					</div>
 
-					<p class="mt-8 text-center text-xs text-secondary/50">GMT+3 Admin Panel &copy; {new Date().getFullYear()}</p>
+					<p class="mt-12 text-center text-[11px] text-gray-300 font-bold tracking-widest uppercase">GMT+3 Admin Panel — Fianarantsoa</p>
 				</main>
 			</div>
+
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Deconnexion" message="Etes-vous sur de vouloir vous deconnecter ?" confirmLabel="Se deconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
 			<ConfirmDialog open={confirm?.type === 'delete-reservation'} title="Supprimer la reservation" message="Cette action est irreversible." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />

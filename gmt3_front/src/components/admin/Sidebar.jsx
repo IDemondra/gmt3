@@ -16,27 +16,24 @@ export function Sidebar({ open, onClose }) {
 	const { url } = useLocation();
 	const user = currentUser.value;
 
-	const content = (
-		<>
-			<div class="p-8">
-				{/* ── Profile card ── */}
-				<div class="flex items-center gap-3 mb-8 pb-5 border-b border-outline-variant/20">
-					<div class="h-10 w-10 rounded-full bg-primary-container flex items-center justify-center shadow-md shadow-primary/30 shrink-0">
-						<span class="material-symbols-outlined text-on-primary text-xl">person</span>
+const content = (
+		<div class="flex flex-col h-full bg-white">
+			<div class="p-6">
+				{/* ── Profile ── */}
+				<div class="flex items-center gap-3 mb-10 px-2">
+					<div class="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0 border border-gray-100">
+						<span class="material-symbols-outlined text-gray-500 text-[20px]">person</span>
 					</div>
 					<div class="min-w-0">
-						<p class="font-button text-button text-on-background font-bold truncate">
-							{user?.
-// @ts-ignore
-							nomUtilisateur || 'GMT+3'}
+						<p class="text-sm font-bold text-gray-900 truncate tracking-tight">
+							{user?.nomUtilisateur || 'GMT+3'}
 						</p>
-						<p class="font-label-caps text-label-caps text-secondary mt-0.5 truncate">
-							{user?.
-// @ts-ignore
-							role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Administrateur'}
+						<p class="text-[11px] text-gray-400 font-medium truncate">
+							{user?.role || 'Admin'}
 						</p>
 					</div>
 				</div>
+
 				<nav class="space-y-1">
 					{navItems.map((item) => {
 						const active = url.startsWith(item.path);
@@ -45,32 +42,32 @@ export function Sidebar({ open, onClose }) {
 								key={item.key}
 								href={item.path}
 								onClick={onClose}
-								class={`flex items-center gap-3 px-4 py-3 rounded-xl font-button text-button transition-all duration-200 ${
+								class={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
 									active
-										? 'bg-primary-container/10 text-primary font-extrabold shadow-sm'
-										: 'text-secondary hover:bg-surface-container hover:text-on-background'
+										? 'bg-primary/5 text-primary'
+										: 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
 								}`}
 							>
-								<span class={`material-symbols-outlined ${active ? 'text-primary-container' : 'text-secondary'}`}>{item.icon}</span>
-								{item.label}
+								<span class={`material-symbols-outlined text-[20px] ${active ? 'text-primary' : 'text-gray-400 group-hover:text-gray-900 transition-colors'}`}>{item.icon}</span>
+								<span class={`text-[13px] font-semibold ${active ? 'font-bold' : ''}`}>
+									{item.label}
+								</span>
 							</a>
 						);
 					})}
 				</nav>
 			</div>
-			<div class="mt-auto p-6 border-t border-outline-variant/30">
-				<div class="rounded-2xl bg-gradient-to-br from-primary/5 to-primary-container/5 p-4 border border-primary/10">
-					<p class="font-label-caps text-label-caps text-primary font-bold uppercase tracking-wider">Version 1.0</p>
-					<p class="text-xs text-secondary mt-1">GMT+3 Admin Panel</p>
-				</div>
+
+			<div class="mt-auto p-6 border-t border-gray-50">
+				<p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase text-center">Version 2.6.0</p>
 			</div>
-		</>
+		</div>
 	);
 
 	return (
 		<>
 			{/* Desktop sidebar */}
-			<aside class="w-72 bg-surface shrink-0 hidden lg:flex flex-col overflow-y-auto border-r border-outline-variant/40">
+			<aside class="w-64 bg-white shrink-0 hidden lg:flex flex-col overflow-y-auto border-r border-gray-100">
 				{content}
 			</aside>
 
