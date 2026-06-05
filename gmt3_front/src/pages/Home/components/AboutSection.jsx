@@ -73,6 +73,18 @@ export function AboutSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
+			{/* Progressive Transition from Previous Light Section */}
+			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#faf9f6] to-transparent pointer-events-none z-10" />
+			
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Personnel Sync: Active</span>
+					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Protocol: HUMAN-ELEMENT-01</span>
+				</div>
+			</div>
+
 			{/* Decorative background elements */}
 			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-3xl pointer-events-none" />

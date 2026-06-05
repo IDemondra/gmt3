@@ -46,6 +46,15 @@ export function ActivitiesSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="specialites">
+			{/* Technical Bridge from Hero */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Incursion Ready</span>
+					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Mode: TECH-BLUEPRINT</span>
+				</div>
+			</div>
+
 			{/* Technical Background Accents */}
 			<div class="absolute inset-0 opacity-[0.03] pointer-events-none" 
 				style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;" />

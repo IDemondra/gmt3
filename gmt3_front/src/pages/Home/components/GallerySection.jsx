@@ -55,6 +55,23 @@ export function GallerySection() {
 
     return (
         <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
+			{/* Progressive Transition from Light Section */}
+			<div class="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-surface-variant to-transparent pointer-events-none z-10" />
+			
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-4">
+					<div class="flex flex-col gap-1">
+						<span class="font-mono text-[8px] text-white/40 tracking-[0.3em] uppercase">Visual Storage Handover</span>
+						<div class="flex items-center gap-2">
+							<div class="h-1 w-1 rounded-full bg-primary" />
+							<span class="font-mono text-[9px] text-white/60 font-bold uppercase">Archive: SEC-GALLERY-26</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
             <div class="absolute -top-24 right-[-8rem] h-72 w-72 rounded-full bg-primary/12 blur-2xl pointer-events-none" />
             <div class="absolute bottom-[-6rem] left-[-5rem] h-80 w-80 rounded-full bg-white/8 blur-2xl pointer-events-none" />
             <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />

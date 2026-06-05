@@ -35,11 +35,32 @@ export function ToursSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="expeditions">
+			{/* Progressive Transition from Dark Section */}
+			<div class="absolute top-0 left-0 right-0 h-80 bg-gradient-to-b from-[#1c1b1b] to-transparent pointer-events-none z-10" />
+			
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-4">
+					<div class="flex flex-col gap-1">
+						<span class="font-mono text-[8px] text-white/40 tracking-[0.3em] uppercase animate-pulse">Data Stream Active</span>
+						<div class="flex items-center gap-2">
+							<div class="h-1 w-1 rounded-full bg-primary" />
+							<span class="font-mono text-[9px] text-white/60 font-bold uppercase">Sector: MADA-GRID-09</span>
+						</div>
+					</div>
+					<div class="text-right hidden md:block">
+						<p class="font-mono text-[9px] text-white/30 tracking-widest uppercase">Transition: Dark {"->"} Light (Field Ready)</p>
+						<p class="font-mono text-[9px] text-primary font-bold tracking-tighter">MISSION LOG SYNC: 100%</p>
+					</div>
+				</div>
+			</div>
+
 			{/* Technical Background */}
 			<div class="absolute inset-0 opacity-[0.03] pointer-events-none" 
 				style="background-image: radial-gradient(#1a1c1c 1px, transparent 1px); background-size: 20px 20px;" />
 			
-			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
+			<div class="relative mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop z-30">
 				
 				{/* ── Header ── */}
 				<div class="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-10">
@@ -47,12 +68,12 @@ export function ToursSection() {
 						<Reveal animation="fadeUp">
 							<div class="flex items-center gap-3 mb-6">
 								<div class="h-2 w-2 rounded-full bg-primary" />
-								<span class="font-label-caps text-label-caps tracking-[0.3em] text-on-background/40 font-bold uppercase">Chronologie Terrain</span>
+								<span class="font-label-caps text-label-caps tracking-[0.3em] text-on-background/70 font-bold uppercase">Chronologie Terrain</span>
 							</div>
 							<h2 class="font-h2 text-h2 md:text-6xl text-on-background font-black uppercase tracking-tighter leading-none">
 								Prochains <br /> <span class="text-primary">Événements</span>
 							</h2>
-							<p class="mt-8 font-body-lg text-secondary leading-relaxed">
+							<p class="mt-8 font-body-lg text-on-background font-medium leading-relaxed">
 								Suivez le fil de nos prochaines incursions. Des dates fermes, des groupes restreints et une logistique sans faille pour une immersion totale.
 							</p>
 						</Reveal>

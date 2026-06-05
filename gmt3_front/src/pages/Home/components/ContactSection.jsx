@@ -3,6 +3,18 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 export function ContactSection() {
 	return (
 		<section id="contact" class="relative bg-primary py-20 overflow-hidden">
+			{/* Progressive Transition from Previous Red Section */}
+			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary-container to-transparent pointer-events-none z-10" />
+			
+			{/* Technical Bridge Line */}
+			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+				<div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
+					<span class="font-mono text-[8px] text-white/30 tracking-[0.2em] uppercase">Communication Bridge: Open</span>
+					<span class="font-mono text-[8px] text-white/30 tracking-[0.2em] uppercase">Auth: VERIFIED</span>
+				</div>
+			</div>
+
 			<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(255,255,255,0.08),_transparent_50%)]" />
 			<div class="relative w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
 				<Reveal animation="fadeUp" duration={700}>
