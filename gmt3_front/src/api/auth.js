@@ -2,7 +2,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
 /** @param {string} nomUtilisateur @param {string} motDePasse */
 export async function loginApi(nomUtilisateur, motDePasse) {
-	const res = await fetch(`${API_BASE}/api/utilisateurs/login`, {
+	const res = await fetch(`${API_BASE}/utilisateurs/login`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ nomUtilisateur, motDePasse }),
@@ -14,7 +14,7 @@ export async function loginApi(nomUtilisateur, motDePasse) {
 }
 
 export async function refreshApi() {
-	const res = await fetch(`${API_BASE}/api/utilisateurs/refresh`, {
+	const res = await fetch(`${API_BASE}/utilisateurs/refresh`, {
 		method: 'POST',
 		credentials: 'include',
 	});
@@ -23,7 +23,7 @@ export async function refreshApi() {
 }
 
 export async function logoutApi() {
-	await fetch(`${API_BASE}/api/utilisateurs/logout`, {
+	await fetch(`${API_BASE}/utilisateurs/logout`, {
 		method: 'POST',
 		credentials: 'include',
 	});
