@@ -83,8 +83,8 @@ export function DestinationsSection() {
 				{/* ── Exploration Grid ── */}
 				<div class="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-auto lg:h-[700px]">
 					{sectors.map((s, i) => (
-						<Reveal key={i} animation="fadeUp" delay={i * 100} className={`${s.span} h-full`}>
-							<article class="group relative h-full w-full overflow-hidden rounded-2xl bg-stone-900 shadow-2xl transition-all duration-700 cursor-pointer isolate">
+						<Reveal key={i} animation="fadeUp" delay={i * 100} className={`${s.span} w-full`}>
+							<article class="group relative w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-900 shadow-2xl transition-all duration-700 cursor-pointer isolate">
 								
 								{/* Background Image with Ken Burns effect on hover */}
 								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />

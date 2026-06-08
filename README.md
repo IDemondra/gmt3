@@ -16,6 +16,7 @@
 - `gmt3_front/src/data/upcomingEvents.js`
 - `gmt3_front/src/utils/gallery.js`
 - `gmt3_front/src/utils/gallery.test.js`
+- `gmt3_front/src/pages/Home/components/DestinationsSection.jsx`
 - `README.md`
 
 ## Summary of What Works
@@ -29,6 +30,7 @@
 - La galerie est normalisee pour garder l'image principale en premier, supprimer les doublons et limiter l'affichage a 10.
 - Les tests backend et frontend ajoutes passent.
 - Le build frontend passe.
+- La section `Destinations Phares` garde ses cards image visibles sur mobile grace a une hauteur minimale adaptee.
 
 ## Remaining Bugs
 - La page publique detail utilise encore les donnees statiques `upcomingEvents.js` pour les exemples locaux, pas une source live branchee sur l'administration.
