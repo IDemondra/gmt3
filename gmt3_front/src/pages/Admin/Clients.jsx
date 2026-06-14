@@ -148,7 +148,7 @@ export function AdminClients() {
 											<td class="px-6 py-4 text-xs text-gray-500 font-medium">{page * ROWS_PER_PAGE + i + 1}</td>
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{c.nom}</td>
 											<td class="px-6 py-4 text-sm text-gray-600 font-mono">{c.contact}</td>
-											<td class="px-6 py-4 text-sm text-gray-600">{formatIsoDateFr(c.dateAjout) || '—'}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">{c.dateAjout || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
 													<button onClick={() => handleEdit(c)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
