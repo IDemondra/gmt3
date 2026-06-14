@@ -49,10 +49,6 @@ export function ActivitiesSection() {
 			{/* Technical Bridge from Hero */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Incursion Ready</span>
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Mode: TECH-BLUEPRINT</span>
-				</div>
 			</div>
 
 			{/* Technical Background Accents */}
@@ -76,11 +72,6 @@ export function ActivitiesSection() {
 						<p class="mt-6 font-body-lg text-white/50 leading-relaxed max-w-xl">
 							Des modules d'exploration conçus pour l'efficacité brute. Chaque spécialité est une brique de votre aventure, calibrée pour le terrain malgache.
 						</p>
-					</div>
-					
-					<div class="hidden md:block text-right">
-						<p class="font-mono text-[10px] text-white/20 tracking-widest uppercase">System Status: Optimal</p>
-						<p class="font-mono text-[10px] text-white/20 tracking-widest uppercase">Coord: 20.0000° S, 47.0000° E</p>
 					</div>
 				</div>
 

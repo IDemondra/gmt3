@@ -53,13 +53,13 @@ export function HeroSection() {
 						<div class="flex flex-wrap items-center gap-6">
 							<a
 								href="#expeditions"
-								class="relative h-16 px-10 flex items-center justify-center bg-primary-container text-white font-button text-sm tracking-widest rounded-full group overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+								class="relative h-16 px-10 flex items-center justify-center bg-primary-container text-white font-button text-sm tracking-widest rounded-full group overflow-hidden shadow-2xl shadow-primary/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95 active:translate-y-0"
 							>
 								<span class="relative z-10 flex items-center gap-3">
 									LANCER L'EXPÉDITION
 									<span class="material-symbols-outlined group-hover:translate-x-1.5 transition-transform duration-300">double_arrow</span>
 								</span>
-								<div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 opacity-10" />
+								<div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-10" />
 							</a>
 							
 							<div class="flex items-center gap-3 text-white/50 group cursor-pointer hover:text-white transition-colors">

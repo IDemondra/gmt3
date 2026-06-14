@@ -1,4 +1,6 @@
-const BACKEND = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+import { parseMarkdown } from '../../utils/markdown.js';
+
+const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 function resolveUrl(url) {
 	if (!url) return '';
@@ -122,9 +124,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 
 								<div class="rounded-xl border border-gray-100 bg-gray-50/30 p-6">
 									<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Description</p>
-									<p class="mt-3 text-sm text-gray-700 leading-relaxed">
-										{event.description || '—'}
-									</p>
+									<div class="mt-3 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description ? parseMarkdown(event.description) : '—' }} />
 								</div>
 							</section>
 

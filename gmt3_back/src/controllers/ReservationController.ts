@@ -1,5 +1,6 @@
 import { ReservationRepository } from '../repositories/ReservationRepository.js';
 import { ReservationService } from '../services/ReservationService.js';
+import { ClientRepository } from '../repositories/ClientRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Reservation } from '../types/index.js';
 import { formatDateToDDMMYYYY } from '../utils/date.js';
@@ -9,6 +10,8 @@ type ReservationBody = {
 	evenementId?: number;
 	nombrePlaces?: number;
 	dateReservation?: string;
+	nom?: string;
+	contact?: string;
 };
 
 function formatReservationDates<T extends { dateReservation?: string | null }>(reservation: T): T {
@@ -43,12 +46,29 @@ export const ReservationController = {
 
 	async create(req: BunRequest): Promise<Response> {
 		const body = await req.json() as ReservationBody;
-		const clientId = toPositiveInteger(body.clientId);
 		const evenementId = toPositiveInteger(body.evenementId);
 		const nombrePlaces = body.nombrePlaces === undefined ? 1 : toPositiveInteger(body.nombrePlaces);
 
-		if (!clientId || !evenementId || !nombrePlaces) {
-			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
+		if (!evenementId || !nombrePlaces) {
+			return Response.json({
+				error: 'CHAMPS_OBLIGATOIRES_MANQUANTS',
+				message: 'Veuillez remplir tous les champs obligatoires'
+			}, { status: 400 });
+		}
+
+		let clientId = toPositiveInteger(body.clientId);
+
+		// Si clientId n'est pas fourni, créer un client avec nom et contact
+		if (!clientId) {
+			if (!body.nom || !body.contact) {
+				return Response.json({
+					error: 'CHAMPS_OBLIGATOIRES_MANQUANTS',
+					message: 'Le nom et le contact sont obligatoires'
+				}, { status: 400 });
+			}
+			const clientRepo = new ClientRepository();
+			const newClient = await clientRepo.create({ nom: body.nom, contact: body.contact });
+			clientId = newClient.id;
 		}
 
 		const reservation = await reservationService.create({
@@ -58,7 +78,10 @@ export const ReservationController = {
 			dateReservation: body.dateReservation || new Date().toISOString(),
 		});
 
-		return Response.json(formatReservationDates(reservation), { status: 201 });
+		return Response.json({
+			...formatReservationDates(reservation),
+			message: 'Réservation confirmée avec succès !'
+		}, { status: 201 });
 	},
 
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {

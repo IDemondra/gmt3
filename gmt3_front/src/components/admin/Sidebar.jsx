@@ -57,10 +57,6 @@ const content = (
 					})}
 				</nav>
 			</div>
-
-			<div class="mt-auto p-6 border-t border-gray-50">
-				<p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase text-center">Version 2.6.0</p>
-			</div>
 		</div>
 	);
 

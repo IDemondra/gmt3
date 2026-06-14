@@ -72,17 +72,13 @@ export function AboutSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-surface-variant px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
-			{/* Progressive Transition from Previous Light Section */}
-			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#faf9f6] to-transparent pointer-events-none z-10" />
+		<section class="relative overflow-hidden bg-[#faf9f6] px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
+			{/* Transition light → light (Tours → About) */}
+			<div class="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#faf9f6] via-[#faf9f6]/50 to-transparent pointer-events-none z-10" />
 			
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
-					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Personnel Sync: Active</span>
-					<span class="font-mono text-[8px] text-on-background/20 tracking-[0.2em] uppercase">Protocol: HUMAN-ELEMENT-01</span>
-				</div>
 			</div>
 
 			{/* Decorative background elements */}
@@ -243,6 +239,8 @@ export function AboutSection() {
 					</Reveal>
 				</div>
 			</div>
+			{/* Transition light → dark (About → Offers) */}
+			<div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent pointer-events-none z-10" />
 		</section>
 	);
 }

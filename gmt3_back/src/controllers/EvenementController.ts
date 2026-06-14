@@ -18,6 +18,23 @@ function formatEvenementDates<T extends { dateEvenement?: string | null; dateDep
 	};
 }
 
+function calculateDuration(e: { dateDepart?: string | null; heureDepart?: string | null; dateRetour?: string | null; heureRetour?: string | null }): string | null {
+	if (!e.dateDepart || !e.dateRetour) return null;
+	try {
+		const start = new Date(`${e.dateDepart}${e.heureDepart ? `T${e.heureDepart}:00` : 'T00:00:00'}`);
+		const end = new Date(`${e.dateRetour}${e.heureRetour ? `T${e.heureRetour}:00` : 'T00:00:00'}`);
+		const hours = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60));
+		const days = Math.floor(hours / 24);
+		const remainingHours = hours % 24;
+		if (days > 0 && remainingHours > 0) return `${days}j ${remainingHours}h`;
+		if (days > 0) return `${days}j`;
+		if (remainingHours > 0) return `${remainingHours}h`;
+		return null;
+	} catch {
+		return null;
+	}
+}
+
 const UPLOADS_ROOT = resolve(import.meta.dir, '..', '..', 'uploads', 'evenements');
 
 function ensureDir(id: number) {
@@ -47,7 +64,8 @@ async function serializeEvenement(id: number) {
 	const item = await evenementService.getById(id);
 	if (!item) return null;
 	const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
-	return { ...formatEvenementDates(item), photosEvenement };
+	const formatted = formatEvenementDates(item);
+	return { ...formatted, photosEvenement, duration: calculateDuration(item) };
 }
 
 async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
@@ -76,17 +94,20 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 export const EvenementController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const items = await evenementService.getAll();
-		return Response.json(items.map(formatEvenementDates));
+		return Response.json({
+			data: items.map((item) => ({ ...formatEvenementDates(item), id: item.id, duration: calculateDuration(item) })),
+			message: `${items.length} événement(s) trouvé(s)`
+		});
 	},
 
 	async getById(req: BunRequest, params: Record<string, string>): Promise<Response> {
 		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 
 		const item = await serializeEvenement(id);
-		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 
-		return Response.json(item);
+		return Response.json({ ...item, id, message: 'Événement chargé avec succès' });
 	},
 
 	async getPhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
@@ -156,8 +177,8 @@ export const EvenementController = {
 
 		await storeGalleryPhotos(item.id, fd);
 		const created = await serializeEvenement(item.id);
-		if (!created) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
-		return Response.json(created, { status: 201 });
+		if (!created) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		return Response.json({ ...created, id: item.id, message: 'Événement créé avec succès' }, { status: 201 });
 	},
 
 	async update(req: BunRequest, params: Record<string, string>): Promise<Response> {
@@ -196,15 +217,15 @@ export const EvenementController = {
 
 		await storeGalleryPhotos(id, fd);
 		const updated = await serializeEvenement(id);
-		if (!updated) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
-		return Response.json(updated);
+		if (!updated) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		return Response.json({ ...updated, id, message: 'Événement modifié avec succès' });
 	},
 
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {
 		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		const ok = await evenementService.delete(id);
-		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
-		return Response.json({ success: true });
+		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		return Response.json({ success: true, message: 'Événement supprimé avec succès' });
 	},
 };

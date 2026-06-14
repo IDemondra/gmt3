@@ -230,7 +230,7 @@ export function AdminReservations() {
 								/>
 							</div>
 							<div>
-								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de places</label>
+								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de personne</label>
 								<input
 									id="nombrePlaces"
 									name="nombrePlaces"

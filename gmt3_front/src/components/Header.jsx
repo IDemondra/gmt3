@@ -28,12 +28,12 @@ export function Header() {
 
 	return (
 		<header class={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-			scrolled ? 'py-2' : 'py-6'
+			scrolled ? 'py-2' : 'py-4 md:py-6'
 		}`}>
-			<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-				<div class={`relative flex items-center justify-between px-6 py-3 rounded-2xl border transition-all duration-500 overflow-hidden isolate ${
-					scrolled 
-						? 'bg-black/60 backdrop-blur-xl border-white/10 shadow-2xl' 
+			<div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+				<div class={`relative flex items-center justify-between px-4 md:px-6 py-3 rounded-2xl border transition-all duration-500 overflow-hidden isolate ${
+					scrolled
+						? 'bg-black/60 backdrop-blur-xl border-white/10 shadow-2xl'
 						: 'bg-transparent border-transparent'
 				}`}>
 					{/* Scanning Line Effect (Only when scrolled) */}
@@ -42,22 +42,22 @@ export function Header() {
 					)}
 
 					{/* Left: Brand */}
-					<a class="flex items-center gap-3 group" href="/">
-						<div class="relative h-10 w-10 flex items-center justify-center bg-primary rounded-lg shadow-lg group-hover:rotate-6 transition-transform">
-							<span class="material-symbols-outlined text-white text-2xl">travel_explore</span>
+					<a class="flex items-center gap-2 md:gap-3 group cursor-pointer shrink-0" href="/">
+						<div class="relative h-9 w-9 md:h-10 md:w-10 flex items-center justify-center bg-primary rounded-lg shadow-lg group-hover:rotate-6 transition-transform">
+							<span class="material-symbols-outlined text-white text-xl md:text-2xl">travel_explore</span>
 						</div>
-						<span class={`font-h2 text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-on-primary'}`}>
-							GMT+3 <span class="text-primary-container">MADAGASCAR</span>
+						<span class={`font-h2 text-base md:text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-on-primary'}`}>
+							GMT+3 <span class="text-primary-container hidden sm:inline">MADAGASCAR</span>
 						</span>
 					</a>
 
-					{/* Center: Main Nav */}
-					<nav class="hidden md:block absolute left-1/2 -translate-x-1/2" aria-label="Navigation principale">
-						<ul class="flex items-center gap-2">
+					{/* Center: Main Nav — desktop only (lg+) */}
+					<nav class="hidden lg:flex items-center gap-1" aria-label="Navigation principale">
+						<ul class="flex items-center gap-1">
 							{navLinks.map((link) => (
 								<li key={link.href}>
 									<a
-										class={`font-button text-[11px] tracking-[0.2em] transition-all duration-300 py-2 px-4 rounded-full border border-transparent hover:border-white/10 hover:bg-white/5 uppercase font-bold ${
+										class={`font-button text-[11px] tracking-[0.2em] transition-all duration-300 py-2 px-3 xl:px-4 rounded-full border border-transparent hover:border-white/10 hover:bg-white/5 uppercase font-bold cursor-pointer ${
 											scrolled ? 'text-white/70 hover:text-white' : 'text-white/80 hover:text-white'
 										}`}
 										href={link.href}
@@ -70,21 +70,21 @@ export function Header() {
 					</nav>
 
 					{/* Right: Action & Mobile Toggle */}
-					<div class="flex items-center gap-4">
+					<div class="flex items-center gap-2 md:gap-4 shrink-0">
 						<a
 							href="#contact"
-							class="hidden md:flex items-center gap-3 bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-full font-button text-[10px] tracking-widest font-black uppercase transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+							class="hidden lg:flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-4 xl:px-5 py-2.5 rounded-full font-button text-[10px] tracking-widest font-black uppercase transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-primary/20 cursor-pointer"
 						>
 							NOUS CONTACTER
 							<span class="material-symbols-outlined text-sm">sensors</span>
 						</a>
 
 						<button
-							class={`md:hidden p-2 rounded-xl transition-colors ${scrolled ? 'text-white bg-white/5' : 'text-white bg-black/20'}`}
+							class={`lg:hidden h-10 w-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${scrolled ? 'text-white bg-white/5' : 'text-white bg-black/20'}`}
 							onClick={toggleMenu}
 							aria-label={mobileMenuOpen.value ? 'Fermer le menu' : 'Ouvrir le menu'}
 						>
-							<span class="material-symbols-outlined text-2xl">
+							<span class="material-symbols-outlined text-xl leading-none">
 								{mobileMenuOpen.value ? 'close' : 'grid_view'}
 							</span>
 						</button>
@@ -92,14 +92,14 @@ export function Header() {
 				</div>
 			</div>
 
-			{/* Mobile Menu Overlay */}
-			<div class={`fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl transition-all duration-500 md:hidden ${
+			{/* Mobile Menu Overlay — visible below lg */}
+			<div class={`fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl transition-all duration-500 lg:hidden ${
 				mobileMenuOpen.value ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
 			}`}>
 				<div class="flex flex-col h-full p-8">
 					<div class="flex justify-between items-center mb-16">
 						<span class="font-mono text-[10px] text-primary tracking-[0.4em] uppercase font-bold">Menu</span>
-						<button onClick={toggleMenu} class="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center text-white">
+						<button onClick={toggleMenu} class="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center text-white cursor-pointer">
 							<span class="material-symbols-outlined">close</span>
 						</button>
 					</div>
@@ -109,7 +109,7 @@ export function Header() {
 							{navLinks.map((link, i) => (
 								<li key={link.href} style={`transition-delay: ${i * 100}ms`} class={`transition-all duration-500 transform ${mobileMenuOpen.value ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'}`}>
 									<a
-										class="flex items-baseline gap-4 group"
+										class="flex items-baseline gap-4 group cursor-pointer"
 										href={link.href}
 										onClick={toggleMenu}
 									>
@@ -122,7 +122,7 @@ export function Header() {
 					</nav>
 
 					<div class="pt-12 border-t border-white/10 text-center">
-						<a href="#contact" onClick={toggleMenu} class="flex items-center justify-center gap-3 w-full bg-primary py-5 rounded-2xl text-white font-black tracking-widest text-xs uppercase shadow-2xl">
+						<a href="#contact" onClick={toggleMenu} class="flex items-center justify-center gap-3 w-full bg-primary hover:bg-primary-container py-5 rounded-2xl text-white font-black tracking-widest text-xs uppercase shadow-2xl transition-all duration-300">
 							DEMANDER UN DEVIS
 							<span class="material-symbols-outlined">north_east</span>
 						</a>

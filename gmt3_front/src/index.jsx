@@ -29,7 +29,7 @@ function AppShell() {
 			{!isAdmin && <Header />}
 			<Router>
 				<Route path="/" component={Home} />
-				<Route path="/events/:slug" component={EventDetail} />
+				<Route path="/events/:id" component={EventDetail} />
 				<Route path="/events" component={Events} />
 				<Route path="/admin" component={AdminLogin} />
 				<Route path="/admin/dashboard" component={AdminDashboard} />

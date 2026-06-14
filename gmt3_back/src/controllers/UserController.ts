@@ -21,19 +21,22 @@ function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T
 export const UserController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const users = await userService.getAll();
-		return Response.json(users.map(formatUserDates));
+		return Response.json({
+			data: users.map(formatUserDates),
+			message: `${users.length} utilisateur(s) trouvé(s)`
+		});
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
 		const id = Number(params.id);
 		if (Number.isNaN(id)) {
-			return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
 		const user = await userService.getById(id);
 		if (!user) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE' }, { status: 404 });
+			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
-		return Response.json(formatUserDates(user));
+		return Response.json({ ...formatUserDates(user), message: 'Utilisateur chargé avec succès' });
 	},
 
 	async create(req: BunRequest): Promise<Response> {
@@ -46,16 +49,16 @@ export const UserController = {
 		};
 
 		if (!body.nomUtilisateur || !body.motDePasse) {
-			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
+			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS', message: 'Le nom d\'utilisateur et le mot de passe sont obligatoires' }, { status: 400 });
 		}
 
 		try {
 			const user = await userService.create(body);
-			return Response.json(formatUserDates(user), { status: 201 });
+			return Response.json({ ...formatUserDates(user), message: 'Utilisateur créé avec succès' }, { status: 201 });
 		} catch (e) {
 			const message = e instanceof Error ? e.message : 'ERREUR_INTERNE';
 			if (message === 'CE_NOM_UTILISATEUR_EXISTE_DEJA') {
-				return Response.json({ error: message }, { status: 409 });
+				return Response.json({ error: message, message: 'Ce nom d\'utilisateur existe déjà' }, { status: 409 });
 			}
 			throw e;
 		}
@@ -64,7 +67,7 @@ export const UserController = {
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {
 		const id = Number(params.id);
 		if (Number.isNaN(id)) {
-			return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
 		const body = await req.json() as Partial<{
 			nom: string;
@@ -76,31 +79,31 @@ export const UserController = {
 
 		const updated = await userService.update(id, body);
 		if (!updated) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE' }, { status: 404 });
+			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
-		return Response.json(formatUserDates(updated));
+		return Response.json({ ...formatUserDates(updated), message: 'Utilisateur modifié avec succès' });
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
 		const id = Number(params.id);
 		if (Number.isNaN(id)) {
-			return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
 		const deleted = await userService.delete(id);
 		if (!deleted) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE' }, { status: 404 });
+			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
-		return Response.json({ success: true });
+		return Response.json({ success: true, message: 'Utilisateur supprimé avec succès' });
 	},
 
 	async login(req: BunRequest): Promise<Response> {
 		const body = await req.json() as { nomUtilisateur: string; motDePasse: string };
 		if (!body.nomUtilisateur || !body.motDePasse) {
-			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
+			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS', message: 'Le nom d\'utilisateur et le mot de passe sont obligatoires' }, { status: 400 });
 		}
 		try {
 			const { user, accessToken, refreshToken } = await userService.authenticate(body.nomUtilisateur, body.motDePasse);
-			return new Response(JSON.stringify({ message: 'OK', user: formatUserDates(user), accessToken }), {
+			return new Response(JSON.stringify({ message: 'Connexion réussie', user: formatUserDates(user), accessToken }), {
 				status: 200,
 				headers: {
 					'Content-Type': 'application/json',
@@ -108,7 +111,7 @@ export const UserController = {
 				},
 			});
 		} catch (e) {
-			return Response.json({ error: 'IDENTIFIANTS_INVALIDES' }, { status: 401 });
+			return Response.json({ error: 'IDENTIFIANTS_INVALIDES', message: 'Identifiants invalides' }, { status: 401 });
 		}
 	},
 
@@ -117,17 +120,17 @@ export const UserController = {
 		const match = cookie.match(/refreshToken=([^;]+)/);
 		const token = match ? decodeURIComponent(match[1]!) : null;
 		if (!token) {
-			return Response.json({ error: 'NON_AUTORISE' }, { status: 401 });
+			return Response.json({ error: 'NON_AUTORISE', message: 'Non autorisé' }, { status: 401 });
 		}
 		const result = await userService.refreshToken(token);
 		if (!result) {
-			return Response.json({ error: 'TOKEN_INVALIDE_OU_EXPIRE' }, { status: 401 });
+			return Response.json({ error: 'TOKEN_INVALIDE_OU_EXPIRE', message: 'Token invalide ou expiré' }, { status: 401 });
 		}
-		return Response.json({ message: 'OK', user: formatUserDates(result.user), accessToken: result.accessToken });
+		return Response.json({ message: 'Token rafraîchi avec succès', user: formatUserDates(result.user), accessToken: result.accessToken });
 	},
 
 	async logout(_req: BunRequest): Promise<Response> {
-		return new Response(JSON.stringify({ success: true }), {
+		return new Response(JSON.stringify({ success: true, message: 'Déconnexion réussie' }), {
 			status: 200,
 			headers: {
 				'Content-Type': 'application/json',

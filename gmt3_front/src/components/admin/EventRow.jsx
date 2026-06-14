@@ -1,6 +1,6 @@
 // @ts-ignore
 const fmtDate = (d) => d ? d.split('-').reverse().join('/') : '';
-const BACKEND = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 const resolveUrl = (url) => {
 	if (!url) return '';
 	if (url.startsWith('http') || url.startsWith('/google-img/') || url.startsWith('blob:')) return url;
@@ -26,7 +26,7 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 					{hasImage ? (
 						<button
 							type="button"
-							onClick={() => onImageClick?.(event.imagePrincipale)}
+							onClick={() => onImageClick?.(resolveUrl(event.imagePrincipale))}
 							class="h-9 w-9 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20 hover:ring-2 hover:ring-primary-container/40 transition-all cursor-pointer"
 							title="Voir l'image"
 						>
@@ -43,7 +43,7 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 							<span class="material-symbols-outlined text-primary-container text-[18px]">landscape</span>
 						</div>
 					)}
-					<span class="font-body-md text-body-md text-on-background font-semibold">{event.title}</span>
+					<span class="font-body-md text-body-md text-on-background font-semibold">{event.titre || event.title}</span>
 				</div>
 			</td>
 			<td class="px-6 py-4 text-sm text-secondary whitespace-nowrap">
@@ -69,12 +69,12 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 			</td>
 			<td class="px-6 py-4">
 				<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-					event.published
+					(event.estPublie || event.published)
 						? 'bg-green-50 text-green-700 border border-green-200'
 						: 'bg-amber-50 text-amber-700 border border-amber-200'
 				}`}>
 					<span class={`w-1.5 h-1.5 rounded-full ${event.published ? 'bg-green-500' : 'bg-amber-500'}`} />
-					{event.published ? 'Publié' : 'Brouillon'}
+					{(event.estPublie || event.published) ? 'Publié' : 'Brouillon'}
 				</span>
 			</td>
 			<td class="px-6 py-4 text-right">

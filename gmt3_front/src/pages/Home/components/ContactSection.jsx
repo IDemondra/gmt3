@@ -1,64 +1,110 @@
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 
+const contacts = [
+	{
+		icon: 'location_on',
+		label: 'Adresse',
+		value: 'Antananarivo, Madagascar',
+		sub: '18.9137° S, 47.5361° E',
+		delay: 70,
+	},
+	{
+		icon: 'phone',
+		label: 'Téléphone',
+		value: '+261 34 00 000 00',
+		sub: 'Lun–Sam / 08h–18h',
+		delay: 140,
+	},
+	{
+		icon: 'email',
+		label: 'Email',
+		value: 'contact@gmt3madagascar.mg',
+		sub: 'Réponse sous 24h',
+		delay: 210,
+	},
+];
+
 export function ContactSection() {
 	return (
-		<section id="contact" class="relative bg-primary py-20 overflow-hidden">
-			{/* Progressive Transition from Previous Red Section */}
-			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary-container to-transparent pointer-events-none z-10" />
-			
+		<section id="contact" class="relative bg-primary py-24 overflow-hidden">
+			{/* Transition dark → primary-red (Banner → Contact) */}
+			<div class="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-primary-container via-primary-container/50 via-40% to-transparent pointer-events-none z-10" />
+
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
-					<span class="font-mono text-[8px] text-white/30 tracking-[0.2em] uppercase">Communication Bridge: Open</span>
-					<span class="font-mono text-[8px] text-white/30 tracking-[0.2em] uppercase">Auth: VERIFIED</span>
-				</div>
 			</div>
 
-			<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(255,255,255,0.08),_transparent_50%)]" />
-			<div class="relative w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+			{/* Dot grid */}
+			<div class="absolute inset-0 opacity-[0.06] pointer-events-none"
+				style="background-image: radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px); background-size: 28px 28px;" />
+
+			{/* Ambient glows */}
+			<div class="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-white/5 blur-[80px] pointer-events-none" />
+			<div class="absolute -bottom-20 right-10 w-96 h-96 rounded-full bg-black/10 blur-[100px] pointer-events-none" />
+
+			{/* Bottom scan line */}
+			<div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+
+			<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
 				<Reveal animation="fadeUp" duration={700}>
 					<div class="text-center mb-16">
-						<span class="inline-block bg-white/15 text-on-primary backdrop-blur-sm px-5 py-2 font-label-caps text-label-caps mb-5 uppercase rounded-xl border border-white/10">
-							CONTACT
-						</span>
-						<h2 class="font-h1-mobile text-h1-mobile md:font-h1 md:text-h1 text-on-primary mb-4 font-black uppercase tracking-tighter">
-							PRET POUR L'AVENTURE?
+						<div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2 rounded-full mb-6">
+							<div class="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+							<span class="font-mono text-[10px] text-white/70 tracking-[0.3em] uppercase font-bold">Canal Ouvert</span>
+						</div>
+						<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
+							Prêt pour <br /><span class="text-white/50">l'Aventure?</span>
 						</h2>
-						<p class="font-body-lg text-body-lg text-on-primary/80 max-w-2xl mx-auto leading-relaxed">
-							Contactez-nous pour planifier votre voyage sur mesure ou pour toute question sur nos circuits
+						<p class="font-body-lg text-white/70 max-w-xl mx-auto leading-relaxed">
+							Contactez-nous pour planifier votre voyage sur mesure ou pour toute question sur nos circuits.
 						</p>
 					</div>
 				</Reveal>
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center max-w-4xl mx-auto">
-					<Reveal animation="fadeUp" delay={70} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
-							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
-								<span class="material-symbols-outlined text-3xl text-on-primary">location_on</span>
+
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+					{contacts.map((c) => (
+						<Reveal key={c.label} animation="fadeUp" delay={c.delay} duration={700}>
+							<div class="group relative backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-black/20 transition-all duration-300 cursor-pointer text-center overflow-hidden">
+								{/* Corner accents */}
+								<div class="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/10 group-hover:border-white/30 transition-colors duration-300" />
+								<div class="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/10 group-hover:border-white/30 transition-colors duration-300" />
+
+								{/* Glow on hover */}
+								<div class="absolute inset-0 bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+
+								<div class="relative z-10">
+									<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-5 group-hover:bg-white/20 group-hover:scale-110 group-hover:border-white/25 transition-all duration-300">
+										<span class="material-symbols-outlined text-2xl text-white">{c.icon}</span>
+									</div>
+									<span class="font-mono text-[9px] text-white/30 tracking-[0.3em] uppercase font-bold block mb-2">{c.label}</span>
+									<p class="font-body-md text-white font-semibold mb-1">{c.value}</p>
+									<p class="font-mono text-[9px] text-white/30 tracking-widest uppercase">{c.sub}</p>
+								</div>
 							</div>
-							<h3 class="font-h3 text-h3 text-on-primary mb-2 font-bold">Adresse</h3>
-							<p class="font-body-md text-body-md text-on-primary/70">Antananarivo, Madagascar</p>
-						</div>
-					</Reveal>
-					<Reveal animation="fadeUp" delay={140} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
-							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
-								<span class="material-symbols-outlined text-3xl text-on-primary">phone</span>
-							</div>
-							<h3 class="font-h3 text-h3 text-on-primary mb-2 font-bold">Telephone</h3>
-							<p class="font-body-md text-body-md text-on-primary/70">+261 34 00 000 00</p>
-						</div>
-					</Reveal>
-					<Reveal animation="fadeUp" delay={210} duration={700}>
-						<div class="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 group cursor-pointer">
-							<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-5 group-hover:bg-primary-container group-hover:scale-110 transition-all duration-300">
-								<span class="material-symbols-outlined text-3xl text-on-primary">email</span>
-							</div>
-							<h3 class="font-h3 text-h3 text-on-primary mb-2 font-bold">Email</h3>
-						<p class="font-body-md text-body-md text-on-primary/70">contact@lemuradventures.mg</p>
-						</div>
-					</Reveal>
+						</Reveal>
+					))}
 				</div>
+
+				{/* CTA row */}
+				<Reveal animation="fadeUp" delay={350} duration={700}>
+					<div class="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4">
+						<a
+							href="mailto:contact@gmt3madagascar.mg"
+							class="group inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-button text-xs tracking-widest font-black uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 hover:scale-105 active:scale-95 cursor-pointer"
+						>
+							ENVOYER UN MESSAGE
+							<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">north_east</span>
+						</a>
+						<a
+							href="tel:+261340000000"
+							class="inline-flex items-center gap-2 border border-white/20 text-white/70 hover:text-white hover:border-white/40 px-8 py-4 rounded-full font-button text-[10px] tracking-widest font-bold uppercase transition-all duration-300 cursor-pointer"
+						>
+							<span class="material-symbols-outlined text-sm">phone</span>
+							APPELER
+						</a>
+					</div>
+				</Reveal>
 			</div>
 		</section>
 	);

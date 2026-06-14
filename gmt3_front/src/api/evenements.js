@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 /**
  * @param {null} token
@@ -16,14 +16,14 @@ export async function evenementsApi(token) {
  */
 export async function evenementApi(token, id) {
 	const headers = token ? { Authorization: `Bearer ${token}` } : {};
-	const res = await fetch(`${API_BASE}/api/evenements/${id}`, { headers, credentials: 'include' });
+	const res = await fetch(`${API_BASE}/evenements/${id}`, { headers, credentials: 'include' });
 	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CHARGEMENT'); }
 	return res.json();
 }
 
 export async function createEvenementApi(token, formData) {
 	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/api/evenements`, { method: 'POST', headers, body: formData, credentials: 'include' });
+	const res = await fetch(`${API_BASE}/evenements`, { method: 'POST', headers, body: formData, credentials: 'include' });
 	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CREATION'); }
 	return res.json();
 }
@@ -35,7 +35,7 @@ export async function createEvenementApi(token, formData) {
  */
 export async function updateEvenementApi(token, id, formData) {
 	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/api/evenements/${id}`, { method: 'PUT', headers, body: formData, credentials: 'include' });
+	const res = await fetch(`${API_BASE}/evenements/${id}`, { method: 'PUT', headers, body: formData, credentials: 'include' });
 	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_MAJ'); }
 	return res.json();
 }
@@ -46,7 +46,7 @@ export async function updateEvenementApi(token, id, formData) {
  */
 export async function deleteEvenementApi(token, id) {
 	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/api/evenements/${id}`, { method: 'DELETE', headers, credentials: 'include' });
+	const res = await fetch(`${API_BASE}/evenements/${id}`, { method: 'DELETE', headers, credentials: 'include' });
 	if (!res.ok) throw new Error('ERREUR_SUPPRESSION');
 	return res.json();
 }

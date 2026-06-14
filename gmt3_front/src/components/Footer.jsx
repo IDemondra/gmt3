@@ -45,10 +45,6 @@ export function Footer() {
 			{/* Technical Bridge from Previous Section (Contact or Banner) */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase animate-pulse">Operational HQ Uplink</span>
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Status: SECURE-IDLE</span>
-				</div>
 			</div>
 
 			{/* Decorative ambient orbs */}
@@ -165,7 +161,6 @@ export function Footer() {
 						<p class="font-mono text-[9px] text-white/20 uppercase tracking-widest">
 							&copy; {currentYear} GMT+3 OPERATIONAL HQ / DESIGNED BY <a href="https://www.facebook.com/hajarison.raphael" target="_blank" class="text-white/40 hover:text-primary transition-colors">DEMONDRA</a>
 						</p>
-						<p class="font-mono text-[8px] text-white/10">ENCRYPTION: AES-256-GCM / DATA REGION: MG-CENTRAL</p>
 					</div>
 
 					<div class="flex items-center gap-6">
@@ -175,11 +170,7 @@ export function Footer() {
 							</a>
 						))}
 						<div class="h-8 w-px bg-white/5 hidden md:block" />
-						<div class="hidden md:flex flex-col items-end">
-							<span class="font-mono text-[8px] text-white/30 uppercase tracking-[0.2em]">Satellite Link</span>
-							<span class="font-mono text-[9px] text-green-500 font-bold uppercase tracking-tighter">Connected</span>
 						</div>
-					</div>
 				</div>
 			</div>
 		</footer>

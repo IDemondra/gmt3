@@ -19,17 +19,17 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 };
 
 const PROTECTED_ROUTES = new Set([
-	'PUT /api/utilisateurs/:id',
-	'DELETE /api/utilisateurs/:id',
-	'PUT /api/clients/:id',
-	'DELETE /api/clients/:id',
-	'POST /api/evenements',
-	'PUT /api/evenements/:id',
-	'DELETE /api/evenements/:id',
-	'POST /api/evenements/:id/photos',
-	'PUT /api/reservations/:id',
-	'DELETE /api/reservations/:id',
-	'GET /api/kpis',
+	'PUT /utilisateurs/:id',
+	'DELETE /utilisateurs/:id',
+	'PUT /clients/:id',
+	'DELETE /clients/:id',
+	'POST /evenements',
+	'PUT /evenements/:id',
+	'DELETE /evenements/:id',
+	'POST /evenements/:id/photos',
+	'PUT /reservations/:id',
+	'DELETE /reservations/:id',
+	'GET /kpis',
 ]);
 
 function matchRoute(

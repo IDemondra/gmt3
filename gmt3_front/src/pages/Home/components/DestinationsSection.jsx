@@ -40,14 +40,10 @@ export function DestinationsSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="destinations">
+		<section class="relative overflow-hidden bg-on-secondary-fixed py-[120px] text-white" id="destinations">
 			{/* Technical Bridge from Activities */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-3">
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">Sector Analysis: Loading</span>
-					<span class="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase">GRID: MADA-V2</span>
-				</div>
 			</div>
 
 			{/* Technical Background */}
@@ -73,36 +69,32 @@ export function DestinationsSection() {
 							</p>
 						</Reveal>
 					</div>
-					
-					<div class="hidden lg:flex flex-col items-end gap-2 border-l border-white/10 pl-10">
-						<p class="font-mono text-[10px] text-white/20 tracking-widest">MAP VERSION 2.6.0</p>
-						<p class="font-mono text-[10px] text-primary tracking-widest font-bold">ACTIVE SCANNING...</p>
-					</div>
 				</div>
 
 				{/* ── Exploration Grid ── */}
 				<div class="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-auto lg:h-[700px]">
 					{sectors.map((s, i) => (
 						<Reveal key={i} animation="fadeUp" delay={i * 100} className={`${s.span} w-full`}>
-							<article class="group relative w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-700 shadow-2xl transition-all duration-700 cursor-pointer isolate border border-white/10">
-								
+							<article class="group relative w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-700 shadow-2xl transition-all duration-300 cursor-pointer isolate border border-white/10 hover:shadow-2xl hover:shadow-primary/20">
+
 								{/* Background Image with Ken Burns effect on hover */}
-								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />
-								
-								{/* Technical Overlays */}
-								<div class="absolute inset-0 z-10 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent transition-opacity duration-500 group-hover:opacity-80" />
+								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />
+
+								{/* Technical Overlays with Duotone */}
+								<div class="absolute inset-0 z-10 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent transition-opacity duration-300 group-hover:opacity-80" />
+								<div class="absolute inset-0 z-10 bg-gradient-to-br from-[#ba0013]/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 								
 								{/* Scanner Crosshairs (visible on hover) */}
-								<div class="absolute inset-4 z-20 border border-white/0 transition-all duration-500 group-hover:border-white/10 group-hover:inset-6">
-									<div class="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-									<div class="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-									<div class="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-									<div class="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+								<div class="absolute inset-4 z-20 border border-white/0 transition-all duration-300 group-hover:border-white/10 group-hover:inset-6">
+									<div class="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+									<div class="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+									<div class="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+									<div class="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 								</div>
 
 								{/* Content Wrapper */}
 								<div class="absolute inset-0 z-30 p-8 flex flex-col justify-between">
-									<div class="flex justify-between items-start translate-y-[-10px] opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+									<div class="flex justify-between items-start translate-y-[-10px] opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
 										<div class="flex flex-col gap-1">
 											<span class="font-mono text-[9px] text-primary font-black tracking-widest">{s.id}</span>
 											<span class="font-mono text-[9px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
@@ -119,12 +111,12 @@ export function DestinationsSection() {
 										<h3 class="font-h1 text-h1 md:text-4xl text-white font-black uppercase tracking-tighter mb-4 leading-none">
 											{s.name}
 										</h3>
-										<p class="font-body-md text-white/70 max-w-sm line-clamp-2 transition-all duration-500 group-hover:line-clamp-none group-hover:text-white">
+										<p class="font-body-md text-white/70 max-w-sm line-clamp-2 transition-all duration-300 group-hover:line-clamp-none group-hover:text-white">
 											{s.desc}
 										</p>
 										
 										{/* Expanded Specs on Hover */}
-										<div class="mt-6 flex items-center gap-6 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0 border-t border-white/10 pt-6">
+										<div class="mt-6 flex items-center gap-6 opacity-0 translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 border-t border-white/10 pt-6">
 											<div class="flex flex-col">
 												<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Elevation</span>
 												<span class="font-mono text-xs font-bold text-white">{s.elev}</span>
@@ -141,28 +133,10 @@ export function DestinationsSection() {
 								</div>
 
 								{/* Shimmer Effect */}
-								<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+								<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
 							</article>
 						</Reveal>
 					))}
-				</div>
-
-				{/* ── Grid Footer ── */}
-				<div class="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
-					<div class="flex items-center gap-6">
-						<div class="flex items-center gap-2">
-							<div class="h-1.5 w-1.5 rounded-full bg-primary" />
-							<span class="font-mono text-[9px] text-white/30 uppercase tracking-widest">Active Sectors: 03</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<div class="h-1.5 w-1.5 rounded-full bg-white/10" />
-							<span class="font-mono text-[9px] text-white/30 uppercase tracking-widest">Pending Sync: 12</span>
-						</div>
-					</div>
-					
-					<p class="hidden md:block font-mono text-[9px] text-white/20 tracking-tighter">
-						RELIABILITY SCALE: HIGH (98.4%) — DATA SOURCE: GMT3 FIELD JOURNALS
-					</p>
 				</div>
 			</div>
 		</section>

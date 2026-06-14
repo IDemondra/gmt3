@@ -11,11 +11,21 @@ import { FormModal } from '../../components/admin/FormModal.jsx';
 import { evenementsApi, evenementApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 import { kpisApi } from '../../api/kpis.js';
 import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
+import { applyFormatting } from '../../utils/textFormatter.js';
+import { useToast } from '../../hooks/useToast.js';
+import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { EventDetailModal } from '../../components/admin/EventDetailModal.jsx';
 
 const DESC_MAX = 1000;
 
 const toDateInputValue = (date = new Date()) => {
+	if (typeof date === 'string') {
+		if (!date) return toDateInputValue();
+		return date.includes('-') ? date.split(' ')[0] : date.split('/').reverse().join('-');
+	}
+	if (!(date instanceof Date) || isNaN(date)) {
+		return toDateInputValue();
+	}
 	const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 	return offsetDate.toISOString().slice(0, 10);
 };
@@ -25,6 +35,7 @@ const toTimeInputValue = (date = new Date()) => date.toTimeString().slice(0, 5);
 export function AdminDashboard() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const { toasts, addToast, removeToast } = useToast();
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -88,12 +99,13 @@ export function AdminDashboard() {
 		} catch { /* keep current */ }
 	};
 
-	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
+	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
 
 	const handleEdit = (event) => {
 		setEditingEvent(event);
-		setPreviewSrc('');
-		setGalleryPreviewSrcs([]);
+		setDescText(event.description || '');
+		setPreviewSrc(event.imagePrincipale ? `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}${event.imagePrincipale}` : '');
+		setGalleryPreviewSrcs((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}${p.url}`));
 		setGalleryFiles([]);
 		setShowForm(true);
 	};
@@ -117,7 +129,7 @@ export function AdminDashboard() {
 			if (imageFile && imageFile.size > 0) {
 				const ext = imageFile.name.split('.').pop().toLowerCase();
 				if (!['jpg', 'jpeg', 'png'].includes(ext)) {
-					alert('Format accepté : .jpg, .jpeg, .png uniquement');
+					addToast('Format accepté : .jpg, .jpeg, .png uniquement', 'warning');
 					return;
 				}
 				fd.set('imagePrincipale', imageFile);
@@ -139,7 +151,7 @@ export function AdminDashboard() {
 			setGalleryFiles([]);
 			setGalleryPreviewSrcs([]);
 		} catch (e) {
-			alert(e.message);
+			addToast((e instanceof Error ? e.message : 'Erreur lors de l\'enregistrement'), 'error');
 		} finally {
 			setUploading(false);
 		}
@@ -282,16 +294,34 @@ export function AdminDashboard() {
 			>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="titre">Titre</label>
-					<input id="titre" name="titre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Nom de l'événement" required defaultValue={editingEvent?.title || ''} />
+					<input id="titre" name="titre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Nom de l'événement" required defaultValue={editingEvent?.titre || editingEvent?.title || ''} />
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="description">Description</label>
-					<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" rows="3" placeholder="Description courte..." maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} defaultValue={editingEvent?.description || ''} />
+					<div class="border border-gray-100 rounded-lg overflow-hidden">
+						<div class="flex items-center gap-1 p-2 bg-gray-50 border-b border-gray-100">
+							<button type="button" onClick={() => applyFormatting(descRef.current, '**', '**')} class="p-2 rounded hover:bg-white transition-colors text-sm font-bold text-gray-700" title="Gras">
+								<span class="material-symbols-outlined text-[18px]">format_bold</span>
+							</button>
+							<button type="button" onClick={() => applyFormatting(descRef.current, '*', '*')} class="p-2 rounded hover:bg-white transition-colors text-sm italic text-gray-700" title="Italique">
+								<span class="material-symbols-outlined text-[18px]">format_italic</span>
+							</button>
+							<button type="button" onClick={() => applyFormatting(descRef.current, '~~', '~~')} class="p-2 rounded hover:bg-white transition-colors text-sm line-through text-gray-700" title="Barré">
+								<span class="material-symbols-outlined text-[18px]">strikethrough_s</span>
+							</button>
+							<div class="w-px h-6 bg-gray-200 mx-1" />
+							<button type="button" onClick={() => applyFormatting(descRef.current, '# ', '')} class="p-2 rounded hover:bg-white transition-colors text-sm font-bold text-gray-700" title="Titre">
+								<span class="material-symbols-outlined text-[18px]">title</span>
+							</button>
+						</div>
+						<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-white border-0 outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset" rows="3" placeholder="Description courte... (Markdown supporté)" maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} defaultValue={editingEvent?.description || ''} value={descText || editingEvent?.description || ''} />
+					</div>
+					<p class="text-[10px] text-gray-400 mt-1">Supporte le markdown: **gras**, *italique*, ~~barré~~</p>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
-						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateDepart || todayStr} />
+						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateDepart ? toDateInputValue(editingEvent.dateDepart) : todayStr} />
 					</div>
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
@@ -299,7 +329,7 @@ export function AdminDashboard() {
 					</div>
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="dateRetour">Date retour</label>
-						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateRetour || todayStr} />
+						<input id="dateRetour" name="dateRetour" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateRetour ? toDateInputValue(editingEvent.dateRetour) : todayStr} />
 					</div>
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="heureRetour">Heure retour</label>
@@ -308,17 +338,48 @@ export function AdminDashboard() {
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
-					<input id="lieu" name="lieu" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.lieu || ''} />
+					<input id="lieu" name="lieu" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.lieu || editingEvent?.location || ''} />
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
-					<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: 150000" defaultValue={editingEvent?.prix ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
+					<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: 150000" defaultValue={editingEvent?.prix ?? editingEvent?.price ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
+				</div>
+				<div class="flex items-center gap-3">
+					<input id="estPublie" name="estPublie" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary/20 cursor-pointer" defaultChecked={editingEvent?.estPublie || editingEvent?.published || false} />
+					<label for="estPublie" class="text-sm text-gray-700 font-medium cursor-pointer">Publié</label>
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="imagePrincipale">
 						Image principale (jpg, jpeg, png)
 					</label>
 					<input id="imagePrincipale" name="imagePrincipale" type="file" accept=".jpg,.jpeg,.png" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => { const f = e.currentTarget.files?.[0]; if (f) setPreviewSrc(URL.createObjectURL(f)); }} />
+					{previewSrc && (
+						<div class="mt-4 rounded-lg overflow-hidden border border-gray-100">
+							<img src={previewSrc} alt="Aperçu" class="max-h-48 object-cover w-full" />
+						</div>
+					)}
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
+						Galerie photos (optionnel)
+					</label>
+					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => {
+						const files = Array.from(e.currentTarget.files || []);
+						setGalleryFiles((current) => [...current, ...files]);
+						setGalleryPreviewSrcs((current) => [...current, ...files.map((f) => URL.createObjectURL(f))]);
+					}} />
+					{galleryPreviewSrcs.length > 0 && (
+						<div class="mt-4 grid grid-cols-3 gap-3">
+							{galleryPreviewSrcs.map((src, i) => (
+								<div key={i} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100">
+									<img src={src} alt={`Galerie ${i}`} class="w-full h-full object-cover" />
+									<button type="button" onClick={() => removeGalleryItem(i)} class="absolute top-1 right-1 p-1 rounded bg-black/50 text-white hover:bg-black/70 transition-all">
+										<span class="material-symbols-outlined text-[16px]">close</span>
+									</button>
+								</div>
+							))}
+						</div>
+					)}
 				</div>
 			</FormModal>
 
@@ -333,6 +394,8 @@ export function AdminDashboard() {
 				onEdit={() => { if (detailEvent) { setShowForm(true); setEditingEvent(detailEvent); setDetailEvent(null); } }}
 				onPreviewImage={(image) => setPreviewImage(image)}
 			/>
+
+			<ToastContainer toasts={toasts} onRemove={removeToast} />
 		</div>
 	);
 }

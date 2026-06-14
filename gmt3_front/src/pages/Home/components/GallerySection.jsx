@@ -60,21 +60,12 @@ export function GallerySection() {
 
     return (
         <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
-			{/* Progressive Transition from Light Section */}
-			<div class="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-surface-variant to-transparent pointer-events-none z-10" />
+			{/* Transition dark → dark (Offers → Gallery) */}
+			<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none z-10" />
 			
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-				<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-start py-4">
-					<div class="flex flex-col gap-1">
-						<span class="font-mono text-[8px] text-white/40 tracking-[0.3em] uppercase">Visual Evidence Retrieval</span>
-						<div class="flex items-center gap-2">
-							<div class="h-1 w-1 rounded-full bg-primary" />
-							<span class="font-mono text-[9px] text-white/60 font-bold uppercase">Database: GMT3-ARCH-2026</span>
-						</div>
-					</div>
-				</div>
 			</div>
 
             {/* Subtle Grid Pattern */}
@@ -96,15 +87,6 @@ export function GallerySection() {
                         <p class="mt-8 max-w-xl font-body-lg text-white/50 leading-relaxed">
                             Chaque image est une donnée brute extraite de nos expéditions. Plus qu'une galerie, c'est l'historique visuel de nos incursions au cœur de Madagascar.
                         </p>
-                    </div>
-                    <div class="hidden lg:flex flex-col items-end gap-3 border-l border-white/10 pl-10">
-                        <div class="flex items-center gap-4">
-                            <span class="font-mono text-[10px] text-white/20 uppercase tracking-widest">Storage Status</span>
-                            <div class="flex gap-1">
-                                {[1,2,3,4,5].map(i => <div key={i} class={`h-1 w-4 rounded-full ${i <= 4 ? 'bg-primary' : 'bg-white/10'}`} />)}
-                            </div>
-                        </div>
-                        <p class="font-mono text-[9px] text-white/30 uppercase tracking-tighter">Secure Uplink: Established</p>
                     </div>
                 </div>
 

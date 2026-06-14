@@ -140,7 +140,7 @@ export function EventDetail({ params }) {
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
 		{ label: 'Localisation', value: normalizedEvent.location || '—' },
-		{ label: 'Durée', value: normalizedEvent.duration || '—' },
+		{ label: 'Durée', value: event.duration || normalizedEvent.duration || '—' },
 		{ label: 'Difficulté', value: normalizedEvent.difficulty || '—' },
 		{ label: 'Taille du groupe', value: normalizedEvent.groupSize || '—' },
 		{ label: 'Saison', value: normalizedEvent.season || '—' },
