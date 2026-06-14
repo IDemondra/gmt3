@@ -25,6 +25,7 @@ export function ToursSection() {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
 			.then((r) => r.json())
 			.then((response) => {
+				console.warn("[DEBUG ToursSection]", "Response structure:", { dataType: typeof response.data, isArray: Array.isArray(response.data), data: response.data });
 				const published = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie)
 					.slice(0, 3);
@@ -253,5 +254,6 @@ export function ToursSection() {
 		</section>
 	);
 }
+
 
 
