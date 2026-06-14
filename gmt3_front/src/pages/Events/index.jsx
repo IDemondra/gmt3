@@ -1,9 +1,48 @@
+import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
-import { upcomingEvents } from '../../data/upcomingEvents.js';
+import { formatDateFr } from '../../utils/dateFormatter.js';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+const BACKEND = API_BASE.replace(/\/api$/, '');
+
+function resolveImg(url) {
+	if (!url) return '';
+	if (url.startsWith('http') || url.startsWith('blob:')) return url;
+	return `${BACKEND}${url}`;
+}
 
 export function Events() {
+	const [events, setEvents] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
+			.then((r) => r.json())
+			.then((response) => {
+				const published = (Array.isArray(response.data) ? response.data : [])
+					.filter((e) => e.estPublie);
+				setEvents(published);
+			})
+			.catch((err) => {
+				console.error('Events fetch error:', err);
+				setEvents([]);
+			})
+			.finally(() => setLoading(false));
+	}, []);
+
+	const transformEvent = (event) => ({
+		id: event.id,
+		title: event.titre,
+		description: event.description,
+		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
+		date: event.dateDepart || event.dateEvenement || '—',
+		badge: 'EXPEDITION',
+		slug: event.id,
+		href: `/events/${event.id}`
+	});
+
 	return (
 		<>
 		<main class="flex-grow flex flex-col pb-section-gap">
@@ -54,7 +93,7 @@ export function Events() {
 						<Reveal animation="fadeLeft" delay={200} duration={700}>
 							<div class="hidden lg:flex flex-col items-end gap-3 border-l border-white/10 pl-10">
 								<div class="flex flex-col items-end gap-1">
-									<span class="font-mono text-[9px] text-white/20 tracking-widest uppercase">{upcomingEvents.length} missions disponibles</span>
+									<span class="font-mono text-[9px] text-white/20 tracking-widest uppercase">{!loading ? events.length : "..."} missions disponibles</span>
 									<span class="font-mono text-[9px] text-primary tracking-widest font-bold uppercase">Réservation ouverte</span>
 								</div>
 								<a
@@ -73,14 +112,22 @@ export function Events() {
 			{/* ── Grid Events ── */}
 			<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-12">
 				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter xl:gap-8">
-					{upcomingEvents.map((event, i) => (
+					{loading ? (
+					<div class="py-24 text-center col-span-1 md:col-span-2 xl:col-span-3">
+						<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
+							<span class="material-symbols-outlined text-3xl text-primary">hourglass_empty</span>
+						</div>
+						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Chargement des expéditions...</p>
+					</div>
+				) : (
+					events.map((event, i) => (
 						<Reveal key={event.title} animation={i % 2 === 0 ? 'driftLeft' : 'driftRight'} delay={i * 80} duration={820}>
 							<TourCard {...event} href={`/events/${event.slug}`} />
 						</Reveal>
 					))}
 				</div>
 
-				{upcomingEvents.length === 0 && (
+				{!loading && events.length === 0 && (
 					<div class="py-24 text-center">
 						<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
 							<span class="material-symbols-outlined text-3xl text-primary">event_busy</span>
@@ -95,3 +142,4 @@ export function Events() {
 		</>
 	);
 }
+

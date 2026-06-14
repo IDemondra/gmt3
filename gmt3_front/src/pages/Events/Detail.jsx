@@ -5,7 +5,6 @@ import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { buildPreviewGallery } from '../../utils/gallery.js';
 import { img } from '../../utils/images.js';
-import { getUpcomingEventBySlug, upcomingEvents } from '../../data/upcomingEvents.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { evenementApi } from '../../api/evenements.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
@@ -19,6 +18,7 @@ export function EventDetail({ params }) {
 	const [bookingModal, setBookingModal] = useState(false);
 	const [bookingData, setBookingData] = useState({ nom: '', contact: '', nombrePlaces: 1 });
 	const [bookingLoading, setBookingLoading] = useState(false);
+	const [relatedEvents, setRelatedEvents] = useState([]);
 	const { toasts, addToast, removeToast } = useToast();
 	const eventId = parseInt(params.id, 10);
 
@@ -76,6 +76,18 @@ export function EventDetail({ params }) {
 			.then((data) => {
 				setEvent(data);
 				setLoading(false);
+
+				// Load related events
+				fetch(`${API_BASE}/evenements`, { credentials: 'include' })
+					.then((r) => r.json())
+					.then((response) => {
+						const related = (Array.isArray(response.data) ? response.data : [])
+							.filter((e) => e.estPublie && e.id !== eventId)
+							.slice(0, 2)
+							.map(transformEventForCard);
+						setRelatedEvents(related);
+					})
+					.catch((err) => console.error('Error loading related events:', err));
 			})
 			.catch((err) => {
 				console.error('Error loading event:', err);
@@ -117,27 +129,35 @@ export function EventDetail({ params }) {
 
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-	const staticEvent = upcomingEvents.find((e) => e.id === eventId || e.title === event.titre || e.title === event.title);
+	const transformEventForCard = (evt) => ({
+		id: evt.id,
+		title: evt.titre,
+		description: evt.description,
+		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
+		date: evt.dateDepart || evt.dateEvenement || '—',
+		badge: 'EXPEDITION',
+		slug: evt.id,
+		href: `/events/${evt.id}`
+	});
 
 	const normalizedEvent = {
-		title: event.titre || event.title,
+		title: event.titre,
 		description: event.description,
-		image: event.imagePrincipale ? `${BACKEND}${event.imagePrincipale}` : (staticEvent?.image || ''),
-		location: event.lieu || event.location || staticEvent?.location,
-		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : (staticEvent?.price || ''),
-		duration: event.duration || staticEvent?.duration,
-		difficulty: event.difficulty || staticEvent?.difficulty,
-		groupSize: event.groupSize || staticEvent?.groupSize,
-		season: event.season || staticEvent?.season,
-		gallery: event.photosEvenement || event.gallery || staticEvent?.gallery || [],
-		badge: event.badge || staticEvent?.badge || 'EXPEDITION',
-		date: event.date || event.dateDepart || event.dateEvenement || staticEvent?.date || '—',
-		slug: event.slug || staticEvent?.slug || `event-${eventId}`,
-		highlights: event.highlights || staticEvent?.highlights || [],
-		itinerary: event.itinerary || staticEvent?.itinerary || [],
+		image: event.imagePrincipale ? `${BACKEND}${event.imagePrincipale}` : '',
+		location: event.lieu || '—',
+		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : '—',
+		duration: event.duration || '—',
+		difficulty: event.difficulty || '—',
+		groupSize: event.groupSize || '—',
+		season: event.season || '—',
+		gallery: event.photosEvenement || [],
+		badge: 'EXPEDITION',
+		date: event.dateDepart || event.dateEvenement || '—',
+		slug: event.id,
+		highlights: event.highlights || [],
+		itinerary: event.itinerary || [],
 	};
 
-	const relatedEvents = upcomingEvents.filter((item) => item.id !== eventId && item.title !== normalizedEvent.title).slice(0, 2);
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
 		{ label: 'Localisation', value: normalizedEvent.location || '—' },
@@ -252,7 +272,7 @@ export function EventDetail({ params }) {
 									<div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
 										<p class="font-label-caps text-label-caps text-on-primary/60">Points forts de l'expérience</p>
 										<ul class="mt-3 space-y-3">
-											{(event.highlights || staticEvent?.highlights || []).map((highlight) => (
+											{(event.highlights || []).map((highlight) => (
 												<li class="flex items-start gap-3 font-body-md text-body-md text-on-primary/85 leading-relaxed">
 													<span class="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary">
 														<span class="material-symbols-outlined text-[15px]">check</span>
