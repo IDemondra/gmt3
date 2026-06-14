@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
@@ -111,21 +111,16 @@ export function Events() {
 
 			{/* ── Grid Events ── */}
 			<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-12">
-				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter xl:gap-8">
-					{loading ? (
-					<div class="py-24 text-center col-span-1 md:col-span-2 xl:col-span-3">
-						<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
-							<span class="material-symbols-outlined text-3xl text-primary">hourglass_empty</span>
+				{loading && (
+					<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter xl:gap-8">
+						<div class="py-24 text-center col-span-1 md:col-span-2 xl:col-span-3">
+							<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
+								<span class="material-symbols-outlined text-3xl text-primary">hourglass_empty</span>
+							</div>
+							<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Chargement des expéditions...</p>
 						</div>
-						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Chargement des expéditions...</p>
 					</div>
-				) : (
-					events.map((event, i) => (
-						<Reveal key={event.title} animation={i % 2 === 0 ? 'driftLeft' : 'driftRight'} delay={i * 80} duration={820}>
-							<TourCard {...event} href={`/events/${event.slug}`} />
-						</Reveal>
-					))}
-				</div>
+				)}
 
 				{!loading && events.length === 0 && (
 					<div class="py-24 text-center">
@@ -134,6 +129,19 @@ export function Events() {
 						</div>
 						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Aucune expédition planifiée</p>
 						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt — nouvelles missions en cours</p>
+					</div>
+				)}
+
+				{!loading && events.length > 0 && (
+					<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter xl:gap-8">
+						{events.map((event, i) => {
+							const card = transformEvent(event);
+							return (
+								<Reveal key={card.id} animation={i % 2 === 0 ? 'driftLeft' : 'driftRight'} delay={i * 80} duration={820}>
+									<TourCard {...card} />
+								</Reveal>
+							);
+						})}
 					</div>
 				)}
 			</section>
