@@ -92,10 +92,10 @@ export function AdminDashboard() {
 				evenementsApi(accessToken.value),
 				kpisApi(accessToken.value),
 			]);
-			if (Array.isArray(evtData)) {
-				setEvents(evtData.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
+			if (Array.isArray(evtData.data)) {
+				setEvents(evtData.data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
 			}
-			if (kpiData && typeof kpiData.totalEvents === 'number') setKpis(kpiData);
+			if (kpiData?.data && typeof kpiData.data.totalEvents === 'number') setKpis(kpiData.data);
 		} catch { /* keep current */ }
 	};
 

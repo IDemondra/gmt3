@@ -35,7 +35,7 @@ export function AdminClients() {
 	const loadClients = async () => {
 		try {
 			const response = await clientsApi(accessToken.value);
-			if (Array.isArray(response.data)) if (Array.isArray(data)) setClients(response.data);
+			if (Array.isArray(response.data)) setClients(response.data);
 		} catch {}
 	};
 

@@ -44,9 +44,9 @@ export function AdminReservations() {
 				clientsApi(accessToken.value),
 				evenementsApi(accessToken.value),
 			]);
-			if (Array.isArray(res)) setReservations(res);
-			if (Array.isArray(cli)) setClients(cli);
-			if (Array.isArray(evt)) setEvenements(evt);
+			if (Array.isArray(res.data)) setReservations(res.data);
+			if (Array.isArray(cli.data)) setClients(cli.data);
+			if (Array.isArray(evt.data)) setEvenements(evt.data);
 		} catch {}
 	};
 

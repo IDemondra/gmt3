@@ -31,7 +31,7 @@ export function AdminUsers() {
 	const loadUsers = async () => {
 		try {
 			const response = await usersApi(accessToken.value);
-			if (Array.isArray(response.data)) if (Array.isArray(data)) setUsers(response.data);
+			if (Array.isArray(response.data)) setUsers(response.data);
 		} catch { /* keep current list */ }
 	};
 
