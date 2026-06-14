@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { Reveal } from '../../components/ui/Reveal.jsx';
@@ -10,6 +10,7 @@ import { parseMarkdownInline } from '../../utils/markdown.js';
 import { evenementApi } from '../../api/evenements.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { useToast } from '../../hooks/useToast.js';
+import { formatDateTimeWithHour } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
 	const [event, setEvent] = useState(null);
@@ -163,6 +164,15 @@ export function EventDetail({ params }) {
 		description: step,
 		totalDays
 	}));
+	
+	const departInfo = event.dateDepart ? {
+		date: event.dateDepart,
+		time: event.heureDepart
+	} : null;
+	const retourInfo = event.dateRetour ? {
+		date: event.dateRetour,
+		time: event.heureRetour
+	} : null;
 
 	return (
 		<>
@@ -345,8 +355,30 @@ export function EventDetail({ params }) {
 								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-on-secondary-fixed p-6 text-on-primary shadow-md shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Rythme du voyage</p>
 									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Flux jour par jour</h2>
-									<div class="mt-2 text-sm text-on-primary/60">{totalDays > 0 ? `${totalDays} jours` : ''}</div>
-									<div class="mt-6 space-y-4">
+									<div class="mt-2 text-sm text-on-primary/60">{totalDays > 0 ? `${totalDays} jours` : ""}</div>
+										{(departInfo || retourInfo) && (
+											<div class="mt-6 space-y-3 pb-6 border-b border-primary/20">
+												{departInfo && (
+													<div class="flex items-start gap-3">
+														<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5">flight_takeoff</span>
+														<div>
+															<p class="font-label-caps text-label-caps text-on-primary/60 text-xs">Départ</p>
+															<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary">{formatDateTimeWithHour(departInfo.date, departInfo.time)}</p>
+														</div>
+													</div>
+												)}
+												{retourInfo && (
+													<div class="flex items-start gap-3">
+														<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5">flight_land</span>
+														<div>
+															<p class="font-label-caps text-label-caps text-on-primary/60 text-xs">Retour</p>
+															<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary">{formatDateTimeWithHour(retourInfo.date, retourInfo.time)}</p>
+														</div>
+													</div>
+												)}
+											</div>
+										)}
+										<div class="mt-6 space-y-4">
 										{itineraryWithDays.map(({ day, description, totalDays: total }) => (
 											<div class="flex gap-4">
 												<div class="flex flex-col h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-on-primary shadow-lg shadow-primary/20">
@@ -482,3 +514,5 @@ export function EventDetail({ params }) {
 		</>
 	);
 }
+
+
