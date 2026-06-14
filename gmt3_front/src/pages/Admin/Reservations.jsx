@@ -166,7 +166,7 @@ export function AdminReservations() {
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{clientMap[r.clientId] || '—'}</td>
 											<td class="px-6 py-4 text-sm text-gray-600">{evenementMap[r.evenementId] || '—'}</td>
 											<td class="px-6 py-4 text-sm font-mono text-gray-900">{r.nombrePlaces}</td>
-											<td class="px-6 py-4 text-sm text-gray-600">{formatIsoDateFr(r.dateReservation) || '—'}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">{r.dateReservation || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
 													<button onClick={() => handleEdit(r)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
