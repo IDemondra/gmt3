@@ -150,7 +150,7 @@ export function EventDetail({ params }) {
 		difficulty: event.difficulty || '—',
 		groupSize: event.groupSize || '—',
 		season: event.season || '—',
-		gallery: event.photosEvenement || [],
+		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),
 		badge: 'EXPEDITION',
 		date: event.dateDepart || event.dateEvenement || '—',
 		slug: event.id,
