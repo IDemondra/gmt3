@@ -24,8 +24,8 @@ export function ToursSection() {
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
 			.then((r) => r.json())
-			.then((data) => {
-				const published = (Array.isArray(data) ? data : [])
+			.then((response) => {
+				const published = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie)
 					.slice(0, 3);
 				console.log('ToursSection events loaded:', published);
@@ -253,3 +253,5 @@ export function ToursSection() {
 		</section>
 	);
 }
+
+

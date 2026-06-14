@@ -30,8 +30,8 @@ export function AdminUsers() {
 
 	const loadUsers = async () => {
 		try {
-			const data = await usersApi(accessToken.value);
-			if (Array.isArray(data)) setUsers(data);
+			const response = await usersApi(accessToken.value);
+			if (Array.isArray(response.data)) if (Array.isArray(data)) setUsers(response.data);
 		} catch { /* keep current list */ }
 	};
 
@@ -184,3 +184,4 @@ export function AdminUsers() {
 		</div>
 	);
 }
+

@@ -34,8 +34,8 @@ export function AdminClients() {
 
 	const loadClients = async () => {
 		try {
-			const data = await clientsApi(accessToken.value);
-			if (Array.isArray(data)) setClients(data);
+			const response = await clientsApi(accessToken.value);
+			if (Array.isArray(response.data)) if (Array.isArray(data)) setClients(response.data);
 		} catch {}
 	};
 
@@ -225,3 +225,4 @@ export function AdminClients() {
 		</div>
 	);
 }
+
