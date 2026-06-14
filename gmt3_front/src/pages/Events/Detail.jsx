@@ -12,6 +12,20 @@ import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
+	const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+	const eventId = parseInt(params.id, 10);
+
+	const transformEventForCard = (evt) => ({
+		id: evt.id,
+		title: evt.titre,
+		description: evt.description,
+		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
+		date: evt.dateDepart || evt.dateEvenement || '—',
+		badge: 'EXPEDITION',
+		slug: evt.id,
+		href: `/events/${evt.id}`
+	});
+
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [preview, setPreview] = useState(null);
@@ -21,7 +35,6 @@ export function EventDetail({ params }) {
 	const [bookingLoading, setBookingLoading] = useState(false);
 	const [relatedEvents, setRelatedEvents] = useState([]);
 	const { toasts, addToast, removeToast } = useToast();
-	const eventId = parseInt(params.id, 10);
 
 	const handleBooking = async (e) => {
 		e.preventDefault();
@@ -127,19 +140,6 @@ export function EventDetail({ params }) {
 			</main>
 		);
 	}
-
-	const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-
-	const transformEventForCard = (evt) => ({
-		id: evt.id,
-		title: evt.titre,
-		description: evt.description,
-		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
-		date: evt.dateDepart || evt.dateEvenement || '—',
-		badge: 'EXPEDITION',
-		slug: evt.id,
-		href: `/events/${evt.id}`
-	});
 
 	const normalizedEvent = {
 		title: event.titre,
