@@ -27,9 +27,7 @@ export function TourCard({ image, badge, date, title, description, href }) {
               <h3 class="clamp-2 font-h3 text-h3 text-on-primary uppercase font-black leading-tight tracking-tight">
                 {title}
               </h3>
-              <p class="clamp-3 font-body-md text-body-md text-on-primary/82 leading-relaxed max-w-md">
-                {description}
-              </p>
+              <p class="clamp-3 font-body-md text-body-md text-on-primary/82 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: description }} />
             </div>
           </div>
         </div>

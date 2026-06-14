@@ -3,6 +3,7 @@ import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { formatDateFr } from '../../utils/dateFormatter.js';
+import { parseMarkdownInline } from '../../utils/markdown.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -35,7 +36,7 @@ export function Events() {
 	const transformEvent = (event) => ({
 		id: event.id,
 		title: event.titre,
-		description: event.description,
+		description: parseMarkdownInline(event.description),
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
 		date: event.dateDepart || event.dateEvenement || '—',
 		badge: 'EXPEDITION',

@@ -18,7 +18,7 @@ export function EventDetail({ params }) {
 	const transformEventForCard = (evt) => ({
 		id: evt.id,
 		title: evt.titre,
-		description: evt.description,
+		description: parseMarkdownInline(evt.description),
 		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
 		date: evt.dateDepart || evt.dateEvenement || '—',
 		badge: 'EXPEDITION',
