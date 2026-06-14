@@ -15,6 +15,7 @@ export function EventDetail({ params }) {
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [preview, setPreview] = useState(null);
+	const [previewIndex, setPreviewIndex] = useState(0);
 	const [bookingModal, setBookingModal] = useState(false);
 	const [bookingData, setBookingData] = useState({ nom: '', contact: '', nombrePlaces: 1 });
 	const [bookingLoading, setBookingLoading] = useState(false);
@@ -352,7 +353,7 @@ export function EventDetail({ params }) {
 											<button
 												key={`${normalizedEvent.slug}-${idx}`}
 												type="button"
-												onClick={() => setPreview({ url: img(src), title: `${normalizedEvent.title} photo ${idx + 1}` })}
+												onClick={() => { setPreviewIndex(idx); setPreview({ url: img(src), title: `${normalizedEvent.title} photo ${idx + 1}` }); }}
 												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-black/10 cursor-pointer"
 											>
 												<img
@@ -459,7 +460,22 @@ export function EventDetail({ params }) {
 				</section>
 			</main>
 			<Footer />
-			<ImagePreview image={preview} onClose={() => setPreview(null)} />
+			<ImagePreview
+				image={preview}
+				onClose={() => setPreview(null)}
+				onNext={() => {
+					const nextIdx = (previewIndex + 1) % gallery.length;
+					setPreviewIndex(nextIdx);
+					setPreview({ url: img(gallery[nextIdx]), title: `${normalizedEvent.title} photo ${nextIdx + 1}` });
+				}}
+				onPrev={() => {
+					const prevIdx = (previewIndex - 1 + gallery.length) % gallery.length;
+					setPreviewIndex(prevIdx);
+					setPreview({ url: img(gallery[prevIdx]), title: `${normalizedEvent.title} photo ${prevIdx + 1}` });
+				}}
+				hasNext={gallery.length > 1}
+				hasPrev={gallery.length > 1}
+			/>
 
 			{bookingModal && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
