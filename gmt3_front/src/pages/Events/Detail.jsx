@@ -345,7 +345,7 @@ export function EventDetail({ params }) {
 											</h3>
 										</div>
 										<p class="max-w-md font-body-md text-body-md leading-relaxed text-secondary sm:text-right">
-											La photo héros reste intacte. La bande ci-dessous prévisualise la galerie dans l'ordre où elle doit être vue.
+											Galerie photo des lieux que vous allez explorer.
 										</p>
 									</div>
 									<div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
