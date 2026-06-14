@@ -1,4 +1,4 @@
-// @ts-ignore
+﻿// @ts-ignore
 import { formatIsoDateFr } from '../../utils/dateFormatter.js';
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 const resolveUrl = (url) => {
