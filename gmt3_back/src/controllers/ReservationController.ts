@@ -31,7 +31,10 @@ const reservationService = new ReservationService(new ReservationRepository());
 export const ReservationController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const reservations = await reservationService.getAll();
-		return Response.json(reservations.map(formatReservationDates));
+		return Response.json({
+			data: reservations.map(formatReservationDates),
+			message: `${reservations.length} réservation(s) trouvée(s)`
+		});
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
