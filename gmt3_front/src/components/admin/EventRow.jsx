@@ -51,16 +51,16 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 				<span class="flex flex-col gap-0.5">
 					<span class="flex items-center gap-1">
 						<span class="material-symbols-outlined text-[14px] text-primary-container">flight_takeoff</span>
-						{formatIsoDateFr(event.dateDepart)}{event.heureDepart ? ` ${event.heureDepart}` : ''}
+						{event.dateDepart}{event.heureDepart ? ` ${event.heureDepart}` : ''}
 					</span>
 					{event.dateRetour ? (
 						<span class="flex items-center gap-1">
 							<span class="material-symbols-outlined text-[14px] text-secondary">flight_land</span>
-							{formatIsoDateFr(event.dateRetour)}{event.heureRetour ? ` ${event.heureRetour}` : ''}
+							{event.dateRetour}{event.heureRetour ? ` ${event.heureRetour}` : ''}
 						</span>
 					) : null}
 				</span>
-			) : formatIsoDateFr(event.date || event.dateEvenement) || '—'}
+			) : event.date || event.dateEvenement || '—'}
 		</td>
 			<td class="px-6 py-4">
 				<span class="font-mono text-sm font-semibold text-on-background bg-surface-container px-3 py-1 rounded-lg">
