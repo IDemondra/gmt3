@@ -6,6 +6,7 @@ import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../store
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { usersApi, createUserApi, updateUserApi, deleteUserApi } from '../../api/users.js';
+import { formatIsoDateTimeFr } from '../../utils/dateFormatter.js';
 
 const roles = ['admin', 'manager', 'editor', 'viewer'];
 
@@ -133,7 +134,7 @@ export function AdminUsers() {
 											<td class="px-6 py-4 text-sm text-gray-600">{u.email}</td>
 											<td class="px-6 py-4"><span class="px-2 py-1 text-[11px] font-bold text-gray-600 bg-gray-100 rounded uppercase">{u.role}</span></td>
 											<td class="px-6 py-4"><span class={`text-xs font-semibold ${u.actif ? 'text-green-600' : 'text-gray-400'}`}>{u.actif ? 'Actif' : 'Inactif'}</span></td>
-											<td class="px-6 py-4 text-sm text-gray-600">{u.derniereConnexion?.slice(0, 16) || '—'}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">{formatIsoDateTimeFr(u.derniereConnexion) || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
 													<button onClick={() => openEdit(u)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>

@@ -1,4 +1,5 @@
 import { parseMarkdown } from '../../utils/markdown.js';
+import { formatIsoDateFr } from '../../utils/dateFormatter.js';
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
@@ -8,11 +9,6 @@ function resolveUrl(url) {
 	return `${BACKEND}${url}`;
 }
 
-function formatDate(value) {
-	if (!value || typeof value !== 'string') return '—';
-	if (!value.includes('-')) return value;
-	return value.split('-').reverse().join('/');
-}
 
 /**
  * @param {{
@@ -103,7 +99,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 											</span>
 										</div>
 										<p class="text-sm text-gray-500 font-medium">
-											{formatDate(event.dateCreation || event.dateEvenement || event.date)}
+											{formatIsoDateFr(event.dateCreation || event.dateEvenement || event.date)}
 										</p>
 									</div>
 								</div>
@@ -112,8 +108,8 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 									{[
 										{ label: 'Lieu', value: event.lieu || '—' },
 										{ label: 'Prix', value: event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—' },
-										{ label: 'Départ', value: `${formatDate(event.dateDepart || event.dateEvenement || event.date)} ${event.heureDepart || ''}` },
-										{ label: 'Retour', value: `${formatDate(event.dateRetour)} ${event.heureRetour || ''}` }
+										{ label: 'Départ', value: `${formatIsoDateFr(event.dateDepart || event.dateEvenement || event.date)} ${event.heureDepart || ''}` },
+										{ label: 'Retour', value: `${formatIsoDateFr(event.dateRetour)} ${event.heureRetour || ''}` }
 									].map((item, idx) => (
 										<div key={idx} class="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
 											<p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{item.label}</p>

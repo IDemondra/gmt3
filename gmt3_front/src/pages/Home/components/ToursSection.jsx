@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
+import { formatDateFr } from '../../../utils/dateFormatter.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -107,7 +108,7 @@ export function ToursSection() {
 						<div class="space-y-24 relative">
 							{events.map((event, i) => {
 								const imgUrl = resolveImg(event.imagePrincipale);
-								const date = event.dateDepart || event.dateEvenement || '—';
+								const date = formatDateFr(event.dateDepart || event.dateEvenement) || '—';
 								const prix = formatPrix(event.prix);
 
 								return (

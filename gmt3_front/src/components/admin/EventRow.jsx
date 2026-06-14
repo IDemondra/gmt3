@@ -1,5 +1,5 @@
 // @ts-ignore
-const fmtDate = (d) => d ? d.split('-').reverse().join('/') : '';
+import { formatIsoDateFr } from '../../utils/dateFormatter.js';
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 const resolveUrl = (url) => {
 	if (!url) return '';
@@ -51,16 +51,16 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 				<span class="flex flex-col gap-0.5">
 					<span class="flex items-center gap-1">
 						<span class="material-symbols-outlined text-[14px] text-primary-container">flight_takeoff</span>
-						{fmtDate(event.dateDepart)}{event.heureDepart ? ` ${event.heureDepart}` : ''}
+						{formatIsoDateFr(event.dateDepart)}{event.heureDepart ? ` ${event.heureDepart}` : ''}
 					</span>
 					{event.dateRetour ? (
 						<span class="flex items-center gap-1">
 							<span class="material-symbols-outlined text-[14px] text-secondary">flight_land</span>
-							{fmtDate(event.dateRetour)}{event.heureRetour ? ` ${event.heureRetour}` : ''}
+							{formatIsoDateFr(event.dateRetour)}{event.heureRetour ? ` ${event.heureRetour}` : ''}
 						</span>
 					) : null}
 				</span>
-			) : fmtDate(event.date) || fmtDate(event.dateEvenement) || '—'}
+			) : formatIsoDateFr(event.date || event.dateEvenement) || '—'}
 		</td>
 			<td class="px-6 py-4">
 				<span class="font-mono text-sm font-semibold text-on-background bg-surface-container px-3 py-1 rounded-lg">

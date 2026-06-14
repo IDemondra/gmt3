@@ -20,3 +20,28 @@ export function formatDateTimeWithHour(dateString, timeString) {
 	if (!timeString) return dateFr;
 	return `${dateFr} à ${timeString}`;
 }
+
+/** Formats an ISO date string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS) to "20 Juin 2026". */
+export function formatIsoDateFr(isoString) {
+	if (!isoString) return '—';
+	try {
+		const [datePart, timePart] = isoString.split('T');
+		const [y, m, d] = datePart.split('-');
+		return formatDateFr(`${d}/${m}/${y}`);
+	} catch {
+		return isoString;
+	}
+}
+
+/** Formats an ISO datetime string to "20 Juin 2026 à 18:09". */
+export function formatIsoDateTimeFr(isoString) {
+	if (!isoString) return '—';
+	try {
+		const [datePart, timePart] = isoString.split('T');
+		const [y, m, d] = datePart.split('-');
+		const time = timePart ? timePart.slice(0, 5) : null;
+		return formatDateTimeWithHour(`${d}/${m}/${y}`, time);
+	} catch {
+		return isoString;
+	}
+}
