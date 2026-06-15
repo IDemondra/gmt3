@@ -34,7 +34,7 @@ export function AboutSection() {
 			role: 'Guide culturelle',
 			meta: 'Traditions & artisanat',
 			note: '« Les vrais trésors de Madagascar sont dans les sourires et les gestes du quotidien. »',
-			src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFObZ3NzvjwCbetXzl_ONZPxuiEgjfXRWCsEkZD1-cV7rExx4dFnd72HvbllO9v6Q19Ej5gPbGvfmlA2U3AE3FyiUK3ehKtEJjSkAy6ORj2xYfvTPAi6_IBkP5yp0Jl4L_qdaakA1xd0S1znDNGX9ndrh-e0rtXOl8Ut8ikFEmiY2V2ZidBPyT1D07PEFHhhEfgnIA9RStddtqqDB82zbtgzI5zL_o5ysVI5plnLzrzyAOULPtrhl85B1a_oxIQ6IIZaTINMSnzfI',
+			src: '/src/assets/hasina.jpeg',
 			accent: 'rotate-[0.8deg]',
 		},
 		{
