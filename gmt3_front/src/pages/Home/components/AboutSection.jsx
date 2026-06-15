@@ -47,7 +47,7 @@ export function AboutSection() {
 		},
 		{
 			name: 'Ando',
-			role: 'Pisteur',
+			role: 'Responsable Eduque Tour',
 			meta: 'Campements & intendance',
 			note: '« Je connais chaque sentier, chaque raccourci, chaque danger. Votre sécurité est ma première destination. »',
 			src: '/src/assets/ando.jpeg',
@@ -107,7 +107,7 @@ export function AboutSection() {
 						<div class="absolute -inset-4 rounded-[2rem] bg-white/40 blur-xl pointer-events-none" />
 						<div class="relative grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
 							{[
-								{ label: "Expertise", val: "10", sub: "Années d'aventure", icon: "military_tech" },
+								{ label: "Expertise", val: "2", sub: "Années d'aventure", icon: "military_tech" },
 								{ label: "Équipe", val: "06", sub: "Membres racines", icon: "group" },
 								{ label: "Origine", val: "100%", sub: "Madagascar native", icon: "location_on" }
 							].map((s, idx) => (

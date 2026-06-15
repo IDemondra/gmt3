@@ -7,7 +7,7 @@ export function HeroSection() {
 			{/* Cinematic Background with Zoom Effect */}
 			<div
 				class="absolute inset-0 z-0 bg-cover bg-center animate-pulse-slow scale-110"
-				style={`background-image: url('${img('https://lh3.googleusercontent.com/aida-public/AB6AXuBQ8Mzkat96InbZDhxRTEWfRMO3DJyZVyx381Ow-oHU8qsc2GnopwLV5-DXndDK-CiwuyKpr2B5kdmV5m0c1pd6Pt-kjj9xbF-zs2Z1JS2mLDf-la8VursBii-QmJ0uo3Bybk36GrrgllyyghH82ElUsQBa5HuY7tJfWn1HCE-8fWWte5mH9ZlP7hMFmzq3VrSJfHwlks4ZWpdNOZlYEIJoOD2FPpjsfQaum8uYDGxm2TJjVg0nZIrvt82dxbglZ1fN6LoQ-KL9mwo')} `}
+				style={`background-image: url('${img('src/assets/hero.jpg')} `}
 			/>
 			
 			{/* Multi-layered Overlays */}

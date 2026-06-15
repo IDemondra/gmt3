@@ -6,7 +6,7 @@ const ops = [
 		icon: 'hiking',
 		tag: 'Aventure Terrain',
 		title: 'Randonnée Guidée',
-		detail: 'Trek sur mesure en petit groupe (max. 8 pers.) avec guides naturalistes certifiés. Randonnées touristiques ou explorations hors sentiers battus, selon vos envies. Sécurité et immersion garanties.',
+		detail: 'Trek sur mesure en groupe avec guides naturalistes certifiés. Randonnées touristiques ou explorations hors sentiers battus, selon vos envies. Sécurité et immersion garanties.',
 		badge: '',
 		badgeLabel: '',
 		status: 'ACTIF',
