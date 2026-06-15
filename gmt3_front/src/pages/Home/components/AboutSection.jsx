@@ -1,5 +1,11 @@
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
+import hanitra from '../../../assets/hanitra.jpeg';
+import hasina from '../../../assets/hasina.jpeg';
+import heritiana from '../../../assets/heritiana.jpeg';
+import ando from '../../../assets/ando.jpeg';
+import billy from '../../../assets/billy.jpeg';
+import tantely from '../../../assets/tantely.jpeg';
 
 export function AboutSection() {
 	const expertise = [
@@ -26,7 +32,7 @@ export function AboutSection() {
 			role: 'Manager',
 			meta: 'Faune & flore endémiques',
 			note: '« Une grande expédition, c\'est d\'abord une grande vision. Je m\'assure que chacun avance dans la même direction. »',
-			src: '/src/assets/hanitra.jpeg',
+			src: hanitra,
 			accent: 'rotate-[-1.2deg]',
 		},
 		{
@@ -34,7 +40,7 @@ export function AboutSection() {
 			role: 'Responsable Marketing',
 			meta: 'Traditions & artisanat',
 			note: '« Chaque histoire de Madagascar mérite d\'être contée. Je suis là pour que le monde entende nos voix authentiques. »',
-			src: '/src/assets/hasina.jpeg',
+			src: hasina,
 			accent: 'rotate-[0.8deg]',
 		},
 		{
@@ -42,7 +48,7 @@ export function AboutSection() {
 			role: "Relation Publique",
 			meta: 'Trek & orientation',
 			note: '« Être le lien entre deux mondes, c\'est une responsabilité que je prends avec fierté. Le respect mutuel, c\'est ma langue maternelle. »',
-			src: '/src/assets/heritiana.jpeg',
+			src: heritiana,
 			accent: 'rotate-[-0.6deg]',
 		},
 		{
@@ -50,7 +56,7 @@ export function AboutSection() {
 			role: 'Responsable Eduque Tour',
 			meta: 'Campements & intendance',
 			note: '« Je connais chaque sentier, chaque raccourci, chaque danger. Votre sécurité est ma première destination. »',
-			src: '/src/assets/ando.jpeg',
+			src: ando,
 			accent: 'rotate-[1.5deg]',
 		},
 		{
@@ -58,7 +64,7 @@ export function AboutSection() {
 			role: 'Animateur',
 			meta: 'Mémoire visuelle',
 			note: '« L\'aventure sans rires et sans connexions humaines, ce n\'est que du tourisme. Je suis là pour créer la magie. »',
-			src: '/src/assets/billy.jpeg',
+			src: billy,
 			accent: 'rotate-[-1deg]',
 		},
 		{
@@ -66,7 +72,7 @@ export function AboutSection() {
 			role: 'Responsable Logistique',
 			meta: 'Lien avec les villages',
 			note: '« Les détails que personne ne voit, ce sont ceux qui font la différence. Chaque campement est une œuvre d\'art bien organisée. »',
-			src: '/src/assets/tantely.jpeg',
+			src: tantely,
 			accent: 'rotate-[0.5deg]',
 		},
 	];

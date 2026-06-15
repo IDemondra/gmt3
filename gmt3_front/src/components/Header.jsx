@@ -2,6 +2,7 @@ import { useLocation } from 'preact-iso';
 import { signal } from '@preact/signals';
 import { img } from '../utils/images.js';
 import { useEffect, useState } from 'preact/hooks';
+import logoGmt3 from '../assets/logo_gmt3.jpeg';
 
 const mobileMenuOpen = signal(false);
 
@@ -44,7 +45,7 @@ export function Header() {
 					{/* Left: Brand */}
 					<a class="flex items-center gap-2 md:gap-3 group cursor-pointer shrink-0" href="/">
 						<div class="relative h-9 w-9 md:h-10 md:w-10 flex items-center justify-center rounded-lg shadow-lg group-hover:rotate-6 transition-transform overflow-hidden">
-							<img src="/src/assets/logo_gmt3.jpeg" alt="GMT+3 Logo" class="w-full h-full object-cover" />
+							<img src={logoGmt3} alt="GMT+3 Logo" class="w-full h-full object-cover" />
 						</div>
 						<span class={`font-h2 text-base md:text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-on-primary'}`}>
 							GMT+3 <span class="text-primary-container hidden sm:inline">MADAGASCAR</span>
