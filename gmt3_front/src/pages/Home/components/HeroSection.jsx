@@ -7,7 +7,7 @@ export function HeroSection() {
 			{/* Cinematic Background with Zoom Effect */}
 			<div
 				class="absolute inset-0 z-0 bg-cover bg-center animate-pulse-slow scale-110"
-				style={`background-image: url('${img('src/assets/hero.jpg')} `}
+				style={`background-image: url('${img('/assets/hero.jpg')}')`}
 			/>
 			
 			{/* Multi-layered Overlays */}
