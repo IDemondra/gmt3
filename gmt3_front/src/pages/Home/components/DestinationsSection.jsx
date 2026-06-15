@@ -2,9 +2,9 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function DestinationsSection() {
-	const bg1 = `url('${img('https://lh3.googleusercontent.com/aida/ADBb0ujjtH4hJs61CX1AyTwzD2rH2ADHkzwJk3H_8Zx9RMGT_Avp18hft53dYVYfjQzVnliiJYH5iz8DWvApZxJDl7CXA9RMJk-mOqmXea0ee7XTlWkJkeXYWmKhR2oaAwq0ZbLUgaSL8eglt0_yxfxf-B9vYyWizv4iE88_jCCC359qwOxgU86AVzp_qUWpV4-XHilZQQVTAw4lubmvfIeonA5irD_pOzPu4we8pL0e7wX9OdKcEcIXgKh1cVg')}')`;
-	const bg2 = `url('${img('https://lh3.googleusercontent.com/aida-public/AB6AXuCHAzLv4UXF0svy3arGo10ftdnYfLums3ksC4WE7JYk2zFZybeTxudGnAtaljoSUaeo4O1gCndNZE4OCyTUWUG1i229gpkMtYSUhEamgwLkIT9dNCGtCrNVGDq50JEUAlRuOO1V8OiQWQ50xTMFhs-C7kVwOrk4KHDNnKgpiH1jJzLwXHdxcYwNE--zQQz891UPb2dPgQHRCg7FXHY6cBw94g_qP0p1DbPiEY3EU3VA-G3ESiWfc6A_Dhx9cb0Ew6-UbnkvRrMwCjc')}')`;
-	const bg3 = `url('${img('https://lh3.googleusercontent.com/aida-public/AB6AXuAcpLVLyVXKwhfrB3ptkpBv8UMN3Zd4okkh9YxHJ_zjPVuA2TAEGCErLDBy01Nax5opgkRzeNevm2Ev_53b14ZDvN1n3faD3-f_qAxt_ufVVDQiRfTiKV8yXKb58Un2xGqgNY70QCkd1GlsbeVTOtafFggRSzEHMNh3h82lOSffPDUNEyRQaLM2pTPK0lqlG5eaOEdS_QWAJ-bR7nldilwTvYyOA6UblYWEWqRBqXxkmbOki6RKfHkyXb7y6WIvGAyX0CccWOr5fIU')}')`;
+	const bg1 = `url('${img('https://images.unsplash.com/photo-1695236268766-cd55f5502fba?w=1200&q=80')}')`;
+	const bg2 = `url('${img('https://images.unsplash.com/photo-1656163157901-8715e42adeb4?w=1200&q=80')}')`;
+	const bg3 = `url('${img('https://images.unsplash.com/photo-1662567534419-b955d8b50cdf?w=1200&q=80')}')`;
 
 	const sectors = [
 		{
