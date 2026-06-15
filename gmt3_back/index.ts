@@ -1,4 +1,5 @@
 import { handleRequest } from './src/app.js';
+import { sqlite } from './src/config/database.js';
 import { resolve } from 'path';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
@@ -21,6 +22,43 @@ Bun.serve({
 	fetch(req) {
 		const url = new URL(req.url);
 		const path = url.pathname;
+
+		// Health check — real DB probe, short-circuited before logging
+		if (path === '/health' && req.method === 'GET') {
+			const checks: Record<string, string> = {};
+			let healthy = true;
+
+			try {
+				const row = sqlite
+					.query("SELECT count(*) AS n FROM sqlite_master WHERE type='table'")
+					.get() as { n: number } | null;
+				if (row && row.n > 0) {
+					checks.database = 'ok';
+				} else {
+					checks.database = 'empty';
+					healthy = false;
+				}
+			} catch (err) {
+				checks.database = 'error';
+				healthy = false;
+			}
+
+			checks.uploads = existsSync(resolve(import.meta.dir, 'uploads')) ? 'ok' : 'missing';
+			if (checks.uploads !== 'ok') healthy = false;
+
+			return new Response(
+				JSON.stringify({
+					status: healthy ? 'healthy' : 'unhealthy',
+					timestamp: new Date().toISOString(),
+					uptime: Math.round(process.uptime?.() || 0),
+					checks,
+				}),
+				{
+					status: healthy ? 200 : 503,
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
+		}
 
 		// Serve uploaded files
 		if (path.startsWith('/uploads/') && req.method === 'GET') {
