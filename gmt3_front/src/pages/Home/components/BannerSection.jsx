@@ -52,7 +52,7 @@ export function BannerSection() {
 							</p>
 							<div class="mt-6 flex items-center gap-6">
 								{[
-									{ val: '12+', label: 'Ans terrain' },
+									{ val: '10', label: 'Ans terrain' },
 									{ val: '100%', label: 'Sur mesure' },
 									{ val: '8', label: 'Max / groupe' },
 								].map((s, i) => (
