@@ -24,14 +24,18 @@ export function App() {
 function AppShell() {
 	const { url } = useLocation();
 	
-	// Détection ultra-robuste de la route Admin
-	const currentPath = typeof window !== 'undefined' ? window.location.pathname : url;
-	const isAdminPath = currentPath.split('?')[0].split('#')[0].startsWith('/admin');
+	// Liste blanche des préfixes de routes publiques
+	const publicPrefixes = ['/events', '/404'];
+	const isHome = url === '/';
+	const isPublic = isHome || publicPrefixes.some(p => url.startsWith(p));
 	
+	// Sécurité supplémentaire : si on voit "admin" dans l'URL, on n'est JAMAIS en public
+	const showPublicHeader = isPublic && !url.includes('/admin');
+
 	return (
-		<>
-			{!isAdminPath && <Header />}
-			<main id="main-content" class="flex-1 flex flex-col min-h-screen w-full relative">
+		<div id="app-root" class="min-h-screen flex flex-col relative">
+			{showPublicHeader && <Header />}
+			<main class="flex-1 flex flex-col">
 				<Router>
 					<Route path="/" component={Home} />
 					<Route path="/events/:id" component={EventDetail} />
@@ -44,9 +48,11 @@ function AppShell() {
 					<Route default component={NotFound} />
 				</Router>
 			</main>
-		</>
+		</div>
 	);
 }
+
+
 
 
 
