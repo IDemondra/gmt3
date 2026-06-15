@@ -37,8 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: gmt3_backend
     volumes:
-      - ./gmt3_back:/app
-      - /app/node_modules
+      # Persistance uniquement — le code vient de l'image buildée
       - ./gmt3_back/data:/app/data
       - ./gmt3_back/uploads:/app/uploads
     environment:

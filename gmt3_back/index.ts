@@ -23,28 +23,23 @@ Bun.serve({
 		const url = new URL(req.url);
 		const path = url.pathname;
 
-		// Health check — real DB probe, short-circuited before logging
+		// Health check — real DB liveness probe, short-circuited before logging
 		if (path === '/health' && req.method === 'GET') {
 			const checks: Record<string, string> = {};
 			let healthy = true;
 
+			// SELECT 1 proves the SQLite engine responds — decoupled from schema/deploy state
 			try {
-				const row = sqlite
-					.query("SELECT count(*) AS n FROM sqlite_master WHERE type='table'")
-					.get() as { n: number } | null;
-				if (row && row.n > 0) {
-					checks.database = 'ok';
-				} else {
-					checks.database = 'empty';
-					healthy = false;
-				}
-			} catch (err) {
+				const row = sqlite.query('SELECT 1 AS ok').get() as { ok: number } | null;
+				checks.database = row?.ok === 1 ? 'ok' : 'error';
+				if (checks.database !== 'ok') healthy = false;
+			} catch {
 				checks.database = 'error';
 				healthy = false;
 			}
 
+			// Informational only — a missing uploads dir must not flap the container
 			checks.uploads = existsSync(resolve(import.meta.dir, 'uploads')) ? 'ok' : 'missing';
-			if (checks.uploads !== 'ok') healthy = false;
 
 			return new Response(
 				JSON.stringify({
