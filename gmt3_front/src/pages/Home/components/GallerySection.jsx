@@ -1,62 +1,45 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+const BACKEND = API_BASE.replace(/\/api$/, '');
+
+function resolveImg(url) {
+	if (!url) return '';
+	if (url.startsWith('http') || url.startsWith('blob:')) return url;
+	return `${BACKEND}${url}`;
+}
+
 export function GallerySection() {
 	const [lightbox, setLightbox] = useState(null);
-    const cards = [
-        {
-            id: 'IMG-0941',
-            src: img('https://lh3.googleusercontent.com/aida/ADBb0ujA9SRMLGsiuZCtrzX3cyE7ym9wpTc-_ElN0ZNTlEeY_PmicE0Ce9iKMzqWYqGGEMld3ZL5cohZVSWl4v5o9CRlNkPcZXacBo5l8UhXMVL6ARGPP_SStBLShAgjUXVhjP8MS_26Tb457HFE6B86ST5qAt5BOlNo7ZH7YIrjWdlVTXpZbQL7S5XAKlRPyZfSnd-fYKBicBdrcMcffG0P9JNy4M3uCYX0dVndNr4ZhMMfGI8uPK11GumjT4Y'),
-            alt: 'Randonnée dans les hautes terres',
-            label: 'Trek Hautes Terres',
-            meta: 'ISO 400 | f/2.8 | 1/1000s',
-            note: 'Progression sur ligne de crête, exposition maximale.',
-            span: 'xl:col-span-8',
-            priority: true,
-			coord: '21.034°S 47.120°E'
-        },
-        {
-            id: 'IMG-0942',
-            src: img('https://lh3.googleusercontent.com/aida/ADBb0uhPBQ8LYwbBz-BpUolrlJ-jEiarh229XEqBqMgV9QUmv0QYJyyQaPgpZjXiorVq9TZZzllsvWioqEsxuipqSZWK5bHix0ZSNdlTnweeqeVbnjs5_ZPvtNo_jU6kAxSJ737iRgunL9X9g0C3LKaDkO7nBH4Sgz_z8UUNWeJXEHvmGOMJdqDyJBbovXPV6UAKrUH5h2XjJSGfqufgUj1ilEToKMXQqUHH8gkiniA1PPnl1uTmnPYstRfTUt4'),
-            alt: 'Village traditionnel et rizières',
-            label: 'Région Betsileo',
-            meta: 'ISO 100 | f/8.0 | 1/250s',
-            note: 'Architecture Betsileo intacte, harmonie agricole.',
-            span: 'xl:col-span-4',
-			coord: '21.458°S 47.089°E'
-        },
-        {
-            id: 'IMG-0943',
-            src: img('https://lh3.googleusercontent.com/aida-public/AB6AXuAkio4VJUPgJPpaxLyJf8XUmQPzbUCkHHzbdIofoPS9BA1BfUXImCENR0mxA91OqeDCz1bWiXFpb1uxDTlqA9FSyLPDlxYYGFNMAVDsXqRq_o5rxf-KPpHEeN4rQWY-AeMAFgXmqm0vXDvDcfB99PknncZRIGPyS_e9KfpACSU__BgtaGCRS-5SjG2v4OxglWwnN7jgk12W2RiT8rL_J7hc0rEF-R5T0QV-cDxZH6YaA97XsLFCUQCchIJtY-ZTmEXTllCnw96DTmc'),
-            alt: 'Faune endémique',
-            label: 'Rencontre Faunique',
-            meta: 'ISO 800 | f/4.0 | 1/500s',
-            note: 'Lémurien catta en phase d\'éveil matinal.',
-            span: 'xl:col-span-4',
-			coord: '21.833°S 46.933°E'
-        },
-        {
-            id: 'IMG-0944',
-            src: img('https://lh3.googleusercontent.com/aida-public/AB6AXuCvU8JMScoFI1gbViK1kPPegwWGpihkNED-vo79OhOKlq-ZcnZi27cJg89GogKZzSAuhe-m63xBdxe0kr6w8jHSSfTIBoe1GT6xEACKS2UY-Dsrx8A2YMZGLijrdzVTQ5apcyHO2PEqP_RYJCZzhm4aRO5QxrAGKtSRDVszLGvbULPSKhek-35AQansjo4gwzG84fDtGXtuTOJEttfBaoGfKPXb6s6HD26Ssnzc3-I93-3CGKz68Pu7avKuVJUHNEWRigTAmhETLvQ'),
-            alt: 'Campement au crépuscule',
-            label: 'Bivouac Sauvage',
-            meta: 'ISO 1600 | f/1.8 | 15s',
-            note: 'Pollution lumineuse nulle. Ciel austral pur.',
-            span: 'xl:col-span-4',
-			coord: '20.254°S 47.112°E'
-        },
-        {
-            id: 'IMG-0945',
-            src: img('https://lh3.googleusercontent.com/aida-public/AB6AXuCP5oX4sfi3TPm_OD2gWDKBFS0ICJRfBpkpaOhmzvPKuLqZ47A-rl_90IPiZVIk5isvF5jSzyk_wcX-e4DkyPPxQoYNtsUQOeRY9PbiMtEz5YOK324BSh55UmGZr66hHRm7dR2VCGMFyP9P1g2cbCkyrW9216cpHZTtM00BJkkIazaM0NUx1Z6E8qzOljuh3Luf57136RDRDQwxYqVvq_vQQj2L8E8VCys03gC49HXx_YgHfZz-RxQW_GAEz1w4AN78stKZSVXR4VI'),
-            alt: 'Pirogue traditionnelle',
-            label: 'Navigation Côtière',
-            meta: 'ISO 200 | f/5.6 | 1/400s',
-            note: 'Passage canal des Pangalanes, brume matinale.',
-            span: 'xl:col-span-4',
-			coord: '18.912°S 49.043°E'
-        },
-    ];
+	const [cards, setCards] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		fetch(`${API_BASE}/galeries`, { credentials: 'include' })
+			.then((r) => r.json())
+			.then((response) => {
+				const photos = (Array.isArray(response.data) ? response.data : [])
+					.slice(0, 5)
+					.map((photo, idx) => ({
+						id: photo.id || `IMG-${String(idx + 1).padStart(4, '0')}`,
+						src: resolveImg(photo.image || photo.src),
+						alt: photo.titre || photo.alt || 'Photo terrain',
+						label: photo.titre || 'Sans titre',
+						meta: photo.meta || 'Expedition GMT3',
+						note: photo.description || photo.note || '',
+						span: ['xl:col-span-8', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4'][idx] || 'xl:col-span-4',
+						priority: idx === 0,
+						coord: photo.coordonnees || photo.coord || '—'
+					}));
+				setCards(photos);
+			})
+			.catch((err) => {
+				setCards([]);
+			})
+			.finally(() => setLoading(false));
+	}, []);
 
     return (
         <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
@@ -90,6 +73,25 @@ export function GallerySection() {
                     </div>
                 </div>
 
+				{loading && (
+					<div class="flex items-center justify-center py-24 gap-3">
+						<div class="h-2 w-2 rounded-full bg-primary animate-bounce" style="animation-delay:0ms" />
+						<div class="h-2 w-2 rounded-full bg-primary animate-bounce" style="animation-delay:150ms" />
+						<div class="h-2 w-2 rounded-full bg-primary animate-bounce" style="animation-delay:300ms" />
+					</div>
+				)}
+
+				{!loading && cards.length === 0 && (
+					<div class="py-24 text-center">
+						<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
+							<span class="material-symbols-outlined text-3xl text-primary">image_not_supported</span>
+						</div>
+						<p class="font-h3 text-xl text-white/40 uppercase tracking-tight">Aucune photo pour le moment</p>
+						<p class="mt-2 font-mono text-[10px] text-white/20 tracking-widest uppercase">Archive en cours de remplissage</p>
+					</div>
+				)}
+
+				{!loading && cards.length > 0 && (
 				<div class="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-12 auto-rows-[300px] sm:auto-rows-[340px]">
 					{cards.map((card, index) => (
 						<div key={card.id} class={`${card.span}`}>
@@ -152,6 +154,7 @@ export function GallerySection() {
 						</div>
 					))}
 				</div>
+				)}
 
                 <div class="mt-16 flex flex-col sm:flex-row items-center justify-between gap-8 border-t border-white/10 pt-10">
                     <div class="flex items-center gap-6">
