@@ -16,31 +16,36 @@ import './index.css';
 export function App() {
 	return (
 		<LocationProvider>
-			<Route path="/(.*)" component={AppShell} />
+			<AppShell />
 		</LocationProvider>
 	);
 }
 
 function AppShell() {
 	const { url } = useLocation();
-	const isAdmin = url.startsWith('/admin');
+	// Plus robuste : vérifie si le chemin commence par /admin
+	const isAdminPath = url.split('?')[0].split('#')[0].startsWith('/admin');
+	
 	return (
 		<>
-			{!isAdmin && <Header />}
-			<Router>
-				<Route path="/" component={Home} />
-				<Route path="/events/:id" component={EventDetail} />
-				<Route path="/events" component={Events} />
-				<Route path="/admin" component={AdminLogin} />
-				<Route path="/admin/dashboard" component={AdminDashboard} />
-				<Route path="/admin/utilisateurs" component={AdminUsers} />
-				<Route path="/admin/clients" component={AdminClients} />
-				<Route path="/admin/reservations" component={AdminReservations} />
-				<Route default component={NotFound} />
-			</Router>
+			{!isAdminPath && <Header />}
+			<main id="main-content" class="flex-1 flex flex-col">
+				<Router>
+					<Route path="/" component={Home} />
+					<Route path="/events/:id" component={EventDetail} />
+					<Route path="/events" component={Events} />
+					<Route path="/admin" component={AdminLogin} />
+					<Route path="/admin/dashboard" component={AdminDashboard} />
+					<Route path="/admin/utilisateurs" component={AdminUsers} />
+					<Route path="/admin/clients" component={AdminClients} />
+					<Route path="/admin/reservations" component={AdminReservations} />
+					<Route default component={NotFound} />
+				</Router>
+			</main>
 		</>
 	);
 }
+
 
 if (typeof window !== 'undefined') {
 	hydrate(<App />, document.getElementById('app'));
