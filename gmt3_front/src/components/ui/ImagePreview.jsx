@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
 /** Resolve relative upload paths to the backend * */
 function resolveUrl(url) {

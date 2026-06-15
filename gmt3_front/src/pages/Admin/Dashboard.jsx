@@ -104,8 +104,8 @@ export function AdminDashboard() {
 	const handleEdit = (event) => {
 		setEditingEvent(event);
 		setDescText(event.description || '');
-		setPreviewSrc(event.imagePrincipale ? `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}${event.imagePrincipale}` : '');
-		setGalleryPreviewSrcs((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}${p.url}`));
+		setPreviewSrc(event.imagePrincipale ? `${import.meta.env.VITE_BACKEND_URL || ''}${event.imagePrincipale}` : '');
+		setGalleryPreviewSrcs((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || ''}${p.url}`));
 		setGalleryFiles([]);
 		setShowForm(true);
 	};

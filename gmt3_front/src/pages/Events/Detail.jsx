@@ -12,7 +12,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
-	const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 	const eventId = parseInt(params.id, 10);
 
 	const transformEventForCard = (evt) => ({

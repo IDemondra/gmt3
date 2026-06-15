@@ -60,6 +60,8 @@ services:
     build:
       context: ./gmt3_front
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
     container_name: gmt3_frontend
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
