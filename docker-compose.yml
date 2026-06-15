@@ -4,32 +4,6 @@ networks:
     external: true
 
 services:
-  # ── Reverse Proxy (Nginx) ──
-  gmt3_nginx:
-    image: nginx:alpine
-    container_name: gmt3_nginx
-    depends_on:
-      gmt3_frontend:
-        condition: service_healthy
-      gmt3_backend:
-        condition: service_healthy
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
-      - traefik.http.routers.gmt3.entrypoints=websecure
-      - traefik.http.routers.gmt3.tls.certresolver=myresolver
-      - traefik.http.services.gmt3.loadbalancer.server.port=80
-      - traefik.docker.network=traefik_preprod
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    networks:
-      - webapp
-      - traefik_preprod
-
   # ── Back-end (Bun) ──
   gmt3_backend:
     build:
@@ -37,7 +11,6 @@ services:
       dockerfile: Dockerfile
     container_name: gmt3_backend
     volumes:
-      # Persistance uniquement — le code vient de l'image buildée
       - ./gmt3_back/data:/app/data
       - ./gmt3_back/uploads:/app/uploads
     environment:
@@ -52,7 +25,7 @@ services:
       - webapp
     restart: unless-stopped
 
-  # ── Front-end (Bun + Vite + Nginx) ──
+  # ── Front-end (Nginx serving SPA + Proxy to Back-end) ──
   gmt3_frontend:
     depends_on:
       gmt3_backend:
@@ -63,12 +36,21 @@ services:
       args:
         VITE_API_BASE: /api
     container_name: gmt3_frontend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
+      - traefik.http.routers.gmt3.entrypoints=websecure
+      - traefik.http.routers.gmt3.tls.certresolver=myresolver
+      - traefik.http.services.gmt3.loadbalancer.server.port=80
+      - traefik.docker.network=traefik_preprod
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/health"]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 10s
     networks:
       - webapp
+      - traefik_preprod
     restart: unless-stopped
+
