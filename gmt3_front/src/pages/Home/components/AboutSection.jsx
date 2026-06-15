@@ -22,51 +22,51 @@ export function AboutSection() {
 
 	const team = [
 		{
-			name: 'Rija',
-			role: 'Guide naturaliste',
+			name: 'Hanitra',
+			role: 'Manager',
 			meta: 'Faune & flore endémiques',
-			note: '« Je lis la forêt comme un livre ouvert. Chaque cri, chaque trace raconte une histoire. »',
-			src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAbuDeIPLsY83l0VH8H0y92_P8QpKqSP8rE3nKmm3kDbjmZgcvhUcWwO2iiqNLPnl67NACEORlOuY1MGvTy1DEoocLXX0Pvc33eMsOykpFGJR7BQXeaz7_fiEpApi2bYlGWGIFbSbiOFdys5G9jUbLC8GBBI6BjWFehAl3bISOSDPYHelPt7ZdHT0nlW8XGUxnUkcUULbbyz4I7wtrDxAtXYFtyKDqmxsj8iQntZi3uZpfXktCP23bYcIvnnTWiVG8RNGM7KzwMcsA',
+			note: '« Une grande expédition, c\'est d\'abord une grande vision. Je m\'assure que chacun avance dans la même direction. »',
+			src: '/src/assets/hanitra.jpeg',
 			accent: 'rotate-[-1.2deg]',
 		},
 		{
 			name: 'Hasina',
 			role: 'Responsable Marketing',
 			meta: 'Traditions & artisanat',
-			note: '« Les vrais trésors de Madagascar sont dans les sourires et les gestes du quotidien. »',
+			note: '« Chaque histoire de Madagascar mérite d\'être contée. Je suis là pour que le monde entende nos voix authentiques. »',
 			src: '/src/assets/hasina.jpeg',
 			accent: 'rotate-[0.8deg]',
 		},
 		{
 			name: 'Heritiana',
-			role: "Relation Publique & Logistique",
+			role: "Relation Publique",
 			meta: 'Trek & orientation',
-			note: "« La montagne ne se dompte pas, elle s'écoute. Je suis là pour traduire. »",
+			note: '« Être le lien entre deux mondes, c\'est une responsabilité que je prends avec fierté. Le respect mutuel, c\'est ma langue maternelle. »',
 			src: '/src/assets/heritiana.jpeg',
 			accent: 'rotate-[-0.6deg]',
 		},
 		{
-			name: 'Miora',
-			role: 'Logistique terrain',
+			name: 'Ando',
+			role: 'Pisteur',
 			meta: 'Campements & intendance',
-			note: '« Un bivouac bien pensé, c\'est la moitié de l\'aventure. L\'autre moitié, c\'est le feu de camp. »',
-			src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFObZ3NzvjwCbetXzl_ONZPxuiEgjfXRWCsEkZD1-cV7rExx4dFnd72HvbllO9v6Q19Ej5gPbGvfmlA2U3AE3FyiUK3ehKtEJjSkAy6ORj2xYfvTPAi6_IBkP5yp0Jl4L_qdaakA1xd0S1znDNGX9ndrh-e0rtXOl8Ut8ikFEmiY2V2ZidBPyT1D07PEFHhhEfgnIA9RStddtqqDB82zbtgzI5zL_o5ysVI5plnLzrzyAOULPtrhl85B1a_oxIQ6IIZaTINMSnzfI',
+			note: '« Je connais chaque sentier, chaque raccourci, chaque danger. Votre sécurité est ma première destination. »',
+			src: '/src/assets/ando.jpeg',
 			accent: 'rotate-[1.5deg]',
 		},
 		{
-			name: 'Tovo',
-			role: 'Photographe & reporter',
+			name: 'Falinirina',
+			role: 'Animateur',
 			meta: 'Mémoire visuelle',
-			note: '« Je ne capture pas des paysages, je capture des moments qui ne reviendront jamais. »',
-			src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvU8JMScoFI1gbViK1kPPegwWGpihkNED-vo79OhOKlq-ZcnZi27cJg89GogKZzSAuhe-m63xBdxe0kr6w8jHSSfTIBoe1GT6xEACKS2UY-Dsrx8A2YMZGLijrdzVTQ5apcyHO2PEqP_RYJCZzhm4aRO5QxrAGKtSRDVszLGvbULPSKhek-35AQansjo4gwzG84fDtGXtuTOJEttfBaoGfKPXb6s6HD26Ssnzc3-I93-3CGKz68Pu7avKuVJUHNEWRigTAmhETLvQ',
+			note: '« L\'aventure sans rires et sans connexions humaines, ce n\'est que du tourisme. Je suis là pour créer la magie. »',
+			src: '/src/assets/billy.jpeg',
 			accent: 'rotate-[-1deg]',
 		},
 		{
-			name: 'Lala',
-			role: 'Médiatrice communautaire',
+			name: 'Tantely',
+			role: 'Responsable Logistique',
 			meta: 'Lien avec les villages',
-			note: '« Chaque village a son propre rythme. Mon rôle, c\'est de faire le pont sans rien bousculer. »',
-			src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAkio4VJUPgJPpaxLyJf8XUmQPzbUCkHHzbdIofoPS9BA1BfUXImCENR0mxA91OqeDCz1bWiXFpb1uxDTlqA9FSyLPDlxYYGFNMAVDsXqRq_o5rxf-KPpHEeN4rQWY-AeMAFgXmqm0vXDvDcfB99PknncZRIGPyS_e9KfpACSU__BgtaGCRS-5SjG2v4OxglWwnN7jgk12W2RiT8rL_J7hc0rEF-R5T0QV-cDxZH6YaA97XsLFCUQCchIJtY-ZTmEXTllCnw96DTmc',
+			note: '« Les détails que personne ne voit, ce sont ceux qui font la différence. Chaque campement est une œuvre d\'art bien organisée. »',
+			src: '/src/assets/tantely.jpeg',
 			accent: 'rotate-[0.5deg]',
 		},
 	];
@@ -169,9 +169,6 @@ export function AboutSection() {
 										<div class="absolute bottom-3 left-3 flex flex-col gap-1">
 											<span class="w-fit bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-lg">
 												{member.role}
-											</span>
-											<span class="w-fit bg-on-background px-2 py-0.5 text-[9px] font-medium text-white/80">
-												EXP: {member.meta.split('&')[0].trim()}
 											</span>
 										</div>
 									</div>
