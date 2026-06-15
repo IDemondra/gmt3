@@ -17,7 +17,7 @@ export function AdminLogin() {
 	const { handleSubmit, formState, errorMsg } = useLogin(route);
 
 	return (
-		<div class="flex-1 flex items-center justify-center bg-[#f9fafb] px-4 min-h-dvh">
+		<div class="flex-1 flex flex-col items-center justify-center bg-[#f9fafb] px-4 min-h-screen">
 			<div class="w-full max-w-[400px]">
 				{/* ── Logo ── */}
 				<div class="text-center mb-10">

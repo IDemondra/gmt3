@@ -23,13 +23,15 @@ export function App() {
 
 function AppShell() {
 	const { url } = useLocation();
-	// Plus robuste : vérifie si le chemin commence par /admin
-	const isAdminPath = url.split('?')[0].split('#')[0].startsWith('/admin');
+	
+	// Détection ultra-robuste de la route Admin
+	const currentPath = typeof window !== 'undefined' ? window.location.pathname : url;
+	const isAdminPath = currentPath.split('?')[0].split('#')[0].startsWith('/admin');
 	
 	return (
 		<>
 			{!isAdminPath && <Header />}
-			<main id="main-content" class="flex-1 flex flex-col">
+			<main id="main-content" class="flex-1 flex flex-col min-h-screen w-full relative">
 				<Router>
 					<Route path="/" component={Home} />
 					<Route path="/events/:id" component={EventDetail} />
@@ -45,6 +47,7 @@ function AppShell() {
 		</>
 	);
 }
+
 
 
 if (typeof window !== 'undefined') {
