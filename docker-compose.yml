@@ -1,14 +1,27 @@
+networks:
+  webapp:
+  traefik_preprod:
+    external: true
+
 services:
   # ── Reverse Proxy (Nginx) ──
   gmt3_nginx:
     image: nginx:alpine
-    ports:
-      - "5173:5173"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - gmt3_backend
       - gmt3_frontend
+      - gmt3_backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
+      - traefik.http.routers.gmt3.entrypoints=websecure
+      - traefik.http.routers.gmt3.tls.certresolver=myresolver
+      - traefik.http.services.gmt3.loadbalancer.server.port=80
+      - traefik.docker.network=traefik_preprod
+    networks:
+      - webapp
+      - traefik_preprod
 
   # ── Back-end (Bun) ──
   gmt3_backend:
@@ -23,9 +36,11 @@ services:
       - ./gmt3_back/uploads:/app/uploads
     environment:
       - PORT=3000
+    networks:
+      - webapp
     restart: unless-stopped
 
-  # ── Front-end (Bun + Vite) ──
+  # ── Front-end (Bun + Vite + Nginx) ──
   gmt3_frontend:
     depends_on:
       - gmt3_backend
@@ -33,10 +48,6 @@ services:
       context: ./gmt3_front
       dockerfile: Dockerfile
     container_name: gmt3_frontend
-    volumes:
-      - ./gmt3_front:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - VITE_API_BASE=/api
+    networks:
+      - webapp
     restart: unless-stopped
