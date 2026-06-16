@@ -78,11 +78,13 @@ jobs:
           host: ${{ secrets.NAS_HOST }}
           username: ${{ secrets.NAS_USER }}
           password: ${{ secrets.NAS_PRIVACY_KEY }}
+          envs: DOCKER_HOST_REGISTRY_NAS
           script: |
             set -e
             echo "=== DEMARRAGE DU DEPLOIEMENT GMT+3 ==="
 
             cd gmt_3
+            export DOCKER_HOST_REGISTRY_NAS=${{ secrets.DOCKER_HOST_REGISTRY_NAS }}
 
             echo "Recuperation des nouvelles images..."
             docker compose pull
