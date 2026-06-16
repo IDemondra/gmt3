@@ -6,9 +6,7 @@ networks:
 services:
   # ── Back-end (Bun) ──
   gmt3_backend:
-    build:
-      context: ./gmt3_back
-      dockerfile: Dockerfile
+    image: ${DOCKER_HOST_REGISTRY_NAS}/gmt3-back:latest
     container_name: gmt3_backend
     volumes:
       - ./gmt3_back/data:/app/data
@@ -30,15 +28,11 @@ services:
 
   # ── Front-end (Nginx serving SPA + Proxy to Back-end) ──
   gmt3_frontend:
+    image: ${DOCKER_HOST_REGISTRY_NAS}/gmt3-front:latest
+    container_name: gmt3_frontend
     depends_on:
       gmt3_backend:
         condition: service_healthy
-    build:
-      context: ./gmt3_front
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE: /api
-    container_name: gmt3_frontend
     labels:
       - traefik.enable=true
       - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
@@ -56,4 +50,3 @@ services:
       - webapp
       - traefik_preprod
     restart: unless-stopped
-
