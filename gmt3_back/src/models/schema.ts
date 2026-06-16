@@ -45,6 +45,14 @@ export const photosEvenement = sqliteTable('photos_evenement', {
 	legende: text('legende', { length: 255 }),
 });
 
+// ── Refresh Tokens (rotation) ──
+export const refreshTokens = sqliteTable('refresh_tokens', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	tokenHash: text('token_hash', { length: 64 }).notNull().unique(),
+	utilisateurId: integer('utilisateur_id').notNull().references(() => utilisateurs.id, { onDelete: 'cascade' }),
+	expiresAt: integer('expires_at').notNull(), // Unix timestamp (seconds)
+});
+
 // ── Réservations ──
 export const reservations = sqliteTable('reservations', {
 	id: integer('id').primaryKey({ autoIncrement: true }),

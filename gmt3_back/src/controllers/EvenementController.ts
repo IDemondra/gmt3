@@ -7,6 +7,18 @@ import { buildGalleryUploadPlan } from '../utils/photoGallery.js';
 import { formatDateToDDMMYYYY } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { fileTypeFromBuffer } from 'file-type';
+
+const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: string } | null> {
+	if (file.size > MAX_FILE_SIZE) return null;
+	const buf = Buffer.from(await file.arrayBuffer());
+	const type = await fileTypeFromBuffer(buf);
+	if (!type || !ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
+	return { buf, ext: type.ext };
+}
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {
 	return {
@@ -72,12 +84,24 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 	const files = getGalleryFiles(fd);
 	if (files.length === 0) return [];
 
-	const plan = buildGalleryUploadPlan(evenementId, files);
+	const validatedFiles: Array<{ file: File; buf: Buffer; ext: string }> = [];
+	for (const file of files) {
+		const validated = await validateImageBuffer(file);
+		if (validated) validatedFiles.push({ file, buf: validated.buf, ext: validated.ext });
+	}
+	if (validatedFiles.length === 0) return [];
+
+	const plan = buildGalleryUploadPlan(evenementId, validatedFiles.map((v) => v.file));
 	const galleryDir = ensureGalleryDir(evenementId);
 
-	for (const item of plan) {
-		const filePath = resolve(galleryDir, item.filename);
-		writeFileSync(filePath, Buffer.from(await item.file.arrayBuffer()));
+	for (let i = 0; i < plan.length; i++) {
+		const item = plan[i]!;
+		const validated = validatedFiles[i]!;
+		const correctedFilename = item.filename.replace(/\.[^.]+$/, `.${validated.ext}`);
+		const filePath = resolve(galleryDir, correctedFilename);
+		writeFileSync(filePath, validated.buf);
+		item.filename = correctedFilename;
+		item.url = `/uploads/evenements/${evenementId}/gallery/${correctedFilename}`;
 	}
 
 	await photoRepository.deleteByEvenementId(evenementId);
@@ -167,11 +191,14 @@ export const EvenementController = {
 
 		const imageFile = fd.get('imagePrincipale') as File | null;
 		if (imageFile && imageFile.size > 0) {
+			const validated = await validateImageBuffer(imageFile);
+			if (!validated) {
+				await evenementService.delete(item.id);
+				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF)' }, { status: 400 });
+			}
 			const dir = ensureDir(item.id);
-			const ext = imageFile.name.split('.').pop() || 'jpg';
-			const filename = `main.${ext}`;
-			const filePath = resolve(dir, filename);
-			writeFileSync(filePath, Buffer.from(await imageFile.arrayBuffer()));
+			const filename = `main.${validated.ext}`;
+			writeFileSync(resolve(dir, filename), validated.buf);
 			await evenementService.update(item.id, { imagePrincipale: `/uploads/evenements/${item.id}/${filename}` });
 		}
 
@@ -204,11 +231,13 @@ export const EvenementController = {
 
 		const imageFile = fd.get('imagePrincipale') as File | null;
 		if (imageFile && imageFile.size > 0) {
+			const validated = await validateImageBuffer(imageFile);
+			if (!validated) {
+				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF)' }, { status: 400 });
+			}
 			const dir = ensureDir(id);
-			const ext = imageFile.name.split('.').pop() || 'jpg';
-			const filename = `main.${ext}`;
-			const filePath = resolve(dir, filename);
-			writeFileSync(filePath, Buffer.from(await imageFile.arrayBuffer()));
+			const filename = `main.${validated.ext}`;
+			writeFileSync(resolve(dir, filename), validated.buf);
 			data.imagePrincipale = `/uploads/evenements/${id}/${filename}`;
 		}
 

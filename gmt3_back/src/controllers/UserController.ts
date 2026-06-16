@@ -126,10 +126,20 @@ export const UserController = {
 		if (!result) {
 			return Response.json({ error: 'TOKEN_INVALIDE_OU_EXPIRE', message: 'Token invalide ou expiré' }, { status: 401 });
 		}
-		return Response.json({ message: 'Token rafraîchi avec succès', user: formatUserDates(result.user), accessToken: result.accessToken });
+		return new Response(JSON.stringify({ message: 'Token rafraîchi avec succès', user: formatUserDates(result.user), accessToken: result.accessToken }), {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				'Set-Cookie': `refreshToken=${result.newRefreshToken}; ${SET_COOKIE_OPTS}`,
+			},
+		});
 	},
 
-	async logout(_req: BunRequest): Promise<Response> {
+	async logout(req: BunRequest): Promise<Response> {
+		const cookie = req.headers.get('Cookie') || '';
+		const match = cookie.match(/refreshToken=([^;]+)/);
+		const token = match ? decodeURIComponent(match[1]!) : null;
+		if (token) await userService.revokeRefreshToken(token);
 		return new Response(JSON.stringify({ success: true, message: 'Déconnexion réussie' }), {
 			status: 200,
 			headers: {

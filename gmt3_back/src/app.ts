@@ -10,6 +10,23 @@ import { resolve } from 'path';
 
 const STATIC_UPLOADS_ROOT = resolve(import.meta.dir, '..', 'uploads');
 
+// In-memory rate limiter: max 10 login attempts per IP per 15 minutes
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+
+function checkLoginRateLimit(ip: string): boolean {
+	const now = Date.now();
+	const entry = loginAttempts.get(ip);
+	if (!entry || now > entry.resetAt) {
+		loginAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+		return true;
+	}
+	if (entry.count >= RATE_LIMIT_MAX) return false;
+	entry.count++;
+	return true;
+}
+
 const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...userRoutes,
 	...clientRoutes,
@@ -19,16 +36,27 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 };
 
 const PROTECTED_ROUTES = new Set([
+	// utilisateurs
+	'GET /api/utilisateurs',
+	'GET /api/utilisateurs/:id',
 	'PUT /api/utilisateurs/:id',
 	'DELETE /api/utilisateurs/:id',
+	// clients
+	'GET /api/clients',
+	'GET /api/clients/:id',
 	'PUT /api/clients/:id',
 	'DELETE /api/clients/:id',
+	// evenements (mutations only)
 	'POST /api/evenements',
 	'PUT /api/evenements/:id',
 	'DELETE /api/evenements/:id',
 	'POST /api/evenements/:id/photos',
+	// reservations (read + mutations, PII)
+	'GET /api/reservations',
+	'GET /api/reservations/:id',
 	'PUT /api/reservations/:id',
 	'DELETE /api/reservations/:id',
+	// kpis
 	'GET /api/kpis',
 ]);
 
@@ -73,10 +101,14 @@ function matchRoute(
 export async function handleRequest(req: BunRequest): Promise<Response> {
 	const url = new URL(req.url);
 	const pathname = url.pathname;
-	const origin = req.headers.get('Origin') || '*';
+	const ALLOWED_ORIGINS = new Set(
+		(Bun.env.CORS_ORIGINS || 'https://gmt3-fianarantsoa.mg,http://localhost:5173').split(','),
+	);
+	const requestOrigin = req.headers.get('Origin') || '';
+	const allowedOrigin = ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : '';
 
 	const corsHeaders = {
-		'Access-Control-Allow-Origin': origin,
+		'Access-Control-Allow-Origin': allowedOrigin || 'null',
 		'Access-Control-Allow-Credentials': 'true',
 		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -105,6 +137,14 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 
 	if (!matched) {
 		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+	}
+
+	// ── Login rate limiting ──
+	if (req.method === 'POST' && pathname === '/api/utilisateurs/login') {
+		const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP') ?? 'unknown';
+		if (!checkLoginRateLimit(ip)) {
+			return Response.json({ error: 'TROP_DE_TENTATIVES', message: 'Trop de tentatives. Réessayez dans 15 minutes.' }, { status: 429, headers: corsHeaders });
+		}
 	}
 
 	// ── Auth guard ──

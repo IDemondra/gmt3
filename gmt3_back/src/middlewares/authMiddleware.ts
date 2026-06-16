@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import type { BunRequest } from '../types/http.js';
 
-const JWT_SECRET = Bun.env.JWT_SECRET || 'gmt3-secret-change-in-production';
+const JWT_SECRET = Bun.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET env var is required');
+const _JWT_SECRET: string = JWT_SECRET;
 
 export async function authMiddleware(req: BunRequest): Promise<Response | undefined> {
 	const authHeader = req.headers.get('Authorization');
@@ -11,7 +13,7 @@ export async function authMiddleware(req: BunRequest): Promise<Response | undefi
 
 	const token = authHeader.slice(7);
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET) as { id: number; nomUtilisateur: string; role: string };
+		const decoded = jwt.verify(token, _JWT_SECRET) as { id: number; nomUtilisateur: string; role: string };
 		(req as any).user = decoded;
 		return undefined;
 	} catch {
