@@ -8,16 +8,33 @@ import { formatDateToDDMMYYYY } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
+import heicConvert from 'heic-convert';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: string } | null> {
 	if (file.size > MAX_FILE_SIZE) return null;
-	const buf = Buffer.from(await file.arrayBuffer());
-	const type = await fileTypeFromBuffer(buf);
-	if (!type || !ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
-	return { buf, ext: type.ext };
+	const rawBuf = Buffer.from(await file.arrayBuffer());
+	const type = await fileTypeFromBuffer(rawBuf);
+	if (!type) return null;
+
+	if (HEIC_MIMES.has(type.mime)) {
+		// Photos iPhone (réglage "Format élevé") sont exportées en HEIC/HEIF.
+		// Aucun navigateur autre que Safari ne sait les afficher : on convertit en JPEG côté serveur.
+		try {
+			const jpegArrayBuffer = await heicConvert({ buffer: rawBuf, format: 'JPEG', quality: 0.9 });
+			const jpegBuf = Buffer.from(jpegArrayBuffer);
+			if (jpegBuf.length > MAX_FILE_SIZE) return null;
+			return { buf: jpegBuf, ext: 'jpg' };
+		} catch {
+			return null;
+		}
+	}
+
+	if (!ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
+	return { buf: rawBuf, ext: type.ext };
 }
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {
@@ -194,7 +211,7 @@ export const EvenementController = {
 			const validated = await validateImageBuffer(imageFile);
 			if (!validated) {
 				await evenementService.delete(item.id);
-				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF)' }, { status: 400 });
+				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
 			const dir = ensureDir(item.id);
 			const filename = `main.${validated.ext}`;
@@ -233,7 +250,7 @@ export const EvenementController = {
 		if (imageFile && imageFile.size > 0) {
 			const validated = await validateImageBuffer(imageFile);
 			if (!validated) {
-				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF)' }, { status: 400 });
+				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
 			const dir = ensureDir(id);
 			const filename = `main.${validated.ext}`;

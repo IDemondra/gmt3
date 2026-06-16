@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "file-type": "^22.0.1",
+    "heic-convert": "^2.1.0",
     "jsonwebtoken": "^9.0.3"
   }
 }

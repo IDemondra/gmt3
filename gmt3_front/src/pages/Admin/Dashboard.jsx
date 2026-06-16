@@ -128,8 +128,8 @@ export function AdminDashboard() {
 			const imageFile = data.get('imagePrincipale');
 			if (imageFile && imageFile.size > 0) {
 				const ext = imageFile.name.split('.').pop().toLowerCase();
-				if (!['jpg', 'jpeg', 'png'].includes(ext)) {
-					addToast('Format accepté : .jpg, .jpeg, .png uniquement', 'warning');
+				if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'].includes(ext)) {
+					addToast('Format accepté : JPG, PNG, WEBP, GIF, HEIC', 'warning');
 					return;
 				}
 				fd.set('imagePrincipale', imageFile);
@@ -350,9 +350,9 @@ export function AdminDashboard() {
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="imagePrincipale">
-						Image principale (jpg, jpeg, png)
+						Image principale (jpg, png, webp, gif, heic)
 					</label>
-					<input id="imagePrincipale" name="imagePrincipale" type="file" accept=".jpg,.jpeg,.png" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => { const f = e.currentTarget.files?.[0]; if (f) setPreviewSrc(URL.createObjectURL(f)); }} />
+					<input id="imagePrincipale" name="imagePrincipale" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => { const f = e.currentTarget.files?.[0]; if (f) setPreviewSrc(URL.createObjectURL(f)); }} />
 					{previewSrc && (
 						<div class="mt-4 rounded-lg overflow-hidden border border-gray-100">
 							<img src={previewSrc} alt="Aperçu" class="max-h-48 object-cover w-full" />
@@ -363,7 +363,7 @@ export function AdminDashboard() {
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
 						Galerie photos (optionnel)
 					</label>
-					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => {
+					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => {
 						const files = Array.from(e.currentTarget.files || []);
 						setGalleryFiles((current) => [...current, ...files]);
 						setGalleryPreviewSrcs((current) => [...current, ...files.map((f) => URL.createObjectURL(f))]);
