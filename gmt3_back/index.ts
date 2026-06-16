@@ -1,5 +1,6 @@
 import { handleRequest } from './src/app.js';
-import { sqlite } from './src/config/database.js';
+import { db, sqlite } from './src/config/database.js';
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 import { resolve } from 'path';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
@@ -16,6 +17,9 @@ if (!existsSync(DB_PATH)) {
 	writeFileSync(DB_PATH, '');
 	console.log('[DB] Created database file');
 }
+
+migrate(db, { migrationsFolder: resolve(import.meta.dir, 'drizzle') });
+console.log('[DB] Migrations applied');
 
 Bun.serve({
 	port: PORT,
