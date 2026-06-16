@@ -15,8 +15,10 @@ import { applyFormatting } from '../../utils/textFormatter.js';
 import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { EventDetailModal } from '../../components/admin/EventDetailModal.jsx';
+import { compressImageIfNeeded } from '../../utils/imageCompress.js';
 
 const DESC_MAX = 1000;
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 const toDateInputValue = (date = new Date()) => {
 	if (typeof date === 'string') {
@@ -45,6 +47,7 @@ export function AdminDashboard() {
 	const [galleryPreviewSrcs, setGalleryPreviewSrcs] = useState([]);
 	const [galleryFiles, setGalleryFiles] = useState([]);
 	const [uploading, setUploading] = useState(false);
+	const [uploadStatus, setUploadStatus] = useState('');
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
 	const [kpis, setKpis] = useState({ totalEvents: 0, totalReservations: 0, limitedEvents: 0 });
@@ -130,15 +133,21 @@ export function AdminDashboard() {
 				const ext = imageFile.name.split('.').pop().toLowerCase();
 				if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'].includes(ext)) {
 					addToast('Format accepté : JPG, PNG, WEBP, GIF, HEIC', 'warning');
+					setUploading(false);
 					return;
 				}
-				fd.set('imagePrincipale', imageFile);
+				setUploadStatus('Compression de l\'image principale...');
+				const compressed = await compressImageIfNeeded(imageFile, MAX_UPLOAD_BYTES);
+				fd.set('imagePrincipale', compressed);
 			}
 
-			for (const file of galleryFiles) {
-				fd.append('photosEvenement', file);
+			for (const [i, file] of galleryFiles.entries()) {
+				setUploadStatus(`Compression photo galerie ${i + 1}/${galleryFiles.length}...`);
+				const compressed = await compressImageIfNeeded(file, MAX_UPLOAD_BYTES);
+				fd.append('photosEvenement', compressed);
 			}
 
+			setUploadStatus('Envoi en cours...');
 			if (editingEvent) {
 				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd);
 				setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
@@ -154,6 +163,7 @@ export function AdminDashboard() {
 			addToast((e instanceof Error ? e.message : 'Erreur lors de l\'enregistrement'), 'error');
 		} finally {
 			setUploading(false);
+			setUploadStatus('');
 		}
 	};
 
@@ -291,6 +301,8 @@ export function AdminDashboard() {
 				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); }}
 				onSubmit={handleSubmit}
 				encType="multipart/form-data"
+				submitting={uploading}
+				submittingLabel={uploadStatus || 'Traitement...'}
 			>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="titre">Titre</label>

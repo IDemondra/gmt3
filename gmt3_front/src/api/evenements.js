@@ -1,5 +1,13 @@
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
+async function parseJsonSafe(res) {
+	try {
+		return await res.json();
+	} catch {
+		return { error: res.status === 413 ? 'FICHIER_TROP_LOURD' : 'ERREUR_SERVEUR' };
+	}
+}
+
 /**
  * @param {null} token
  */
@@ -17,14 +25,14 @@ export async function evenementsApi(token) {
 export async function evenementApi(token, id) {
 	const headers = token ? { Authorization: `Bearer ${token}` } : {};
 	const res = await fetch(`${API_BASE}/evenements/${id}`, { headers, credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CHARGEMENT'); }
+	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_CHARGEMENT'); }
 	return res.json();
 }
 
 export async function createEvenementApi(token, formData) {
 	const headers = { Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/evenements`, { method: 'POST', headers, body: formData, credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CREATION'); }
+	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_CREATION'); }
 	return res.json();
 }
 
@@ -36,7 +44,7 @@ export async function createEvenementApi(token, formData) {
 export async function updateEvenementApi(token, id, formData) {
 	const headers = { Authorization: `Bearer ${token}` };
 	const res = await fetch(`${API_BASE}/evenements/${id}`, { method: 'PUT', headers, body: formData, credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_MAJ'); }
+	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_MAJ'); }
 	return res.json();
 }
 
