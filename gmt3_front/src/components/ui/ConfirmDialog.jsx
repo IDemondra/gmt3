@@ -74,7 +74,7 @@ export function ConfirmDialog({
 						type="button"
 						onClick={onCancel}
 						disabled={loading}
-						class="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all"
+						class="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{cancelLabel}
 					</button>
@@ -82,13 +82,14 @@ export function ConfirmDialog({
 						type="button"
 						onClick={handleConfirm}
 						disabled={loading}
-						class={`flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm ${
+						class={`flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
 							isDanger
 								? 'bg-red-600 text-white hover:bg-red-700'
 								: 'bg-primary text-white hover:bg-primary-container'
 						}`}
 					>
-						{confirmLabel}
+						{loading && <span class="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+						{loading ? 'Patientez...' : confirmLabel}
 					</button>
 				</div>
 			</div>
