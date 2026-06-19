@@ -33,7 +33,7 @@ function AppShell() {
 	const showPublicHeader = isPublic && !url.includes('/admin');
 
 	return (
-		<div id="app-root" class="min-h-screen flex flex-col relative">
+		<div id="app-root" class="min-h-dvh flex flex-col relative">
 			{showPublicHeader && <Header />}
 			<main class="flex-1 flex flex-col">
 				<Router>
