@@ -102,7 +102,7 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	const url = new URL(req.url);
 	const pathname = url.pathname;
 	const ALLOWED_ORIGINS = new Set(
-		(Bun.env.CORS_ORIGINS || 'https://gmt3-fianarantsoa.mg,http://localhost:5173').split(','),
+		(Bun.env.CORS_ORIGINS || 'https://gmt3-fianarantsoa.mg,http://localhost:4321,http://localhost:5173').split(','),
 	);
 	const requestOrigin = req.headers.get('Origin') || '';
 	const allowedOrigin = ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : '';

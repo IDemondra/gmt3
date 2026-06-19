@@ -1,0 +1,74 @@
+---
+import '../index.css';
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+
+export interface Props {
+	title?: string;
+	description?: string;
+	keywords?: string;
+	image?: string;
+	noindex?: boolean;
+}
+
+const {
+	title = 'GMT3 Fianarantsoa | Tourisme Fianarantsoa - Voyages & Randonnées',
+	description = 'GMT3 Fianarantsoa : Spécialiste du tourisme à Fianarantsoa. Circuits, randonnées, immersion culturelle Betsileo, hôtels et voyages sur mesure dans la Haute Matsiatra.',
+	keywords = 'gmt3 fianarantsoa, tourisme fianarantsoa, fianarantsoa tourisme, voyage fianarantsoa, randonnée fianarantsoa, haute matsiatra',
+	image = '/assets/logo_gmt3.jpeg',
+	noindex = false,
+} = Astro.props;
+
+const canonical = `${SITE}${Astro.url.pathname}`;
+const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
+---
+
+<!doctype html>
+<html class="light" lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" content="#ba0013" />
+		<link rel="icon" type="image/jpeg" href="/assets/logo_gmt3.jpeg" />
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
+		<link rel="canonical" href={canonical} />
+		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+
+		<!-- SEO Local Fianarantsoa -->
+		<meta name="geo.region" content="MG" />
+		<meta name="geo.placename" content="Fianarantsoa" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="GMT3 Fianarantsoa" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content="fr_MG" />
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body class="bg-background text-on-background font-body-md min-h-dvh flex flex-col">
+		<slot />
+	</body>
+</html>

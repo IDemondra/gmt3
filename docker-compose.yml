@@ -16,6 +16,15 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - CORS_ORIGINS=${CORS_ORIGINS}
+    labels:
+      # Route /api (host public) -> backend. Priorité > router front.
+      - traefik.enable=true
+      - traefik.http.routers.gmt3-api.rule=Host(`gmt3-fianarantsoa.mg`) && PathPrefix(`/api`)
+      - traefik.http.routers.gmt3-api.entrypoints=websecure
+      - traefik.http.routers.gmt3-api.tls.certresolver=myresolver
+      - traefik.http.routers.gmt3-api.priority=100
+      - traefik.http.services.gmt3-api.loadbalancer.server.port=3000
+      - traefik.docker.network=traefik_preprod
     healthcheck:
       test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s
@@ -24,28 +33,35 @@ services:
       start_period: 10s
     networks:
       - webapp
+      - traefik_preprod
     restart: unless-stopped
 
-  # ── Front-end (Nginx serving SPA + Proxy to Back-end) ──
+  # ── Front-end (Astro SSR — serveur Bun/Node) ──
   gmt3_frontend:
     image: ${DOCKER_HOST_REGISTRY_NAS}/gmt3-front:latest
     container_name: gmt3_frontend
     depends_on:
       gmt3_backend:
         condition: service_healthy
+    environment:
+      - HOST=0.0.0.0
+      - PORT=4321
+      # Fetch SSR (dans les .astro) -> backend interne via le réseau docker
+      - API_BASE_INTERNAL=http://gmt3_backend:3000/api
     labels:
       - traefik.enable=true
       - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
       - traefik.http.routers.gmt3.entrypoints=websecure
       - traefik.http.routers.gmt3.tls.certresolver=myresolver
-      - traefik.http.services.gmt3.loadbalancer.server.port=80
+      - traefik.http.routers.gmt3.priority=1
+      - traefik.http.services.gmt3.loadbalancer.server.port=4321
       - traefik.docker.network=traefik_preprod
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/health"]
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
     networks:
       - webapp
       - traefik_preprod

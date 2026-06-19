@@ -8,12 +8,16 @@ const defaultOptions = {
 
 export function useScrollReveal(options = {}) {
 	const ref = useRef(null);
-	const [isVisible, setIsVisible] = useState(false);
+	// Visible par défaut : SSR + no-JS + hydratation échouée => contenu jamais masqué (SEO safe).
+	const [isVisible, setIsVisible] = useState(true);
 	const { threshold, rootMargin, once } = { ...defaultOptions, ...options };
 
 	useEffect(() => {
 		const el = ref.current;
-		if (!el) return;
+		if (!el || typeof IntersectionObserver === 'undefined') return; // reste visible
+
+		// On arme l'animation d'entrée seulement quand l'observer est dispo.
+		setIsVisible(false);
 
 		const observer = new IntersectionObserver(
 			([entry]) => {

@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Header } from '../../components/Header.jsx';
+import { EventDetail } from '../../views/Events/Detail.jsx';
+
+const id = Astro.params.id;
+// Fetch SSR -> backend interne (runtime), distinct du /api client (navigateur)
+const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
+
+// Fetch serveur uniquement pour les méta SEO (le rendu visuel = composant existant)
+let event = null;
+const eventId = parseInt(id ?? '', 10);
+if (!Number.isNaN(eventId)) {
+	event = await fetch(`${API_BASE}/evenements/${eventId}`, { credentials: 'include' })
+		.then((r) => (r.ok ? r.json() : null))
+		.catch(() => null);
+}
+
+const title = event ? `${event.titre} — GMT3 Fianarantsoa` : 'Événement — GMT3 Fianarantsoa';
+const description = event
+	? (event.description || '').replace(/[#*_`>]/g, '').slice(0, 160)
+	: 'Détail de l’expédition à Fianarantsoa et Haute Matsiatra.';
+const keywords = event
+	? `${event.titre}, ${event.lieu || ''}, randonnée fianarantsoa, circuit haute matsiatra`
+	: undefined;
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} image={event?.imagePrincipale} noindex={!event}>
+	<Header client:load />
+	<EventDetail client:load params={{ id }} />
+</BaseLayout>

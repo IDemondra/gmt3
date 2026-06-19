@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Header } from '../../components/Header.jsx';
+import { Events } from '../../views/Events/index.jsx';
+---
+
+<BaseLayout
+	title="Randonnées & expéditions à Fianarantsoa — GMT3 Fianarantsoa"
+	description="Calendrier des randonnées et circuits à Fianarantsoa et en Haute Matsiatra : dates fermes, groupes restreints, immersion culturelle Betsileo. Réservez votre place."
+	keywords="randonnée fianarantsoa, circuit fianarantsoa, expédition haute matsiatra, trek betsileo, voyage fianarantsoa"
+>
+	<Header client:load />
+	<Events client:load />
+</BaseLayout>

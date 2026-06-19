@@ -2,7 +2,7 @@ import type { IRepository } from './interfaces/IRepository.js';
 import type { Evenement, NewEvenement } from '../types/index.js';
 import { eq } from 'drizzle-orm';
 import { db } from '../config/database.js';
-import { evenements } from '../models/schema.js';
+import { evenements, reservations, photosEvenement } from '../models/schema.js';
 
 export class EvenementRepository implements IRepository<Evenement, NewEvenement> {
     async findAll(): Promise<Evenement[]> {
@@ -21,7 +21,16 @@ export class EvenementRepository implements IRepository<Evenement, NewEvenement>
         return rows[0];
     }
     async delete(id: number): Promise<boolean> {
-        const rows = await db.delete(evenements).where(eq(evenements.id, id)).returning({ id: evenements.id });
-        return rows.length > 0;
+        // Suppression des lignes filles avant l'événement (FK), atomique.
+        return db.transaction((tx) => {
+            tx.delete(reservations).where(eq(reservations.evenementId, id)).run();
+            tx.delete(photosEvenement).where(eq(photosEvenement.evenementId, id)).run();
+            const rows = tx
+                .delete(evenements)
+                .where(eq(evenements.id, id))
+                .returning({ id: evenements.id })
+                .all();
+            return rows.length > 0;
+        });
     }
 }

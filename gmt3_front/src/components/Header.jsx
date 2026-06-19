@@ -1,12 +1,9 @@
-import { useLocation } from 'preact-iso';
 import { signal } from '@preact/signals';
-import { img } from '../utils/images.js';
 import { useEffect, useState } from 'preact/hooks';
 
 const mobileMenuOpen = signal(false);
 
 export function Header() {
-	const { url } = useLocation();
 	const [scrolled, setScrolled] = useState(false);
 
 	useEffect(() => {

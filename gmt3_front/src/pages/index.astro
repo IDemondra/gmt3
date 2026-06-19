@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Header } from '../components/Header.jsx';
+import { Home } from '../views/Home/index.jsx';
+---
+
+<BaseLayout>
+	<Header client:load />
+	<Home client:load />
+</BaseLayout>

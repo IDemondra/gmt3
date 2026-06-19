@@ -1,13 +1,15 @@
+# ── Build ──
 FROM oven/bun:latest AS builder
 
 WORKDIR /app
 
 COPY package.json bun.lock ./
-RUN bun install
+RUN bun install --frozen-lockfile
 
 COPY . .
 
-# Same-origin API path baked into the bundle at build time (Vite static replace)
+# Base API côté CLIENT (navigateur) : same-origin, routée vers le back par Traefik.
+# Inlinée dans le bundle client au build (préfixe VITE_).
 ARG VITE_API_BASE=/api
 ARG VITE_BACKEND_URL=
 ENV VITE_API_BASE=$VITE_API_BASE
@@ -15,12 +17,22 @@ ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
 RUN bun run build
 
-FROM nginx:alpine
+# ── Runtime (serveur SSR Astro) ──
+FROM oven/bun:latest AS runtime
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV NODE_ENV=production
+# L'adapter node écoute sur HOST:PORT ; HOST=0.0.0.0 obligatoire en conteneur.
+ENV HOST=0.0.0.0
+ENV PORT=4321
+# Base API côté SERVEUR (fetch SSR dans les .astro) -> backend interne.
+ENV API_BASE_INTERNAL=http://gmt3_backend:3000/api
 
-EXPOSE 80
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 4321
+
+CMD ["bun", "./dist/server/entry.mjs"]
