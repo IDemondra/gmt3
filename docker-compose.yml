@@ -19,7 +19,7 @@ services:
     labels:
       # Route /api (host public) -> backend. Priorité > router front.
       - traefik.enable=true
-      - traefik.http.routers.gmt3-api.rule=Host(`gmt3-fianarantsoa.mg`) && PathPrefix(`/api`)
+      - traefik.http.routers.gmt3-api.rule=Host(`gmt3-fianarantsoa.mg`) && (PathPrefix(`/api`) || PathPrefix(`/uploads`))
       - traefik.http.routers.gmt3-api.entrypoints=websecure
       - traefik.http.routers.gmt3-api.tls.certresolver=myresolver
       - traefik.http.routers.gmt3-api.priority=100

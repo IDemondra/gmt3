@@ -21,6 +21,11 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 		server: {
 			proxy: {
+				// Images stockées par le backend (événements + galerie)
+				'/uploads': {
+					target: 'http://localhost:3000',
+					changeOrigin: true,
+				},
 				'/google-img/': {
 					target: 'https://lh3.googleusercontent.com/',
 					changeOrigin: true,
