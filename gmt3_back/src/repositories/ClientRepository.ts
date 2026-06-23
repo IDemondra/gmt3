@@ -14,6 +14,11 @@ export class ClientRepository implements IClientRepository {
 		return rows[0];
 	}
 
+	async findByContact(contact: string): Promise<Client | undefined> {
+		const rows = await db.select().from(clients).where(eq(clients.contact, contact)).limit(1);
+		return rows[0];
+	}
+
 	async create(data: NewClient): Promise<Client> {
 		const rows = await db.insert(clients).values(data).returning();
 		return rows[0]!;

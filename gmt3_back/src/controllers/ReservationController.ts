@@ -61,7 +61,7 @@ export const ReservationController = {
 
 		let clientId = toPositiveInteger(body.clientId);
 
-		// Si clientId n'est pas fourni, créer un client avec nom et contact
+		// Si clientId n'est pas fourni, créer ou récupérer un client avec nom et contact
 		if (!clientId) {
 			if (!body.nom || !body.contact) {
 				return Response.json({
@@ -70,8 +70,13 @@ export const ReservationController = {
 				}, { status: 400 });
 			}
 			const clientRepo = new ClientRepository();
-			const newClient = await clientRepo.create({ nom: body.nom, contact: body.contact });
-			clientId = newClient.id;
+			const existingClient = await clientRepo.findByContact(body.contact);
+			if (existingClient) {
+				clientId = existingClient.id;
+			} else {
+				const newClient = await clientRepo.create({ nom: body.nom, contact: body.contact });
+				clientId = newClient.id;
+			}
 		}
 
 		const reservation = await reservationService.create({
