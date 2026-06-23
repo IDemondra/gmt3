@@ -84,7 +84,7 @@ export function AboutSection() {
 			{/* Decorative background elements */}
 			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-3xl pointer-events-none" />
-			<div class="absolute top-1/4 right-10 h-64 w-64 rounded-full bg-primary/5 blur-[100px] pointer-events-none animate-pulse" />
+			<div class="absolute top-1/4 right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
 			<div class="relative mx-auto max-w-container-max">
 				{/* ── Header ── */}
@@ -111,7 +111,7 @@ export function AboutSection() {
 								{ label: "Équipe", val: "06", sub: "Membres racines", icon: "group" },
 								{ label: "Origine", val: "100%", sub: "Madagascar native", icon: "location_on" }
 							].map((s, idx) => (
-								<div key={idx} class="group flex items-center gap-4 rounded-2xl border border-white/40 bg-white/60 p-4 shadow-sm backdrop-blur-md transition-all hover:translate-x-2 hover:bg-white/80">
+								<div key={idx} class="group flex items-center gap-4 rounded-2xl border border-white/40 bg-white/85 p-4 shadow-sm transition-all hover:translate-x-2 hover:bg-white">
 									<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
 										<span class="material-symbols-outlined">{s.icon}</span>
 									</div>
@@ -202,7 +202,7 @@ export function AboutSection() {
 									</div>
 
 									{/* "Tape" piece at bottom */}
-									<div class="absolute -bottom-2 right-10 h-6 w-16 bg-white/60 backdrop-blur-sm border border-stone-200/50 -rotate-2 opacity-0 transition-opacity group-hover:opacity-100" />
+									<div class="absolute -bottom-2 right-10 h-6 w-16 bg-white/80 border border-stone-200/50 -rotate-2 opacity-0 transition-opacity group-hover:opacity-100" />
 								</div>
 							</article>
 						</Reveal>
@@ -211,8 +211,8 @@ export function AboutSection() {
 
 				{/* ── Call to Action: Join the Expedition ── */}
 				<div class="mt-24 rounded-[2.5rem] bg-on-background p-8 md:p-12 text-center text-white relative overflow-hidden">
-					<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] pointer-events-none" />
-					<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none" />
+					<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-3xl pointer-events-none" />
+					<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-3xl pointer-events-none" />
 					
 					<Reveal animation="fadeUp">
 						<div class="max-w-2xl mx-auto relative z-10">
