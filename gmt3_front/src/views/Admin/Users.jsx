@@ -8,7 +8,7 @@ import { FormModal } from '../../components/admin/FormModal.jsx';
 import { usersApi, createUserApi, updateUserApi, deleteUserApi } from '../../api/users.js';
 import { formatIsoDateTimeFr } from '../../utils/dateFormatter.js';
 
-const roles = ['admin', 'manager', 'editor', 'viewer'];
+const roles = ['admin', 'editeur'];
 
 export function AdminUsers() {
 	const { route } = useLocation();
@@ -172,7 +172,7 @@ export function AdminUsers() {
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="role">Rôle</label>
-					<select id="role" name="role" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" defaultValue={editingUser?.role || 'editor'}>
+					<select id="role" name="role" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" defaultValue={editingUser?.role || 'editeur'}>
 						{roles.map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
 					</select>
 				</div>
