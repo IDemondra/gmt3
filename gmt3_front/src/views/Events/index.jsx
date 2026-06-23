@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
-import { formatDateFr } from '../../utils/dateFormatter.js';
+import { formatDateFr, isDateInFuture } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
@@ -23,7 +23,7 @@ export function Events() {
 			.then((r) => r.json())
 			.then((response) => {
 				const published = (Array.isArray(response.data) ? response.data : [])
-					.filter((e) => e.estPublie);
+					.filter((e) => e.estPublie && isDateInFuture(e.dateDepart || e.dateEvenement));
 				setEvents(published);
 			})
 			.catch((err) => {
