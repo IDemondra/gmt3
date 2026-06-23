@@ -175,9 +175,19 @@ export function AdminDashboard() {
 		setConfirm(null);
 	};
 
-	const filtered = search
+	const dateToTs = (d) => {
+		if (!d) return 0;
+		const [day, month, year] = String(d).split('/');
+		const ts = new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+		return Number.isNaN(ts) ? 0 : ts;
+	};
+
+	const filtered = (search
 		? events.filter((e) => e.title.toLowerCase().includes(search.toLowerCase()))
-		: events;
+		: events
+	)
+		.slice()
+		.sort((a, b) => dateToTs(b.dateDepart || b.date) - dateToTs(a.dateDepart || a.date));
 
 	return (
 		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
