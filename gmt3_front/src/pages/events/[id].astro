@@ -23,9 +23,13 @@ const description = event
 const keywords = event
 	? `${event.titre}, ${event.lieu || ''}, randonnée fianarantsoa, circuit haute matsiatra`
 	: undefined;
+
+// Image OG absolue : les uploads sont servis par le backend, pas par le domaine front.
+const PUBLIC_BACKEND = import.meta.env.PUBLIC_BACKEND_URL || 'https://gmt3-fianarantsoa.mg';
+const ogImage = event?.imagePrincipale ? `${PUBLIC_BACKEND}${event.imagePrincipale}` : undefined;
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} image={event?.imagePrincipale} noindex={!event}>
+<BaseLayout title={title} description={description} keywords={keywords} image={ogImage} noindex={!event} ogType="article">
 	<Header client:load />
 	<EventDetail client:load params={{ id }} />
 </BaseLayout>

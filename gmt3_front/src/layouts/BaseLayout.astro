@@ -9,6 +9,7 @@ export interface Props {
 	keywords?: string;
 	image?: string;
 	noindex?: boolean;
+	ogType?: string;
 }
 
 const {
@@ -17,10 +18,16 @@ const {
 	keywords = 'gmt3 fianarantsoa, tourisme fianarantsoa, fianarantsoa tourisme, voyage fianarantsoa, randonnée fianarantsoa, haute matsiatra',
 	image = '/assets/logo_gmt3.jpeg',
 	noindex = false,
+	ogType = 'website',
 } = Astro.props;
 
 const canonical = `${SITE}${Astro.url.pathname}`;
 const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
+
+// Bouton WhatsApp flottant — masqué sur les pages noindex (admin).
+const WHATSAPP_NUMBER = import.meta.env.PUBLIC_WHATSAPP || '261340312401';
+const WHATSAPP_MSG = encodeURIComponent('Bonjour GMT3, je souhaite des informations sur vos expéditions.');
+const showWhatsapp = !noindex;
 ---
 
 <!doctype html>
@@ -43,7 +50,7 @@ const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
 		<meta name="geo.placename" content="Fianarantsoa" />
 
 		<!-- Open Graph -->
-		<meta property="og:type" content="website" />
+		<meta property="og:type" content={ogType} />
 		<meta property="og:site_name" content="GMT3 Fianarantsoa" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
@@ -70,5 +77,20 @@ const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
 	</head>
 	<body class="bg-background text-on-background font-body-md min-h-dvh flex flex-col">
 		<slot />
+
+		{showWhatsapp && (
+			<a
+				href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`}
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Contacter GMT3 sur WhatsApp"
+				class="group fixed bottom-5 right-5 z-[150] flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3.5 shadow-lg shadow-black/20 transition-all duration-300 hover:pr-5 hover:scale-105"
+			>
+				<svg viewBox="0 0 32 32" width="26" height="26" fill="white" aria-hidden="true" class="shrink-0">
+					<path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.128 6.744 3.046 9.38L1.05 31.33l6.156-1.968A15.9 15.9 0 0 0 16.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0Zm9.318 22.594c-.386 1.09-1.92 1.994-3.142 2.258-.836.178-1.928.32-5.604-1.204-4.7-1.948-7.726-6.724-7.962-7.034-.226-.31-1.9-2.53-1.9-4.826s1.168-3.42 1.638-3.89c.386-.386.842-.562 1.122-.562.14 0 .266.007.38.013.328.014.492.034.708.55.27.648.928 2.244 1.006 2.408.08.164.134.356.024.566-.102.21-.192.328-.356.518-.164.19-.346.424-.494.57-.164.164-.336.342-.144.67.19.328.852 1.404 1.83 2.274 1.26 1.122 2.32 1.47 2.69 1.624.276.114.604.086.81-.13.262-.28.586-.744.916-1.2.234-.328.53-.368.84-.252.316.11 1.998.942 2.34 1.112.342.17.568.252.652.394.082.142.082.812-.304 1.902Z"/>
+				</svg>
+				<span class="max-w-0 overflow-hidden whitespace-nowrap text-sm font-bold text-white transition-all duration-300 group-hover:max-w-[140px]">WhatsApp</span>
+			</a>
+		)}
 	</body>
 </html>
