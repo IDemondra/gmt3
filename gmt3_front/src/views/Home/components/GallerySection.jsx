@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
+import { isDateInFuture, formatDateFr } from '../../../utils/dateFormatter.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -17,22 +18,31 @@ export function GallerySection() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${API_BASE}/galeries`, { credentials: 'include' })
+		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
 			.then((r) => r.json())
 			.then((response) => {
-				const photos = (Array.isArray(response.data) ? response.data : [])
-					.slice(0, 5)
-					.map((photo, idx) => ({
-						id: photo.id || `IMG-${String(idx + 1).padStart(4, '0')}`,
-						src: resolveImg(photo.image || photo.src),
-						alt: photo.titre || photo.alt || 'Photo terrain',
-						label: photo.titre || 'Sans titre',
-						meta: photo.meta || 'Expedition GMT3',
-						note: photo.description || photo.note || '',
-						span: ['xl:col-span-8', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4'][idx] || 'xl:col-span-4',
-						priority: idx === 0,
-						coord: photo.coordonnees || photo.coord || '—'
-					}));
+				const events = (Array.isArray(response.data) ? response.data : [])
+					.filter((e) => e.estPublie && !isDateInFuture(e.dateDepart || e.dateEvenement));
+				// Aplatit les photos des événements passés en une archive visuelle.
+				const flat = [];
+				for (const evt of events) {
+					for (const photo of (evt.photosEvenement || [])) {
+						flat.push({
+							src: resolveImg(photo.url),
+							alt: evt.titre || 'Photo terrain',
+							label: evt.titre || 'Sans titre',
+							meta: formatDateFr(evt.dateDepart || evt.dateEvenement) || 'Expedition GMT3',
+							note: photo.legende || evt.lieu || '',
+							coord: evt.lieu || '—',
+						});
+					}
+				}
+				const photos = flat.slice(0, 5).map((p, idx) => ({
+					...p,
+					id: `IMG-${String(idx + 1).padStart(4, '0')}`,
+					span: ['xl:col-span-8', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4'][idx] || 'xl:col-span-4',
+					priority: idx === 0,
+				}));
 				setCards(photos);
 			})
 			.catch((err) => {
