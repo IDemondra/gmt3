@@ -4,6 +4,7 @@ import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { formatDateFr, isDateInFuture } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
+import { StarRating } from '../../components/ui/StarRating.jsx';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -181,6 +182,12 @@ export function Events() {
 										<span class="rounded-full border border-white/20 bg-white/8 px-3 py-1 font-mono text-[10px] text-white/60">
 											{formatDateFr(event.dateDepart || event.dateEvenement)}
 										</span>
+										{event.nombreAvis > 0 && (
+											<span class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1">
+												<StarRating value={event.noteMoyenne} size="text-[13px]" />
+												<span class="font-mono text-[10px] text-amber-200/80">{event.noteMoyenne} ({event.nombreAvis})</span>
+											</span>
+										)}
 									</div>
 									<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 										{photos.map((photo, idx) => (

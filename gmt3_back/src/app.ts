@@ -3,6 +3,7 @@ import { clientRoutes } from './routes/clientRoutes.js';
 import { evenementRoutes } from './routes/evenementRoutes.js';
 import { reservationRoutes } from './routes/reservationRoutes.js';
 import { kpiRoutes } from './routes/kpiRoutes.js';
+import { avisRoutes } from './routes/avisRoutes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
 import { existsSync } from 'fs';
@@ -33,6 +34,7 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...evenementRoutes,
 	...reservationRoutes,
 	...kpiRoutes,
+	...avisRoutes,
 };
 
 // Routes nécessitant le rôle "admin" (gestion des comptes).
@@ -65,6 +67,10 @@ const PROTECTED_ROUTES = new Set([
 	'DELETE /api/reservations/:id',
 	// kpis
 	'GET /api/kpis',
+	// avis (modération — POST public reste non protégé)
+	'GET /api/avis',
+	'DELETE /api/avis/:id',
+	'PUT /api/avis/:id/approuver',
 ]);
 
 function matchRoute(

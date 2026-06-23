@@ -45,6 +45,18 @@ export const photosEvenement = sqliteTable('photos_evenement', {
 	legende: text('legende', { length: 255 }),
 });
 
+// ── Avis / Témoignages ──
+export const avis = sqliteTable('avis', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	evenementId: integer('evenement_id').notNull().references(() => evenements.id, { onDelete: 'cascade' }),
+	nom: text('nom', { length: 100 }).notNull(),
+	note: integer('note').notNull(),
+	commentaire: text('commentaire'),
+	photoUrl: text('photo_url', { length: 255 }),
+	estApprouve: integer('est_approuve', { mode: 'boolean' }).default(false).notNull(),
+	dateCreation: text('date_creation').default(new Date().toISOString()),
+});
+
 // ── Refresh Tokens (rotation) ──
 export const refreshTokens = sqliteTable('refresh_tokens', {
 	id: integer('id').primaryKey({ autoIncrement: true }),

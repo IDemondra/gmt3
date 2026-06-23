@@ -8,6 +8,13 @@
       "when": 1781580152634,
       "tag": "0000_tiny_photon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782199285693,
+      "tag": "0001_avis",
+      "breakpoints": true
     }
   ]
 }

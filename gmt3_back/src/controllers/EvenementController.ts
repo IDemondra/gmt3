@@ -1,6 +1,7 @@
 import { EvenementService } from '../services/EvenementService.js';
 import { EvenementRepository } from '../repositories/EvenementRepository.js';
 import { PhotoEvenementRepository } from '../repositories/PhotoEvenementRepository.js';
+import { AvisRepository } from '../repositories/AvisRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Evenement } from '../types/index.js';
 import { buildGalleryUploadPlan } from '../utils/photoGallery.js';
@@ -91,13 +92,20 @@ function getGalleryFiles(fd: GalleryFormData): File[] {
 
 const evenementService = new EvenementService(new EvenementRepository());
 const photoRepository = new PhotoEvenementRepository();
+const avisRepository = new AvisRepository();
+
+function avgNote(items: { note: number }[]): number {
+	if (items.length === 0) return 0;
+	return Math.round((items.reduce((s, a) => s + a.note, 0) / items.length) * 10) / 10;
+}
 
 async function serializeEvenement(id: number) {
 	const item = await evenementService.getById(id);
 	if (!item) return null;
 	const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
+	const avis = await avisRepository.findApprovedByEvenementId(id);
 	const formatted = formatEvenementDates(item);
-	return { ...formatted, photosEvenement, duration: calculateDuration(item) };
+	return { ...formatted, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, duration: calculateDuration(item) };
 }
 
 async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
@@ -148,13 +156,26 @@ export const EvenementController = {
 		for (const list of photosByEvent.values()) {
 			list.sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0));
 		}
+		const approvedAvis = await avisRepository.findAllApproved();
+		const avisByEvent = new Map<number, typeof approvedAvis>();
+		for (const a of approvedAvis) {
+			const list = avisByEvent.get(a.evenementId) ?? [];
+			list.push(a);
+			avisByEvent.set(a.evenementId, list);
+		}
 		return Response.json({
-			data: items.map((item) => ({
-				...formatEvenementDates(item),
-				id: item.id,
-				duration: calculateDuration(item),
-				photosEvenement: photosByEvent.get(item.id) ?? [],
-			})),
+			data: items.map((item) => {
+				const avis = avisByEvent.get(item.id) ?? [];
+				return {
+					...formatEvenementDates(item),
+					id: item.id,
+					duration: calculateDuration(item),
+					photosEvenement: photosByEvent.get(item.id) ?? [],
+					avis,
+					noteMoyenne: avgNote(avis),
+					nombreAvis: avis.length,
+				};
+			}),
 			message: `${items.length} événement(s) trouvé(s)`
 		});
 	},

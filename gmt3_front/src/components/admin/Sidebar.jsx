@@ -6,6 +6,7 @@ const navItems = [
 	{ icon: 'people', label: 'Clients', key: 'clients', path: '/admin/clients', table: 'clients' },
 	{ icon: 'book_online', label: 'Réservations', key: 'reservations', path: '/admin/reservations', table: 'reservations' },
 	{ icon: 'photo_library', label: 'Photos', key: 'photos', path: '/admin/photos', table: 'photos_evenement' },
+	{ icon: 'reviews', label: 'Avis', key: 'avis', path: '/admin/avis', table: 'avis' },
 	{ icon: 'group', label: 'Guides', key: 'guides', path: '/admin/guides', table: null },
 	{ icon: 'admin_panel_settings', label: 'Utilisateurs', key: 'utilisateurs', path: '/admin/utilisateurs', table: 'utilisateurs' },
 	{ icon: 'settings', label: 'Paramètres', key: 'settings', path: '/admin/settings', table: null },

@@ -7,9 +7,11 @@ import { buildPreviewGallery } from '../../utils/gallery.js';
 import { img } from '../../utils/images.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { evenementApi } from '../../api/evenements.js';
+import { createAvisApi } from '../../api/avis.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
+import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
-import { formatDateTimeWithHour } from '../../utils/dateFormatter.js';
+import { formatDateTimeWithHour, isDateInFuture } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
@@ -35,6 +37,37 @@ export function EventDetail({ params }) {
 	const [bookingLoading, setBookingLoading] = useState(false);
 	const [relatedEvents, setRelatedEvents] = useState([]);
 	const { toasts, addToast, removeToast } = useToast();
+
+	const [reviewForm, setReviewForm] = useState({ nom: '', note: 0, commentaire: '' });
+	const [reviewPhoto, setReviewPhoto] = useState(/** @type {File|null} */(null));
+	const [reviewLoading, setReviewLoading] = useState(false);
+	const [reviewSent, setReviewSent] = useState(false);
+
+	const handleReviewSubmit = async (e) => {
+		e.preventDefault();
+		if (!reviewForm.nom.trim() || reviewForm.note < 1) {
+			addToast('Indiquez votre nom et une note', 'warning');
+			return;
+		}
+		setReviewLoading(true);
+		try {
+			const fd = new FormData();
+			fd.append('evenementId', String(eventId));
+			fd.append('nom', reviewForm.nom.trim());
+			fd.append('note', String(reviewForm.note));
+			if (reviewForm.commentaire.trim()) fd.append('commentaire', reviewForm.commentaire.trim());
+			if (reviewPhoto) fd.append('photo', reviewPhoto);
+			const res = await createAvisApi(fd);
+			addToast(res.message || 'Merci pour votre avis !', 'success');
+			setReviewForm({ nom: '', note: 0, commentaire: '' });
+			setReviewPhoto(null);
+			setReviewSent(true);
+		} catch (err) {
+			addToast(err?.message || 'Erreur lors de l\'envoi', 'error');
+		} finally {
+			setReviewLoading(false);
+		}
+	};
 
 	const handleBooking = async (e) => {
 		e.preventDefault();
@@ -434,6 +467,100 @@ export function EventDetail({ params }) {
 								</div>
 							</aside>
 						</Reveal>
+					</div>
+				</section>
+
+				{/* ── Avis / Témoignages ── */}
+				<section id="avis" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-20">
+					<Reveal animation="fadeUp" duration={760}>
+						<div class="flex items-end justify-between gap-4 mb-8">
+							<div>
+								<p class="font-label-caps text-label-caps text-secondary">Retours terrain</p>
+								<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight text-on-background">Avis des participants</h2>
+							</div>
+							{event.nombreAvis > 0 && (
+								<div class="flex flex-col items-end gap-1">
+									<div class="flex items-center gap-2">
+										<span class="font-h2 text-3xl font-black text-on-background">{event.noteMoyenne}</span>
+										<StarRating value={event.noteMoyenne} size="text-[22px]" />
+									</div>
+									<span class="font-mono text-[10px] text-secondary tracking-widest uppercase">{event.nombreAvis} avis</span>
+								</div>
+							)}
+						</div>
+					</Reveal>
+
+					<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+						{/* Liste des avis */}
+						<div class="space-y-4">
+							{(event.avis || []).length === 0 && (
+								<div class="rounded-2xl border border-outline-variant/60 bg-surface-container/40 p-8 text-center">
+									<span class="material-symbols-outlined text-3xl text-secondary/40">reviews</span>
+									<p class="mt-2 font-body-md text-secondary">Aucun avis pour le moment. Soyez le premier !</p>
+								</div>
+							)}
+							{(event.avis || []).map((a) => (
+								<article key={a.id} class="rounded-2xl border border-outline-variant/60 bg-gradient-to-br from-white/90 to-white/40 backdrop-blur-sm p-5 shadow-sm">
+									<div class="flex items-start justify-between gap-4">
+										<div class="flex items-center gap-3">
+											<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-black uppercase">
+												{a.nom.charAt(0)}
+											</div>
+											<div>
+												<p class="font-body-md font-bold text-on-background leading-tight">{a.nom}</p>
+												<StarRating value={a.note} size="text-[15px]" />
+											</div>
+										</div>
+										<span class="font-mono text-[10px] text-secondary/70">{a.dateCreation}</span>
+									</div>
+									{a.commentaire && <p class="mt-3 font-body-md text-secondary leading-relaxed">{a.commentaire}</p>}
+									{a.photoUrl && (
+										<img src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="mt-3 h-40 w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" />
+									)}
+								</article>
+							))}
+						</div>
+
+						{/* Formulaire */}
+						<aside class="lg:sticky lg:top-24 h-fit">
+							<div class="rounded-[1.5rem] border border-outline-variant/60 bg-on-secondary-fixed p-6 text-on-primary shadow-md">
+								<h3 class="font-h3 text-h3 font-black uppercase tracking-tight">Laisser un avis</h3>
+								<p class="mt-2 font-body-md text-on-primary/60">Partagez votre expérience. Publié après modération.</p>
+								{reviewSent ? (
+									<div class="mt-6 rounded-2xl bg-primary/10 border border-primary/30 p-5 text-center">
+										<span class="material-symbols-outlined text-3xl text-primary">check_circle</span>
+										<p class="mt-2 font-body-md text-on-primary/80">Merci ! Votre avis sera publié après validation.</p>
+									</div>
+								) : (
+									<form onSubmit={handleReviewSubmit} class="mt-5 space-y-4">
+										<div>
+											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2">Votre note</label>
+											<StarRating value={reviewForm.note} onChange={(n) => setReviewForm({ ...reviewForm, note: n })} size="text-[28px]" />
+										</div>
+										<div>
+											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-nom">Nom</label>
+											<input id="rev-nom" type="text" value={reviewForm.nom} onInput={(e) => setReviewForm({ ...reviewForm, nom: e.currentTarget.value })}
+												class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-on-primary placeholder-on-primary/30 outline-none focus:border-primary" placeholder="Votre nom" required />
+										</div>
+										<div>
+											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-com">Commentaire</label>
+											<textarea id="rev-com" rows={4} value={reviewForm.commentaire} onInput={(e) => setReviewForm({ ...reviewForm, commentaire: e.currentTarget.value })}
+												class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-on-primary placeholder-on-primary/30 outline-none focus:border-primary resize-none" placeholder="Votre expérience sur le terrain..." />
+										</div>
+										<div>
+											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-photo">Photo (optionnel)</label>
+											<input id="rev-photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/*" onChange={(e) => setReviewPhoto(e.currentTarget.files?.[0] || null)}
+												class="w-full text-sm text-on-primary/60 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white" />
+										</div>
+										<button type="submit" disabled={reviewLoading}
+											class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 font-button text-button text-on-primary transition-all hover:brightness-110 disabled:opacity-50 cursor-pointer">
+											{reviewLoading ? 'Envoi...' : 'Publier mon avis'}
+											<span class="material-symbols-outlined text-[18px]">send</span>
+										</button>
+									</form>
+								)}
+							</div>
+						</aside>
 					</div>
 				</section>
 
