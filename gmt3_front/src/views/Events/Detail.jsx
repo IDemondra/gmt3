@@ -198,6 +198,7 @@ export function EventDetail({ params }) {
 	};
 
 	const isPast = !isDateInFuture(event.dateDepart || event.dateEvenement);
+	const showAvis = isPast || (event.avis || []).length > 0;
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
 		{ label: 'Localisation', value: normalizedEvent.location || '—' },
@@ -496,7 +497,8 @@ export function EventDetail({ params }) {
 					</div>
 				</section>
 
-				{/* ── Avis / Témoignages ── */}
+				{/* ── Avis / Témoignages (événements passés) ── */}
+				{showAvis && (
 				<section id="avis" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-20">
 					<Reveal animation="fadeUp" duration={760}>
 						<div class="flex items-end justify-between gap-4 mb-8">
@@ -516,7 +518,7 @@ export function EventDetail({ params }) {
 						</div>
 					</Reveal>
 
-					<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+					<div class={`grid gap-8 ${isPast ? 'lg:grid-cols-[1.1fr_0.9fr]' : ''}`}>
 						{/* Liste des avis */}
 						<div class="space-y-4">
 							{(event.avis || []).length === 0 && (
@@ -547,7 +549,8 @@ export function EventDetail({ params }) {
 							))}
 						</div>
 
-						{/* Formulaire */}
+						{/* Formulaire — uniquement sur expédition passée */}
+						{isPast && (
 						<aside class="lg:sticky lg:top-24 h-fit">
 							<div class="rounded-[1.5rem] border border-outline-variant/60 bg-on-secondary-fixed p-6 text-on-primary shadow-md">
 								<h3 class="font-h3 text-h3 font-black uppercase tracking-tight">Laisser un avis</h3>
@@ -587,8 +590,10 @@ export function EventDetail({ params }) {
 								)}
 							</div>
 						</aside>
+						)}
 					</div>
 				</section>
+				)}
 
 				<section id="related" class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-20">
 					<Reveal animation="fadeUp" duration={760}>

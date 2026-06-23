@@ -55,6 +55,15 @@ export const AvisController = {
 			return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement introuvable' }, { status: 404 });
 		}
 
+		// On ne peut donner un avis que sur une expédition déjà passée.
+		const refDate = evenement.dateDepart || evenement.dateEvenement;
+		const eventDate = refDate ? new Date(refDate) : null;
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		if (!eventDate || Number.isNaN(eventDate.getTime()) || eventDate >= today) {
+			return Response.json({ error: 'EVENEMENT_NON_TERMINE', message: 'Vous ne pouvez donner un avis qu\'après l\'expédition' }, { status: 400 });
+		}
+
 		let photoUrl: string | null = null;
 		const photo = fd.get('photo');
 		if (photo instanceof File && photo.size > 0) {
