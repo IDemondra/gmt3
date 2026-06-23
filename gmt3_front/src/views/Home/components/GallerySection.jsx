@@ -173,14 +173,14 @@ export function GallerySection() {
                             <span class="font-mono text-[10px] text-white/40 tracking-widest uppercase">Encryption Active</span>
                         </div>
                     </div>
-                    <button
-                        class="group relative px-10 py-5 bg-white text-on-secondary-fixed font-button text-xs tracking-[0.2em] font-black uppercase rounded-sm overflow-hidden transition-all hover:pr-14"
-                        type="button"
+                    <a
+                        href="/archives"
+                        class="group relative px-10 py-5 bg-white text-on-secondary-fixed font-button text-xs tracking-[0.2em] font-black uppercase rounded-sm overflow-hidden transition-all hover:pr-14 inline-block"
                     >
                         <span class="relative z-10">Accéder aux Archives Complètes</span>
                         <span class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 material-symbols-outlined">database</span>
                         <div class="absolute inset-0 bg-primary translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 -z-0 opacity-10" />
-                    </button>
+                    </a>
                 </div>
             </div>
         </section>
