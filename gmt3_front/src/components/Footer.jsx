@@ -15,22 +15,22 @@ const socialLinks = [
 	},
 	{
 		label: 'Email',
-		href: '#contact',
+		href: '/#contact',
 		viewBox: '0 0 24 24',
 		path: 'M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z',
 	},
 ];
 
 const navLinks = [
-	{ label: 'Expéditions', href: '#expeditions' },
-	{ label: 'Destinations', href: '#destinations' },
-	{ label: 'Guides', href: '#guides' },
+	{ label: 'Expéditions', href: '/#expeditions' },
+	{ label: 'Destinations', href: '/#destinations' },
+	{ label: 'Guides', href: '/#equipes' },
 	{ label: 'Offres', href: '/events' },
-	{ label: 'Galerie', href: '#gallery' },
+	{ label: 'Galerie', href: '/archives' },
 ];
 
 const infoLinks = [
-	{ label: 'Contact', href: '#contact' },
+	{ label: 'Contact', href: '/#contact' },
 	{ label: 'Sécurité', href: '#' },
 	{ label: 'Conditions', href: '#' },
 	{ label: 'Confidentialité', href: '#' },

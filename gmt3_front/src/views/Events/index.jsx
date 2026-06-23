@@ -103,7 +103,7 @@ export function Events() {
 									<span class="font-mono text-[9px] text-primary tracking-widest font-bold uppercase">Réservation ouverte</span>
 								</div>
 								<a
-									href="#contact"
+									href="/#contact"
 									class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-5 py-3 rounded-full font-button text-[10px] tracking-widest font-black uppercase transition-all duration-300 hover:scale-105 cursor-pointer"
 								>
 									DEMANDER UN DEVIS

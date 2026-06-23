@@ -17,10 +17,10 @@ export function Header() {
 	};
 
 	const navLinks = [
-		{ href: '#expeditions', label: 'EXPÉDITIONS' },
-		{ href: '#destinations', label: 'DESTINATIONS' },
-		{ href: '#specialites', label: 'SPÉCIALITÉS' },
-		{ href: '#gallery', label: 'ARCHIVES' },
+		{ href: '/#expeditions', label: 'EXPÉDITIONS' },
+		{ href: '/#destinations', label: 'DESTINATIONS' },
+		{ href: '/#specialites', label: 'SPÉCIALITÉS' },
+		{ href: '/#gallery', label: 'ARCHIVES' },
 	];
 
 	return (
@@ -69,7 +69,7 @@ export function Header() {
 					{/* Right: Action & Mobile Toggle */}
 					<div class="flex items-center gap-2 md:gap-4 shrink-0">
 						<a
-							href="#contact"
+							href="/#contact"
 							class="hidden lg:flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-4 xl:px-5 py-2.5 rounded-full font-button text-[10px] tracking-widest font-black uppercase transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-primary/20 cursor-pointer"
 						>
 							NOUS CONTACTER
@@ -119,7 +119,7 @@ export function Header() {
 					</nav>
 
 					<div class="pt-12 border-t border-white/10 text-center">
-						<a href="#contact" onClick={toggleMenu} class="flex items-center justify-center gap-3 w-full bg-primary hover:bg-primary-container py-5 rounded-2xl text-white font-black tracking-widest text-xs uppercase shadow-2xl transition-all duration-300">
+						<a href="/#contact" onClick={toggleMenu} class="flex items-center justify-center gap-3 w-full bg-primary hover:bg-primary-container py-5 rounded-2xl text-white font-black tracking-widest text-xs uppercase shadow-2xl transition-all duration-300">
 							DEMANDER UN DEVIS
 							<span class="material-symbols-outlined">north_east</span>
 						</a>
