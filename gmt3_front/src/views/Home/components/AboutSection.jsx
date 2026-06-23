@@ -72,7 +72,7 @@ export function AboutSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-[#faf9f6] px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes">
+		<section class="relative overflow-hidden bg-[#faf9f6] px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes" style="content-visibility: auto; contain-intrinsic-size: auto 1400px;">
 			{/* Transition light → light (Tours → About) */}
 			<div class="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#faf9f6] via-[#faf9f6]/50 to-transparent pointer-events-none z-10" />
 			
@@ -81,10 +81,8 @@ export function AboutSection() {
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 			</div>
 
-			{/* Decorative background elements */}
-			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-			<div class="absolute bottom-[-7rem] right-[-4rem] h-80 w-80 rounded-full bg-white/20 blur-3xl pointer-events-none" />
-			<div class="absolute top-1/4 right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+			{/* Decorative background — un seul glow léger pour limiter le repaint au scroll */}
+			<div class="absolute -top-24 left-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-2xl pointer-events-none" style="will-change: transform; transform: translateZ(0);" />
 
 			<div class="relative mx-auto max-w-container-max">
 				{/* ── Header ── */}
@@ -104,7 +102,7 @@ export function AboutSection() {
 
 					{/* Mission Log Stats */}
 					<div class="relative">
-						<div class="absolute -inset-4 rounded-[2rem] bg-white/40 blur-xl pointer-events-none" />
+						<div class="absolute -inset-4 rounded-[2rem] bg-white/40 pointer-events-none" />
 						<div class="relative grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
 							{[
 								{ label: "Expertise", val: "2", sub: "Années d'aventure", icon: "military_tech" },
@@ -139,7 +137,7 @@ export function AboutSection() {
 						>
 							<article class="group relative">
 								{/* The "Notebook Page" Card */}
-								<div class={`relative flex flex-col rounded-[0.5rem] bg-[#fdfcf8] p-4 pt-12 shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:rotate-0 isolate ${member.accent} border-b-4 border-stone-300/50`}>
+								<div class={`relative flex flex-col rounded-[0.5rem] bg-[#fdfcf8] p-4 pt-12 shadow-md transition-[transform,box-shadow] duration-500 hover:-translate-y-2 hover:shadow-2xl hover:rotate-0 isolate ${member.accent} border-b-4 border-stone-300/50`}>
 									
 									{/* Top decoration: Binder holes or Clip */}
 									<div class="absolute top-4 left-0 right-0 flex justify-center gap-4 opacity-30">
@@ -159,7 +157,7 @@ export function AboutSection() {
 									<div class="relative aspect-[4/5] overflow-hidden rounded-sm bg-stone-200 shadow-inner">
 										<img
 											alt={member.name}
-											class="h-full w-full object-cover grayscale-[0.2] sepia-[0.1] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 group-hover:scale-105"
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 											loading="lazy"
 											decoding="async"
 											src={img(member.src)}
@@ -211,8 +209,7 @@ export function AboutSection() {
 
 				{/* ── Call to Action: Join the Expedition ── */}
 				<div class="mt-24 rounded-[2.5rem] bg-on-background p-8 md:p-12 text-center text-white relative overflow-hidden">
-					<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-3xl pointer-events-none" />
-					<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-3xl pointer-events-none" />
+					<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-2xl pointer-events-none" />
 					
 					<Reveal animation="fadeUp">
 						<div class="max-w-2xl mx-auto relative z-10">
