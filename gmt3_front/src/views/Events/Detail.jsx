@@ -197,6 +197,7 @@ export function EventDetail({ params }) {
 		itinerary: event.itinerary || [],
 	};
 
+	const isPast = !isDateInFuture(event.dateDepart || event.dateEvenement);
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
 		{ label: 'Localisation', value: normalizedEvent.location || '—' },
@@ -322,14 +323,24 @@ export function EventDetail({ params }) {
 										</ul>
 									</div>
 
-									<button
-										type="button"
-										onClick={() => setBookingModal(true)}
-										class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
-									>
-										PARTICIPER
-										<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-									</button>
+									{isPast ? (
+										<a
+											href="#avis"
+											class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:bg-white/10 cursor-pointer"
+										>
+											EXPÉDITION TERMINÉE — LAISSER UN AVIS
+											<span class="material-symbols-outlined text-[18px]">rate_review</span>
+										</a>
+									) : (
+										<button
+											type="button"
+											onClick={() => setBookingModal(true)}
+											class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
+										>
+											PARTICIPER
+											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+										</button>
+									)}
 								</aside>
 							</Reveal>
 						</div>
@@ -460,14 +471,24 @@ export function EventDetail({ params }) {
 											<span class="material-symbols-outlined text-[18px]">arrow_back</span>
 											RETOUR À LA LISTE
 										</a>
-										<button
-											type="button"
-											onClick={() => setBookingModal(true)}
-											class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
-										>
-											PARTICIPER
-											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-										</button>
+										{isPast ? (
+											<a
+												href="#avis"
+												class="inline-flex items-center justify-center gap-2 rounded-2xl border border-outline-variant px-5 py-4 font-button text-button text-primary transition-all duration-300 hover:bg-primary/10 cursor-pointer"
+											>
+												LAISSER UN AVIS
+												<span class="material-symbols-outlined text-[18px]">rate_review</span>
+											</a>
+										) : (
+											<button
+												type="button"
+												onClick={() => setBookingModal(true)}
+												class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
+											>
+												PARTICIPER
+												<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+											</button>
+										)}
 									</div>
 								</div>
 							</aside>
