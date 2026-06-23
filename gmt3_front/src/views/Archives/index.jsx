@@ -127,9 +127,14 @@ export function Archives() {
 												<span>{photos.length} clichés</span>
 											</div>
 										</div>
-										<a href={`/events/${evt.id}`} class="inline-flex items-center gap-2 font-button text-[10px] tracking-widest font-black uppercase text-primary hover:text-white transition-colors shrink-0">
-											Fiche mission <span class="material-symbols-outlined text-sm">north_east</span>
-										</a>
+										<div class="flex items-center gap-4 shrink-0">
+											<a href={`/events/${evt.id}#avis`} class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-button text-[10px] tracking-widest font-black uppercase text-white hover:brightness-110 transition-all">
+												<span class="material-symbols-outlined text-sm">rate_review</span> Laisser un avis
+											</a>
+											<a href={`/events/${evt.id}`} class="inline-flex items-center gap-2 font-button text-[10px] tracking-widest font-black uppercase text-primary hover:text-white transition-colors">
+												Fiche mission <span class="material-symbols-outlined text-sm">north_east</span>
+											</a>
+										</div>
 									</div>
 
 									<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

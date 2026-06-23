@@ -124,6 +124,11 @@ export function EventDetail({ params }) {
 				setEvent(data);
 				setLoading(false);
 
+				// Scroll vers la section avis si l'URL pointe dessus (#avis), une fois rendue.
+				if (typeof window !== 'undefined' && window.location.hash === '#avis') {
+					setTimeout(() => document.getElementById('avis')?.scrollIntoView({ behavior: 'smooth' }), 100);
+				}
+
 				// Load related events
 				fetch(`${API_BASE}/evenements`, { credentials: 'include' })
 					.then((r) => r.json())
