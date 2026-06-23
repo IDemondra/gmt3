@@ -14,6 +14,20 @@ export function formatDateFr(dateString) {
 	}
 }
 
+/** Retourne true si la date DD/MM/YYYY est aujourd'hui ou dans le futur. */
+export function isDateInFuture(dateString) {
+	if (!dateString) return false;
+	try {
+		const [day, month, year] = dateString.split('/');
+		const eventDate = new Date(Number(year), Number(month) - 1, Number(day));
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		return eventDate >= today;
+	} catch {
+		return false;
+	}
+}
+
 export function formatDateTimeWithHour(dateString, timeString) {
 	if (!dateString) return '';
 	const dateFr = formatDateFr(dateString);
