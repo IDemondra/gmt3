@@ -14,18 +14,30 @@ export function formatDateFr(dateString) {
 	}
 }
 
+/** Parse une date "DD/MM/YYYY" en objet Date (minuit local), ou null si invalide. */
+export function parseFrDate(dateString) {
+	if (!dateString) return null;
+	const parts = String(dateString).split('/');
+	if (parts.length !== 3) return null;
+	const [day, month, year] = parts.map(Number);
+	if (!day || !month || !year) return null;
+	const d = new Date(year, month - 1, day);
+	return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/** Timestamp (ms) d'une date "DD/MM/YYYY", ou 0 si invalide. Pratique pour trier. */
+export function frDateToTs(dateString) {
+	const d = parseFrDate(dateString);
+	return d ? d.getTime() : 0;
+}
+
 /** Retourne true si la date DD/MM/YYYY est aujourd'hui ou dans le futur. */
 export function isDateInFuture(dateString) {
-	if (!dateString) return false;
-	try {
-		const [day, month, year] = dateString.split('/');
-		const eventDate = new Date(Number(year), Number(month) - 1, Number(day));
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		return eventDate >= today;
-	} catch {
-		return false;
-	}
+	const eventDate = parseFrDate(dateString);
+	if (!eventDate) return false;
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	return eventDate >= today;
 }
 
 export function formatDateTimeWithHour(dateString, timeString) {

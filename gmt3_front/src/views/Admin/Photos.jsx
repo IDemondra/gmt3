@@ -100,12 +100,22 @@ export function AdminPhotos() {
 		setPreviews((prev) => prev.filter((_, i) => i !== idx));
 	};
 
-	const handleSave = async () => {
-		if (!selected) return;
-		if (newFiles.length === 0) {
+	const requestSave = () => {
+		if (!selected || newFiles.length === 0) {
 			addToast('Ajoutez au moins une photo', 'warning');
 			return;
 		}
+		// Remplacement destructif : confirmer seulement si une galerie existe déjà.
+		if (existing.length > 0) {
+			setConfirm({ type: 'replace' });
+		} else {
+			handleSave();
+		}
+	};
+
+	const handleSave = async () => {
+		setConfirm(null);
+		if (!selected || newFiles.length === 0) return;
 		setUploading(true);
 		try {
 			const fd = new FormData();
@@ -238,7 +248,7 @@ export function AdminPhotos() {
 									<div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-50">
 										{uploading && <span class="text-xs text-gray-400">{uploadStatus}</span>}
 										<button
-											onClick={handleSave}
+											onClick={requestSave}
 											disabled={uploading || newFiles.length === 0}
 											class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
 										>
@@ -256,6 +266,7 @@ export function AdminPhotos() {
 			</div>
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
+			<ConfirmDialog open={confirm?.type === 'replace'} title="Remplacer la galerie" message={`Les ${existing.length} photo(s) actuellement en ligne seront définitivement remplacées par les ${newFiles.length} nouvelle(s). Continuer ?`} confirmLabel="Remplacer" icon="sync" variant="danger" onConfirm={handleSave} onCancel={() => setConfirm(null)} />
 			<ToastContainer toasts={toasts} onRemove={removeToast} />
 		</div>
 	);

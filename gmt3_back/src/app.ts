@@ -35,6 +35,13 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...kpiRoutes,
 };
 
+// Routes nécessitant le rôle "admin" (gestion des comptes).
+const ADMIN_ONLY_ROUTES = new Set([
+	'POST /api/utilisateurs',
+	'PUT /api/utilisateurs/:id',
+	'DELETE /api/utilisateurs/:id',
+]);
+
 const PROTECTED_ROUTES = new Set([
 	// utilisateurs
 	'GET /api/utilisateurs',
@@ -64,7 +71,7 @@ function matchRoute(
 	method: string,
 	pathname: string,
 	routes: Record<string, Record<string, RouteHandler>>,
-): { handler: RouteHandler; params: Record<string, string>; isProtected: boolean } | null {
+): { handler: RouteHandler; params: Record<string, string>; isProtected: boolean; isAdminOnly: boolean } | null {
 	for (const [pattern, methods] of Object.entries(routes)) {
 		const patternParts = pattern.split('/');
 		const pathParts = pathname.split('/');
@@ -91,7 +98,7 @@ function matchRoute(
 			if (handler) {
 				// Check if this route+method is protected
 				const routeKey = `${method} ${pattern}`;
-				return { handler, params, isProtected: PROTECTED_ROUTES.has(routeKey) };
+				return { handler, params, isProtected: PROTECTED_ROUTES.has(routeKey), isAdminOnly: ADMIN_ONLY_ROUTES.has(routeKey) };
 			}
 		}
 	}
@@ -148,9 +155,20 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	}
 
 	// ── Auth guard ──
-	if (matched.isProtected) {
+	if (matched.isProtected || matched.isAdminOnly) {
 		const authResult = await authMiddleware(req);
-		if (authResult) return authResult;
+		if (authResult) {
+			for (const [key, value] of Object.entries(corsHeaders)) authResult.headers.set(key, value);
+			return authResult;
+		}
+	}
+
+	// ── Role guard (admin) ──
+	if (matched.isAdminOnly) {
+		const role = (req as any).user?.role;
+		if (role !== 'admin') {
+			return Response.json({ error: 'ACCES_REFUSE', message: 'Réservé aux administrateurs' }, { status: 403, headers: corsHeaders });
+		}
 	}
 
 	try {

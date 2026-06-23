@@ -13,6 +13,7 @@ function formatClientDates<T extends { dateAjout?: string | null }>(client: T): 
 }
 
 const clientService = new ClientService(new ClientRepository());
+const reservationRepository = new ReservationRepository();
 
 export const ClientController = {
     async getAll(req: BunRequest): Promise<Response> {
@@ -53,8 +54,7 @@ export const ClientController = {
         const id = Number(params.id);
         if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 
-        const reservationRepo = new ReservationRepository();
-        const reservations = await reservationRepo.findByClientId(id);
+        const reservations = await reservationRepository.findByClientId(id);
         if (reservations.length > 0) {
             return Response.json({
                 error: 'CLIENT_HAS_RESERVATIONS',

@@ -16,6 +16,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { EventDetailModal } from '../../components/admin/EventDetailModal.jsx';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
+import { frDateToTs } from '../../utils/dateFormatter.js';
 
 const DESC_MAX = 1000;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -99,7 +100,9 @@ export function AdminDashboard() {
 				setEvents(evtData.data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
 			}
 			if (kpiData?.data && typeof kpiData.data.totalEvents === 'number') setKpis(kpiData.data);
-		} catch { /* keep current */ }
+		} catch {
+			addToast('Impossible de charger les données du tableau de bord', 'error');
+		}
 	};
 
 	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
@@ -171,15 +174,11 @@ export function AdminDashboard() {
 		try {
 			await deleteEvenementApi(accessToken.value, eventId);
 			setEvents((prev) => prev.filter((e) => e.id !== eventId));
-		} catch { /* ignore */ }
+			addToast('Événement supprimé', 'success');
+		} catch {
+			addToast('Échec de la suppression', 'error');
+		}
 		setConfirm(null);
-	};
-
-	const dateToTs = (d) => {
-		if (!d) return 0;
-		const [day, month, year] = String(d).split('/');
-		const ts = new Date(Number(year), Number(month) - 1, Number(day)).getTime();
-		return Number.isNaN(ts) ? 0 : ts;
 	};
 
 	const filtered = (search
@@ -187,7 +186,7 @@ export function AdminDashboard() {
 		: events
 	)
 		.slice()
-		.sort((a, b) => dateToTs(b.dateDepart || b.date) - dateToTs(a.dateDepart || a.date));
+		.sort((a, b) => frDateToTs(b.dateDepart || b.date) - frDateToTs(a.dateDepart || a.date));
 
 	return (
 		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">

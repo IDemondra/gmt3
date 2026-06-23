@@ -7,12 +7,15 @@ import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { usersApi, createUserApi, updateUserApi, deleteUserApi } from '../../api/users.js';
 import { formatIsoDateTimeFr } from '../../utils/dateFormatter.js';
+import { useToast } from '../../hooks/useToast.js';
+import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const roles = ['admin', 'editeur'];
 
 export function AdminUsers() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const { toasts, addToast, removeToast } = useToast();
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -32,7 +35,9 @@ export function AdminUsers() {
 		try {
 			const response = await usersApi(accessToken.value);
 			if (Array.isArray(response.data)) setUsers(response.data);
-		} catch { /* keep current list */ }
+		} catch {
+			addToast('Impossible de charger les utilisateurs', 'error');
+		}
 	};
 
 	const handleSubmit = async (data) => {
@@ -54,8 +59,9 @@ export function AdminUsers() {
 			}
 			setShowForm(false);
 			setEditingUser(null);
+			addToast(editingUser ? 'Utilisateur modifié' : 'Utilisateur créé', 'success');
 		} catch (e) {
-			alert(e.message);
+			addToast(e.message || 'Erreur', 'error');
 		}
 	};
 
@@ -75,8 +81,11 @@ export function AdminUsers() {
 			if (confirm?.user) {
 				await deleteUserApi(accessToken.value, confirm.user.id);
 				setUsers((prev) => prev.filter((u) => u.id !== confirm.user.id));
+				addToast('Utilisateur supprimé', 'success');
 			}
-		} catch { /* ignore */ }
+		} catch {
+			addToast('Échec de la suppression', 'error');
+		}
 		setConfirm(null);
 	};
 
@@ -154,6 +163,7 @@ export function AdminUsers() {
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
 			<ConfirmDialog open={confirm?.type === 'delete'} title="Supprimer l'utilisateur" message={`Supprimer définitivement l'utilisateur "${confirm?.user?.nomUtilisateur}" ?`} confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={executeDelete} onCancel={() => setConfirm(null)} />
+			<ToastContainer toasts={toasts} onRemove={removeToast} />
 
 			<FormModal
 				open={showForm}

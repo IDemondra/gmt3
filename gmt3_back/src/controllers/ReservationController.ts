@@ -27,6 +27,7 @@ function toPositiveInteger(value: unknown): number | null {
 }
 
 const reservationService = new ReservationService(new ReservationRepository());
+const clientRepository = new ClientRepository();
 
 export const ReservationController = {
 	async getAll(req: BunRequest): Promise<Response> {
@@ -69,12 +70,11 @@ export const ReservationController = {
 					message: 'Le nom et le contact sont obligatoires'
 				}, { status: 400 });
 			}
-			const clientRepo = new ClientRepository();
-			const existingClient = await clientRepo.findByContact(body.contact);
+			const existingClient = await clientRepository.findByContact(body.contact);
 			if (existingClient) {
 				clientId = existingClient.id;
 			} else {
-				const newClient = await clientRepo.create({ nom: body.nom, contact: body.contact });
+				const newClient = await clientRepository.create({ nom: body.nom, contact: body.contact });
 				clientId = newClient.id;
 			}
 		}

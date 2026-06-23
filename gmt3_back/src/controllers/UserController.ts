@@ -18,11 +18,17 @@ function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T
 	};
 }
 
+/** Retire le hash du mot de passe avant de renvoyer un utilisateur au client. */
+function toSafeUser<T extends { motDePasse?: string }>(user: T): Omit<T, 'motDePasse'> {
+	const { motDePasse: _omit, ...safe } = user;
+	return safe;
+}
+
 export const UserController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const users = await userService.getAll();
 		return Response.json({
-			data: users.map(formatUserDates),
+			data: users.map((u) => toSafeUser(formatUserDates(u))),
 			message: `${users.length} utilisateur(s) trouvé(s)`
 		});
 	},
@@ -36,7 +42,7 @@ export const UserController = {
 		if (!user) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
-		return Response.json({ ...formatUserDates(user), message: 'Utilisateur chargé avec succès' });
+		return Response.json({ ...toSafeUser(formatUserDates(user)), message: 'Utilisateur chargé avec succès' });
 	},
 
 	async create(req: BunRequest): Promise<Response> {
@@ -54,7 +60,7 @@ export const UserController = {
 
 		try {
 			const user = await userService.create(body);
-			return Response.json({ ...formatUserDates(user), message: 'Utilisateur créé avec succès' }, { status: 201 });
+			return Response.json({ ...toSafeUser(formatUserDates(user)), message: 'Utilisateur créé avec succès' }, { status: 201 });
 		} catch (e) {
 			const message = e instanceof Error ? e.message : 'ERREUR_INTERNE';
 			if (message === 'CE_NOM_UTILISATEUR_EXISTE_DEJA') {
@@ -81,7 +87,7 @@ export const UserController = {
 		if (!updated) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
-		return Response.json({ ...formatUserDates(updated), message: 'Utilisateur modifié avec succès' });
+		return Response.json({ ...toSafeUser(formatUserDates(updated)), message: 'Utilisateur modifié avec succès' });
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {

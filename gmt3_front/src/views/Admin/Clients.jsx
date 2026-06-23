@@ -7,6 +7,8 @@ import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { clientsApi, createClientApi, updateClientApi, deleteClientApi } from '../../api/clients.js';
 import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
 import { formatIsoDateFr } from '../../utils/dateFormatter.js';
+import { useToast } from '../../hooks/useToast.js';
+import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const ROWS_PER_PAGE = 10;
 const CONTACT_DIGITS = 10;
@@ -14,6 +16,7 @@ const CONTACT_DIGITS = 10;
 export function AdminClients() {
 	const { route } = useLocation();
 	const { confirmLogout } = useLogout(() => route('/admin', true));
+	const { toasts, addToast, removeToast } = useToast();
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -36,7 +39,9 @@ export function AdminClients() {
 		try {
 			const response = await clientsApi(accessToken.value);
 			if (Array.isArray(response.data)) setClients(response.data);
-		} catch {}
+		} catch {
+			addToast('Impossible de charger les clients', 'error');
+		}
 	};
 
 	const handleCreate = () => {
@@ -85,7 +90,8 @@ export function AdminClients() {
 			}
 			setShowForm(false);
 			setEditingClient(null);
-		} catch (e) { alert(e.message); }
+			addToast(editingClient ? 'Client modifié' : 'Client créé', 'success');
+		} catch (e) { addToast(e.message || 'Erreur', 'error'); }
 	};
 
 	const confirmDelete = async () => {
@@ -93,7 +99,10 @@ export function AdminClients() {
 		try {
 			await deleteClientApi(accessToken.value, confirm.clientId);
 			setClients((prev) => prev.filter((c) => c.id !== confirm.clientId));
-		} catch {}
+			addToast('Client supprimé', 'success');
+		} catch {
+			addToast('Échec de la suppression (réservations liées ?)', 'error');
+		}
 		setConfirm(null);
 	};
 
@@ -182,6 +191,7 @@ export function AdminClients() {
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
 			<ConfirmDialog open={confirm?.type === 'delete-client'} title="Supprimer le client" message="Cette action est irréversible. Le client sera définitivement supprimé." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />
+			<ToastContainer toasts={toasts} onRemove={removeToast} />
 
 			{showForm && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditingClient(null); }}>

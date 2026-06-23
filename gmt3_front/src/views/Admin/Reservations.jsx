@@ -9,12 +9,15 @@ import { reservationsApi, createReservationApi, updateReservationApi, deleteRese
 import { clientsApi } from '../../api/clients.js';
 import { evenementsApi } from '../../api/evenements.js';
 import { formatIsoDateFr } from '../../utils/dateFormatter.js';
+import { useToast } from '../../hooks/useToast.js';
+import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const ROWS_PER_PAGE = 10;
 
 export function AdminReservations() {
 	const { route } = useLocation();
 	const { handleLogout, confirmLogout } = useLogout(() => route('/admin', true));
+	const { toasts, addToast, removeToast } = useToast();
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -47,7 +50,9 @@ export function AdminReservations() {
 			if (Array.isArray(res.data)) setReservations(res.data);
 			if (Array.isArray(cli.data)) setClients(cli.data);
 			if (Array.isArray(evt.data)) setEvenements(evt.data);
-		} catch {}
+		} catch {
+			addToast('Impossible de charger les réservations', 'error');
+		}
 	};
 
 	const clientMap = /** @type {Record<number, string>} */({});
@@ -96,7 +101,8 @@ export function AdminReservations() {
 			}
 			setShowForm(false);
 			setEditing(null);
-		} catch (err) { alert(err.message); }
+			addToast(editing ? 'Réservation modifiée' : 'Réservation créée', 'success');
+		} catch (err) { addToast(err.message || 'Erreur', 'error'); }
 	};
 
 	const confirmDelete = async () => {
@@ -104,7 +110,10 @@ export function AdminReservations() {
 		try {
 			await deleteReservationApi(accessToken.value, confirm.id);
 			setReservations((prev) => prev.filter((r) => r.id !== confirm.id));
-		} catch {}
+			addToast('Réservation supprimée', 'success');
+		} catch {
+			addToast('Échec de la suppression', 'error');
+		}
 		setConfirm(null);
 	};
 
@@ -199,6 +208,7 @@ export function AdminReservations() {
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
 			<ConfirmDialog open={confirm?.type === 'delete-reservation'} title="Supprimer la réservation" message="Cette action est irréversible." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />
+			<ToastContainer toasts={toasts} onRemove={removeToast} />
 
 			{showForm && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditing(null); }}>
