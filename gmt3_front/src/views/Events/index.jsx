@@ -23,7 +23,7 @@ export function Events() {
 			.then((r) => r.json())
 			.then((response) => {
 				const published = (Array.isArray(response.data) ? response.data : [])
-					.filter((e) => e.estPublie && isDateInFuture(e.dateDepart || e.dateEvenement));
+					.filter((e) => e.estPublie);
 				setEvents(published);
 			})
 			.catch((err) => {
@@ -32,6 +32,10 @@ export function Events() {
 			})
 			.finally(() => setLoading(false));
 	}, []);
+
+	const futureEvents = events.filter((e) => isDateInFuture(e.dateDepart || e.dateEvenement));
+	const pastEventsWithPhotos = events
+		.filter((e) => !isDateInFuture(e.dateDepart || e.dateEvenement) && (e.photosEvenement || []).length > 0);
 
 	const transformEvent = (event) => ({
 		id: event.id,
@@ -94,7 +98,7 @@ export function Events() {
 						<Reveal animation="fadeLeft" delay={200} duration={700}>
 							<div class="hidden lg:flex flex-col items-end gap-3 border-l border-white/10 pl-10">
 								<div class="flex flex-col items-end gap-1">
-									<span class="font-mono text-[9px] text-white/20 tracking-widest uppercase">{!loading ? events.length : "..."} missions disponibles</span>
+									<span class="font-mono text-[9px] text-white/20 tracking-widest uppercase">{!loading ? futureEvents.length : "..."} missions disponibles</span>
 									<span class="font-mono text-[9px] text-primary tracking-widest font-bold uppercase">Réservation ouverte</span>
 								</div>
 								<a
@@ -123,7 +127,7 @@ export function Events() {
 					</div>
 				)}
 
-				{!loading && events.length === 0 && (
+				{!loading && futureEvents.length === 0 && (
 					<div class="py-24 text-center">
 						<div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5 mb-6">
 							<span class="material-symbols-outlined text-3xl text-primary">event_busy</span>
@@ -133,9 +137,9 @@ export function Events() {
 					</div>
 				)}
 
-				{!loading && events.length > 0 && (
+				{!loading && futureEvents.length > 0 && (
 					<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter xl:gap-8">
-						{events.map((event, i) => {
+						{futureEvents.map((event, i) => {
 							const card = transformEvent(event);
 							return (
 								<Reveal key={card.id} animation={i % 2 === 0 ? 'driftLeft' : 'driftRight'} delay={i * 80} duration={820}>
@@ -146,6 +150,65 @@ export function Events() {
 					</div>
 				)}
 			</section>
+
+			{/* ── Preuves de Terrain ── */}
+			{!loading && pastEventsWithPhotos.length > 0 && (
+				<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full mt-24 pt-16 border-t border-white/10">
+					<Reveal animation="fadeUp" duration={760}>
+						<div class="flex items-center gap-3 mb-6">
+							<div class="h-px w-10 bg-primary/50" />
+							<span class="font-label-caps text-[10px] tracking-[0.3em] text-primary font-bold uppercase">Galerie Terrain</span>
+						</div>
+					</Reveal>
+					<Reveal animation="arc" delay={60} duration={820}>
+						<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
+							Preuves de <br /><span class="text-primary">Terrain</span>
+						</h2>
+					</Reveal>
+					<Reveal animation="fadeUp" delay={120} duration={760}>
+						<p class="font-body-lg text-white/50 max-w-xl leading-relaxed mb-12">
+							Moments capturés lors de nos expéditions passées. L'authenticité de nos missions, sans filtre.
+						</p>
+					</Reveal>
+
+					<div class="space-y-16">
+						{pastEventsWithPhotos.map((event) => {
+							const photos = (event.photosEvenement || []).map((p) => resolveImg(p.url));
+							return (
+								<div key={event.id} class="space-y-4">
+									<div class="flex flex-wrap items-center gap-3 mb-4">
+										<h3 class="font-h3 text-h3 text-white font-black uppercase">{event.titre}</h3>
+										<span class="rounded-full border border-white/20 bg-white/8 px-3 py-1 font-mono text-[10px] text-white/60">
+											{formatDateFr(event.dateDepart || event.dateEvenement)}
+										</span>
+									</div>
+									<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+										{photos.map((photo, idx) => (
+											<Reveal key={`${event.id}-photo-${idx}`} animation="fadeUp" delay={idx * 40} duration={600}>
+												<a
+													href={photo}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="group relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50"
+												>
+													<img
+														src={photo}
+														alt={`${event.titre} photo ${idx + 1}`}
+														class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+														loading="lazy"
+														referrerPolicy="no-referrer"
+													/>
+													<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+												</a>
+											</Reveal>
+										))}
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</section>
+			)}
 		</main>
 		<Footer />
 		</>

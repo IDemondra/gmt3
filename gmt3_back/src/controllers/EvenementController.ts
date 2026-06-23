@@ -138,8 +138,23 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 export const EvenementController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const items = await evenementService.getAll();
+		const allPhotos = await photoRepository.findAll();
+		const photosByEvent = new Map<number, typeof allPhotos>();
+		for (const photo of allPhotos) {
+			const list = photosByEvent.get(photo.evenementId) ?? [];
+			list.push(photo);
+			photosByEvent.set(photo.evenementId, list);
+		}
+		for (const list of photosByEvent.values()) {
+			list.sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0));
+		}
 		return Response.json({
-			data: items.map((item) => ({ ...formatEvenementDates(item), id: item.id, duration: calculateDuration(item) })),
+			data: items.map((item) => ({
+				...formatEvenementDates(item),
+				id: item.id,
+				duration: calculateDuration(item),
+				photosEvenement: photosByEvent.get(item.id) ?? [],
+			})),
 			message: `${items.length} événement(s) trouvé(s)`
 		});
 	},
