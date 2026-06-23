@@ -1,5 +1,6 @@
 import { ClientService } from '../services/ClientService.js';
 import { ClientRepository } from '../repositories/ClientRepository.js';
+import { ReservationRepository } from '../repositories/ReservationRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Client } from '../types/index.js';
 import { formatDateToDDMMYYYY } from '../utils/date.js';
@@ -51,6 +52,16 @@ export const ClientController = {
     async delete(req: BunRequest, params: { id: string }): Promise<Response> {
         const id = Number(params.id);
         if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
+
+        const reservationRepo = new ReservationRepository();
+        const reservations = await reservationRepo.findByClientId(id);
+        if (reservations.length > 0) {
+            return Response.json({
+                error: 'CLIENT_HAS_RESERVATIONS',
+                message: `Ce client a ${reservations.length} réservation(s). Supprimez d'abord les réservations associées.`
+            }, { status: 409 });
+        }
+
         const ok = await clientService.delete(id);
         if (!ok) return Response.json({ error: 'CLIENT_INTROUVABLE', message: 'Client non trouvé' }, { status: 404 });
         return Response.json({ success: true, message: 'Client supprimé avec succès' });

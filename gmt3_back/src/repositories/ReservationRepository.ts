@@ -12,6 +12,9 @@ export class ReservationRepository implements IRepository<Reservation, NewReserv
         const rows = await db.select().from(reservations).where(eq(reservations.id, id)).limit(1);
         return rows[0];
     }
+    async findByClientId(clientId: number): Promise<Reservation[]> {
+        return db.select().from(reservations).where(eq(reservations.clientId, clientId));
+    }
     async create(data: NewReservation): Promise<Reservation> {
         const rows = await db.insert(reservations).values(data).returning();
         return rows[0]!;
