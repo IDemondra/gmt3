@@ -87,7 +87,7 @@ export function ActivitiesSection() {
 
 						return (
 							<Reveal key={index} animation="fadeUp" delay={index * 100} className={spanClass}>
-								<article class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate">
+								<a href="#contact" aria-label={`${activity.title} — nous contacter`} class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
 									
 									{/* Corner Accents */}
 									<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-primary transition-colors" />
@@ -122,15 +122,15 @@ export function ActivitiesSection() {
 										</p>
 									</div>
 
-									{/* Footer: Tech specs / Status */}
+									{/* Footer: CTA contact */}
 									<div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-										<span class="text-[9px] font-bold tracking-widest text-primary uppercase">Module Active</span>
-										<span class="material-symbols-outlined text-sm text-white/20">sensors</span>
+										<span class="text-[9px] font-bold tracking-widest text-primary uppercase">Nous contacter</span>
+										<span class="material-symbols-outlined text-sm text-primary group-hover:translate-x-1 transition-transform">north_east</span>
 									</div>
 
 									{/* Background Glow */}
 									<div class="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-								</article>
+								</a>
 							</Reveal>
 						);
 					})}

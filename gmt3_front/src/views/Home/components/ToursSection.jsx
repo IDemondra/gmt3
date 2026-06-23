@@ -187,66 +187,6 @@ export function ToursSection() {
 						</div>
 					</div>
 				)}
-
-				{/* ── CTA Expéditions Personnalisées ── */}
-				<div class="mt-24 relative overflow-hidden rounded-3xl bg-on-secondary-fixed isolate min-h-[280px] flex items-center">
-					<div class="absolute inset-0 z-0 pointer-events-none">
-						<div class="absolute inset-0 bg-gradient-to-r from-on-secondary-fixed via-on-secondary-fixed/95 to-on-secondary-fixed/80" />
-						<div class="absolute right-0 top-0 bottom-0 w-2/5 bg-primary/10" style="clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%)" />
-						<div class="absolute right-0 top-0 bottom-0 w-1/4 bg-primary/5" style="clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%)" />
-					</div>
-					<div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-						style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 28px 28px;" />
-					<div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent z-10" />
-					<div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
-					<div class="absolute right-8 top-1/2 -translate-y-1/2 z-10 hidden lg:block opacity-[0.04]">
-						<span class="material-symbols-outlined text-white" style="font-size: 200px; line-height: 1;">explore</span>
-					</div>
-					<div class="absolute top-4 right-6 z-20 hidden md:flex flex-col items-end gap-1">
-						<span class="font-mono text-[8px] text-white/20 tracking-[0.3em] uppercase">GMT3 / CUSTOM-OPS</span>
-						<span class="font-mono text-[8px] text-primary tracking-widest font-bold">STATUS: OPEN</span>
-					</div>
-
-					<div class="relative z-20 w-full p-8 md:p-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-						<div class="max-w-xl">
-							<div class="flex items-center gap-3 mb-5">
-								<div class="h-px w-8 bg-primary/60" />
-								<span class="font-label-caps text-[10px] tracking-[0.3em] text-primary font-bold uppercase">Mission sur mesure</span>
-							</div>
-							<h4 class="font-h2 text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight mb-4">
-								Expéditions<br /><span class="text-primary">Personnalisées</span>
-							</h4>
-							<p class="font-body-md text-white/50 leading-relaxed max-w-md">
-								Nos équipes terrain calibrent un itinéraire spécifique pour votre groupe ou projet — logistique, dates, difficulté.
-							</p>
-							<div class="mt-5 flex items-center gap-4 text-white/20">
-								<span class="font-mono text-[9px] tracking-widest uppercase">S 18.91° / E 47.53°</span>
-								<div class="h-px w-8 bg-white/10" />
-								<span class="font-mono text-[9px] tracking-widest uppercase">Madagascar</span>
-							</div>
-						</div>
-
-						<div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-start sm:items-center gap-4 shrink-0">
-							<a
-								href="#contact"
-								class="group relative inline-flex items-center gap-3 px-8 py-4 bg-primary text-white font-button text-xs tracking-[0.2em] font-bold uppercase rounded-full overflow-hidden shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-							>
-								<span class="relative z-10 flex items-center gap-3">
-									DEMANDER UN DEVIS
-									<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">north_east</span>
-								</span>
-								<div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-10" />
-							</a>
-							<a
-								href="/events"
-								class="inline-flex items-center gap-2 px-6 py-4 border border-white/10 text-white/50 hover:text-white hover:border-white/30 font-button text-xs tracking-[0.2em] font-bold uppercase rounded-full transition-all duration-300 cursor-pointer"
-							>
-								VOIR LE CATALOGUE
-								<span class="material-symbols-outlined text-sm">arrow_forward</span>
-							</a>
-						</div>
-					</div>
-				</div>
 			</div>
 		</section>
 	);
