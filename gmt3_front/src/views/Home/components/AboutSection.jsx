@@ -160,6 +160,8 @@ export function AboutSection() {
 										<img
 											alt={member.name}
 											class="h-full w-full object-cover grayscale-[0.2] sepia-[0.1] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 group-hover:scale-105"
+											loading="lazy"
+											decoding="async"
 											src={img(member.src)}
 										/>
 										{/* Overlay vignette */}
@@ -225,7 +227,7 @@ export function AboutSection() {
 								</a>
 								<div class="flex -space-x-3 items-center">
 									{team.slice(0, 4).map((m, idx) => (
-										<img key={idx} src={img(m.src)} class="h-10 w-10 rounded-full border-2 border-on-background object-cover" />
+										<img key={idx} src={img(m.src)} alt={m.name || 'Membre de l\'équipe GMT3'} loading="lazy" decoding="async" class="h-10 w-10 rounded-full border-2 border-on-background object-cover" />
 									))}
 									<div class="h-10 w-10 rounded-full border-2 border-on-background bg-stone-800 flex items-center justify-center text-[10px] font-bold">
 										+2

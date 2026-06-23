@@ -126,6 +126,8 @@ export function GallerySection() {
 										alt={card.alt}
 										class="absolute inset-0 h-full w-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
 										loading={card.priority ? 'eager' : 'lazy'}
+										decoding="async"
+										referrerPolicy="no-referrer"
 										src={card.src}
 									/>
 									

@@ -101,7 +101,7 @@ export function Footer() {
 								<ul class="space-y-4">
 									{navLinks.map(({ label, href }) => (
 										<li key={label}>
-											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group">
+											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group py-2 min-h-[44px]">
 												<span class="h-1 w-1 bg-white/10 group-hover:bg-primary rounded-full transition-colors" />
 												{label.toUpperCase()}
 											</a>
@@ -116,7 +116,7 @@ export function Footer() {
 								<ul class="space-y-4">
 									{infoLinks.map(({ label, href }) => (
 										<li key={label}>
-											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group">
+											<a href={href} class="text-xs text-white/40 hover:text-primary transition-colors flex items-center gap-2 group py-2 min-h-[44px]">
 												<span class="h-1 w-1 bg-white/10 group-hover:bg-primary rounded-full transition-colors" />
 												{label.toUpperCase()}
 											</a>
@@ -165,8 +165,8 @@ export function Footer() {
 
 					<div class="flex items-center gap-6">
 						{socialLinks.map(({ label, href, viewBox, path }) => (
-							<a key={label} href={href} class="text-white/20 hover:text-primary transition-all duration-300 hover:scale-110">
-								<svg class="w-4 h-4 fill-current" viewBox={viewBox}><path d={path} /></svg>
+							<a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} class="flex h-11 w-11 items-center justify-center text-white/20 hover:text-primary transition-all duration-300 hover:scale-110">
+								<svg class="w-4 h-4 fill-current" viewBox={viewBox} aria-hidden="true"><path d={path} /></svg>
 							</a>
 						))}
 						<div class="h-8 w-px bg-white/5 hidden md:block" />

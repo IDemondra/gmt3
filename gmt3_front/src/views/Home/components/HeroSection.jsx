@@ -70,6 +70,22 @@ export function HeroSection() {
 							</div>
 						</div>
 					</Reveal>
+
+					{/* Stats de réassurance */}
+					<Reveal animation="fadeUp" delay={550} duration={800}>
+						<dl class="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-white/10 pt-8 max-w-2xl">
+							{[
+								{ val: '10', label: 'Ans terrain' },
+								{ val: '100%', label: 'Sur mesure' },
+								{ val: '8', label: 'Max / groupe' },
+							].map((s, i) => (
+								<div key={i} class="flex flex-col">
+									<dt class="font-h2 text-3xl font-black text-primary-container leading-none">{s.val}</dt>
+									<dd class="mt-1 font-mono text-[9px] text-white/40 uppercase tracking-[0.25em]">{s.label}</dd>
+								</div>
+							))}
+						</dl>
+					</Reveal>
 				</div>
 			</div>
 
