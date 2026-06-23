@@ -13,6 +13,7 @@ import heicConvert from 'heic-convert';
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_GALLERY_PHOTOS = 10;
 
 async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: string } | null> {
 	if (file.size > MAX_FILE_SIZE) return null;
@@ -83,7 +84,9 @@ type GalleryFormData = {
 };
 
 function getGalleryFiles(fd: GalleryFormData): File[] {
-	return fd.getAll('photosEvenement').filter((value): value is File => value instanceof File && value.size > 0);
+	return fd.getAll('photosEvenement')
+		.filter((value): value is File => value instanceof File && value.size > 0)
+		.slice(0, MAX_GALLERY_PHOTOS);
 }
 
 const evenementService = new EvenementService(new EvenementRepository());

@@ -58,3 +58,16 @@ export async function deleteEvenementApi(token, id) {
 	if (!res.ok) throw new Error('ERREUR_SUPPRESSION');
 	return res.json();
 }
+
+/**
+ * Remplace toute la galerie photo d'un événement.
+ * @param {string|null} token
+ * @param {number} id
+ * @param {FormData} formData FormData contenant les champs `photosEvenement`
+ */
+export async function replacePhotosApi(token, id, formData) {
+	const headers = { Authorization: `Bearer ${token}` };
+	const res = await fetch(`${API_BASE}/evenements/${id}/photos`, { method: 'POST', headers, body: formData, credentials: 'include' });
+	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_UPLOAD'); }
+	return res.json();
+}

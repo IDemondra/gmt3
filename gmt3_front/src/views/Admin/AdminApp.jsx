@@ -4,6 +4,7 @@ import { AdminDashboard } from './Dashboard.jsx';
 import { AdminUsers } from './Users.jsx';
 import { AdminClients } from './Clients.jsx';
 import { AdminReservations } from './Reservations.jsx';
+import { AdminPhotos } from './Photos.jsx';
 
 /**
  * SPA admin privée (CSR uniquement, montée en `client:only="preact"`).
@@ -18,6 +19,7 @@ export default function AdminApp() {
 				<Route path="/admin/utilisateurs" component={AdminUsers} />
 				<Route path="/admin/clients" component={AdminClients} />
 				<Route path="/admin/reservations" component={AdminReservations} />
+				<Route path="/admin/photos" component={AdminPhotos} />
 				<Route default component={AdminLogin} />
 			</Router>
 		</LocationProvider>
