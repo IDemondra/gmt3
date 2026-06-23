@@ -10,6 +10,7 @@ import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
 import heicConvert from 'heic-convert';
+import { optimizeImage } from '../utils/imageOptimize.js';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
@@ -29,14 +30,14 @@ async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: stri
 			const jpegArrayBuffer = await heicConvert({ buffer: rawBuf, format: 'JPEG', quality: 0.9 });
 			const jpegBuf = Buffer.from(jpegArrayBuffer);
 			if (jpegBuf.length > MAX_FILE_SIZE) return null;
-			return { buf: jpegBuf, ext: 'jpg' };
+			return optimizeImage(jpegBuf, 'jpg');
 		} catch {
 			return null;
 		}
 	}
 
 	if (!ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
-	return { buf: rawBuf, ext: type.ext };
+	return optimizeImage(rawBuf, type.ext);
 }
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {

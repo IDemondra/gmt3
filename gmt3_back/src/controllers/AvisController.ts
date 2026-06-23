@@ -6,6 +6,7 @@ import { formatDateToDDMMYYYY } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
+import { optimizeImage } from '../utils/imageOptimize.js';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -25,12 +26,13 @@ function toPositiveInteger(value: unknown): number | null {
 
 async function storeAvisPhoto(evenementId: number, file: File): Promise<string | null> {
 	if (file.size === 0 || file.size > MAX_FILE_SIZE) return null;
-	const buf = Buffer.from(await file.arrayBuffer());
-	const type = await fileTypeFromBuffer(buf);
+	const rawBuf = Buffer.from(await file.arrayBuffer());
+	const type = await fileTypeFromBuffer(rawBuf);
 	if (!type || !ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
+	const { buf, ext } = await optimizeImage(rawBuf, type.ext);
 	const dir = resolve(UPLOADS_ROOT, String(evenementId));
 	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-	const filename = `${Date.now()}.${type.ext}`;
+	const filename = `${Date.now()}.${ext}`;
 	writeFileSync(resolve(dir, filename), buf);
 	return `/uploads/avis/${evenementId}/${filename}`;
 }
