@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
 import { formatDateFr, isDateInFuture } from '../../../utils/dateFormatter.js';
@@ -115,7 +115,7 @@ export function ToursSection() {
 
 											{/* Photo */}
 											<div class="w-full md:w-1/2">
-												<div class="group relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white">
+												<a href={`/events/${event.id}`} class="group block relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white hover:shadow-2xl transition-shadow">
 													{imgUrl ? (
 														<div
 															class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
@@ -138,7 +138,7 @@ export function ToursSection() {
 															</span>
 														)}
 													</div>
-												</div>
+												</a>
 											</div>
 
 											{/* Timeline node */}
@@ -191,6 +191,3 @@ export function ToursSection() {
 		</section>
 	);
 }
-
-
-
