@@ -24,10 +24,11 @@ const {
 const canonical = `${SITE}${Astro.url.pathname}`;
 const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
 
-// Bouton WhatsApp flottant — masqué sur les pages noindex (admin).
 const WHATSAPP_NUMBER = import.meta.env.PUBLIC_WHATSAPP || '261340312401';
 const WHATSAPP_MSG = encodeURIComponent('Bonjour GMT3, je souhaite des informations sur vos expéditions.');
 const showWhatsapp = !noindex;
+
+const GA_ID = import.meta.env.PUBLIC_GA_ID;
 ---
 
 <!doctype html>
@@ -74,6 +75,20 @@ const showWhatsapp = !noindex;
 			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
+
+		{GA_ID && (
+			<>
+				<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+				<script define:vars={{ GA_ID }}>
+					window.dataLayer = window.dataLayer || [];
+					function gtag() {
+						dataLayer.push(arguments);
+					}
+					gtag('js', new Date());
+					gtag('config', GA_ID);
+				</script>
+			</>
+		)}
 	</head>
 	<body class="bg-background text-on-background font-body-md min-h-dvh flex flex-col">
 		<slot />
