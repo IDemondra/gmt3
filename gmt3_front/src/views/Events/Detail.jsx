@@ -134,7 +134,7 @@ export function EventDetail({ params }) {
 					.then((r) => r.json())
 					.then((response) => {
 						const related = (Array.isArray(response.data) ? response.data : [])
-							.filter((e) => e.estPublie && e.id !== eventId)
+							.filter((e) => e.estPublie && e.id !== eventId && isDateInFuture(e.dateDepart || e.dateEvenement))
 							.slice(0, 2)
 							.map(transformEventForCard);
 						setRelatedEvents(related);
