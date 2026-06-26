@@ -56,9 +56,24 @@ const jsonLd = event
 			}),
 		}
 	: undefined;
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+const breadcrumbLd = event
+	? {
+			'@context': 'https://schema.org',
+			'@type': 'BreadcrumbList',
+			itemListElement: [
+				{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` },
+				{ '@type': 'ListItem', position: 2, name: 'Expéditions', item: `${SITE}/events` },
+				{ '@type': 'ListItem', position: 3, name: event.titre, item: `${SITE}/events/${id}` },
+			],
+		}
+	: undefined;
+
+const pageLd = [breadcrumbLd, jsonLd].filter(Boolean);
 ---
 
-<BaseLayout title={title} description={description} image={ogImage} noindex={!event} ogType="article" jsonLd={jsonLd}>
+<BaseLayout title={title} description={description} image={ogImage} noindex={!event} ogType="article" jsonLd={pageLd}>
 	<Header client:load />
 	<EventDetail client:load params={{ id }} />
 </BaseLayout>

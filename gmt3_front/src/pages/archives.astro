@@ -2,11 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Header } from '../components/Header.jsx';
 import { Archives } from '../views/Archives/index.jsx';
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+const breadcrumbLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` },
+		{ '@type': 'ListItem', position: 2, name: 'Archives', item: `${SITE}/archives` },
+	],
+};
 ---
 
 <BaseLayout
 	title="Archives terrain — Photos des expéditions passées | GMT3 Fianarantsoa"
 	description="L'historique visuel complet de nos expéditions à Fianarantsoa et en Haute Matsiatra. Galeries photos de toutes nos missions terrain passées."
+	jsonLd={breadcrumbLd}
 >
 	<Header client:load />
 	<Archives client:load />
