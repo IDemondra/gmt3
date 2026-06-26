@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Header } from '../components/Header.jsx';
+import { Footer } from '../components/Footer.jsx';
+
+const faqs = [
+	{
+		q: 'Où se situe GMT+3 Fianarantsoa ?',
+		a: "GMT+3 Fianarantsoa est basé à Anolaka, à Fianarantsoa, dans la région Haute Matsiatra au cœur du pays Betsileo (Madagascar). Nous opérons nos circuits et randonnées dans toute la Haute Matsiatra.",
+	},
+	{
+		q: 'Quels types de voyages proposez-vous ?',
+		a: "Nous organisons des circuits sur mesure, des randonnées et treks guidés, des excursions à la journée, des séjours et des immersions culturelles Betsileo à Fianarantsoa et dans la Haute Matsiatra.",
+	},
+	{
+		q: 'Comment réserver une expédition ?',
+		a: "Vous pouvez réserver directement via WhatsApp au +261 34 03 124 01, par email à hanitra@great-madagascar-tours.com, ou en consultant le calendrier des expéditions à dates fixes sur notre page Expéditions.",
+	},
+	{
+		q: 'Proposez-vous des voyages sur mesure ?',
+		a: "Oui. Nous concevons des itinéraires personnalisés selon vos dates, votre budget, votre rythme et vos centres d'intérêt (nature, culture, randonnée, photographie). Contactez-nous pour construire votre voyage.",
+	},
+	{
+		q: 'Quelle est la meilleure période pour visiter Fianarantsoa et la Haute Matsiatra ?',
+		a: "La saison sèche, d'avril à novembre, offre les meilleures conditions pour la randonnée et les circuits. La période de mai à octobre est idéale pour les treks en pays Betsileo.",
+	},
+	{
+		q: 'Les randonnées sont-elles adaptées aux débutants ?',
+		a: "Oui. Nous proposons des niveaux variés, de la balade accessible à tous jusqu'au trek sportif. Chaque expédition précise sa difficulté, et nos guides adaptent le rythme au groupe.",
+	},
+	{
+		q: 'Vos guides sont-ils francophones ?',
+		a: "Oui, nos guides sont francophones et connaissent en profondeur la culture Betsileo, la faune et la flore endémiques de la région.",
+	},
+	{
+		q: 'Quels moyens de paiement acceptez-vous ?',
+		a: "Les tarifs sont indiqués en ariary (MGA). Les modalités de paiement sont précisées lors de la réservation ; contactez-nous pour les options disponibles.",
+	},
+];
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: faqs.map((f) => ({
+		'@type': 'Question',
+		name: f.q,
+		acceptedAnswer: { '@type': 'Answer', text: f.a },
+	})),
+};
+---
+
+<BaseLayout
+	title="FAQ — Tourisme à Fianarantsoa | GMT+3 Fianarantsoa"
+	description="Questions fréquentes sur nos circuits, randonnées et voyages sur mesure à Fianarantsoa et en Haute Matsiatra : réservation, périodes, niveaux, guides, paiement."
+	jsonLd={jsonLd}
+>
+	<Header client:load />
+
+	<main class="bg-background text-on-background flex-1">
+		<section class="w-full max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop pt-32 pb-24">
+			<div class="mb-12">
+				<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary">FAQ</span>
+				<h1 class="font-h1 text-h1 md:text-5xl font-black uppercase tracking-tighter leading-none mt-3">
+					Questions fréquentes
+				</h1>
+				<p class="font-body-md text-on-surface-variant max-w-xl leading-relaxed mt-5">
+					Tout ce qu'il faut savoir avant de partir explorer Fianarantsoa et la Haute Matsiatra avec GMT+3.
+				</p>
+			</div>
+
+			<div class="space-y-3">
+				{faqs.map((f) => (
+					<details class="group rounded-2xl border border-outline-variant bg-surface-container overflow-hidden">
+						<summary class="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-5 font-body-lg font-semibold hover:bg-surface-variant transition-colors">
+							<span>{f.q}</span>
+							<span class="material-symbols-outlined text-primary shrink-0 transition-transform duration-300 group-open:rotate-45">add</span>
+						</summary>
+						<div class="px-6 pb-6 pt-1 font-body-md text-on-surface-variant leading-relaxed">
+							{f.a}
+						</div>
+					</details>
+				))}
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</BaseLayout>
