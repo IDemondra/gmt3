@@ -6,23 +6,52 @@ const SITE = 'https://gmt3-fianarantsoa.mg';
 export interface Props {
 	title?: string;
 	description?: string;
-	keywords?: string;
 	image?: string;
 	noindex?: boolean;
 	ogType?: string;
+	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
 	title = 'GMT+3 Fianarantsoa | Tourisme, Voyage sur Mesure & Randonnées',
 	description = 'GMT3 Fianarantsoa : Spécialiste du tourisme à Fianarantsoa. Circuits, randonnées, voyage sur mesure, immersion culturelle Betsileo et hôtels dans la Haute Matsiatra.',
-	keywords = 'gmt+3 fianarantsoa, gmt3 fianarantsoa, great tours madagascar, great tours fianarantsoa, tourisme fianarantsoa, fianarantsoa tourisme, voyage fianarantsoa, voyage sur mesure fianarantsoa, randonnée fianarantsoa, trek fianarantsoa, circuit fianarantsoa, agence tourisme fianarantsoa, guide fianarantsoa, séjour fianarantsoa, excursion fianarantsoa, excursion madagascar, picnic fianarantsoa, aventure madagascar, safari madagascar, visite guidée fianarantsoa, exploration madagascar, découverte fianarantsoa, hôtel fianarantsoa, lodge madagascar, nature madagascar, tourisme madagascar, betsileo madagascar, haute matsiatra, guide madagascar',
 	image = '/assets/logo_gmt3.jpeg',
 	noindex = false,
 	ogType = 'website',
+	jsonLd,
 } = Astro.props;
 
 const canonical = `${SITE}${Astro.url.pathname}`;
 const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
+
+const organizationLd = {
+	'@context': 'https://schema.org',
+	'@type': 'TravelAgency',
+	'@id': `${SITE}/#organization`,
+	name: 'GMT+3 Fianarantsoa',
+	alternateName: ['GMT3 Fianarantsoa', 'Great Tours Madagascar'],
+	url: SITE,
+	logo: `${SITE}/assets/logo_gmt3.jpeg`,
+	image: `${SITE}/assets/logo_gmt3.jpeg`,
+	description,
+	email: 'dhajarison@gmail.com',
+	telephone: '+261340312401',
+	areaServed: 'Madagascar',
+	address: {
+		'@type': 'PostalAddress',
+		addressLocality: 'Fianarantsoa',
+		addressRegion: 'Haute Matsiatra',
+		addressCountry: 'MG',
+	},
+	geo: {
+		'@type': 'GeoCoordinates',
+		latitude: -21.4536,
+		longitude: 47.0858,
+	},
+	sameAs: ['https://www.facebook.com/hajarison.raphael'],
+};
+
+const structuredData = jsonLd ? [organizationLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : [organizationLd];
 
 const WHATSAPP_NUMBER = import.meta.env.PUBLIC_WHATSAPP || '261340312401';
 const WHATSAPP_MSG = encodeURIComponent('Bonjour GMT3, je souhaite des informations sur vos expéditions.');
@@ -42,7 +71,6 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<meta name="keywords" content={keywords} />
 		<link rel="canonical" href={canonical} />
 		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 
@@ -50,9 +78,12 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 		<meta name="geo.region" content="MG" />
 		<meta name="geo.placename" content="Fianarantsoa" />
 
+		<!-- Données structurées -->
+		<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
 		<!-- Open Graph -->
 		<meta property="og:type" content={ogType} />
-		<meta property="og:site_name" content="GMT3 Fianarantsoa" />
+		<meta property="og:site_name" content="GMT+3 Fianarantsoa" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={ogImage} />

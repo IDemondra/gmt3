@@ -20,16 +20,45 @@ const title = event ? `${event.titre} — GMT3 Fianarantsoa` : 'Événement — 
 const description = event
 	? (event.description || '').replace(/[#*_`>]/g, '').slice(0, 160)
 	: 'Détail de l’expédition à Fianarantsoa et Haute Matsiatra.';
-const keywords = event
-	? `${event.titre}, ${event.lieu || ''}, randonnée fianarantsoa, circuit haute matsiatra`
-	: undefined;
-
 // Image OG absolue : les uploads sont servis par le backend, pas par le domaine front.
 const PUBLIC_BACKEND = import.meta.env.PUBLIC_BACKEND_URL || 'https://gmt3-fianarantsoa.mg';
 const ogImage = event?.imagePrincipale ? `${PUBLIC_BACKEND}${event.imagePrincipale}` : undefined;
+
+// L'API renvoie les dates en DD/MM/YYYY -> schema.org exige du ISO 8601.
+const toISO = (d) => {
+	if (!d) return undefined;
+	const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(d);
+	return m ? `${m[3]}-${m[2]}-${m[1]}` : d;
+};
+
+const jsonLd = event
+	? {
+			'@context': 'https://schema.org',
+			'@type': 'TouristTrip',
+			name: event.titre,
+			description,
+			...(ogImage && { image: ogImage }),
+			...(event.lieu && {
+				touristType: 'Tourisme à Fianarantsoa',
+				itinerary: { '@type': 'Place', name: event.lieu },
+			}),
+			...(toISO(event.dateDepart) && { startDate: toISO(event.dateDepart) }),
+			...(toISO(event.dateRetour) && { endDate: toISO(event.dateRetour) }),
+			provider: { '@id': 'https://gmt3-fianarantsoa.mg/#organization' },
+			...(event.prix != null && {
+				offers: {
+					'@type': 'Offer',
+					price: event.prix,
+					priceCurrency: 'MGA',
+					availability: 'https://schema.org/InStock',
+					url: `https://gmt3-fianarantsoa.mg/events/${id}`,
+				},
+			}),
+		}
+	: undefined;
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} image={ogImage} noindex={!event} ogType="article">
+<BaseLayout title={title} description={description} image={ogImage} noindex={!event} ogType="article" jsonLd={jsonLd}>
 	<Header client:load />
 	<EventDetail client:load params={{ id }} />
 </BaseLayout>
