@@ -49,10 +49,29 @@ const organizationLd = {
 		latitude: -21.4536,
 		longitude: 47.0858,
 	},
-	sameAs: ['https://www.facebook.com/hajarison.raphael'],
+	sameAs: ['https://www.facebook.com/groups/1567275954180870'],
 };
 
-const structuredData = jsonLd ? [organizationLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : [organizationLd];
+// Signal officiel Google pour le "nom du site" affiché dans les résultats.
+const websiteLd = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	'@id': `${SITE}/#website`,
+	url: SITE,
+	name: 'GMT+3 Fianarantsoa',
+	alternateName: 'GMT3 Fianarantsoa',
+	inLanguage: 'fr',
+	publisher: { '@id': `${SITE}/#organization` },
+	creator: {
+		'@type': 'Person',
+		name: 'Demondra',
+		url: 'https://www.facebook.com/hajarison.raphael',
+	},
+};
+
+const structuredData = jsonLd
+	? [organizationLd, websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])]
+	: [organizationLd, websiteLd];
 
 const WHATSAPP_NUMBER = import.meta.env.PUBLIC_WHATSAPP || '261340312401';
 const WHATSAPP_MSG = encodeURIComponent('Bonjour GMT3, je souhaite des informations sur vos expéditions.');
