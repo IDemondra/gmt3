@@ -2,38 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-# Crawlers IA / LLM — accès explicitement autorisé
-User-agent: GPTBot
-Allow: /
-Disallow: /admin
-
-User-agent: OAI-SearchBot
-Allow: /
-Disallow: /admin
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /admin
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /admin
-
-User-agent: Claude-Web
-Allow: /
-Disallow: /admin
-
-User-agent: PerplexityBot
-Allow: /
-Disallow: /admin
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /admin
-
-User-agent: Applebot-Extended
-Allow: /
-Disallow: /admin
-
 Sitemap: https://gmt3-fianarantsoa.mg/sitemap-index.xml
 Sitemap: https://gmt3-fianarantsoa.mg/sitemap-events.xml
