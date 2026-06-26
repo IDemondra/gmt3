@@ -33,6 +33,39 @@ Design modernized using **UI-UX Pro Max** guidelines: Motion-Driven animations, 
 ## Next Step
 Integrate the backend API (`gmt3_back`) for dynamic tour/event data, implement search/filter on Events page, and add i18n support.
 
+## SEO & Référencement
+
+Travaux d'optimisation SEO réalisés sur le site (branche `seo/structured-data-cleanup`).
+
+### Données structurées (JSON-LD)
+- **`TravelAgency`** (global, `BaseLayout.astro`) — nom (`GMT+3 Fianarantsoa` + `alternateName`), adresse Anolaka Fianarantsoa, géo (-21.4536, 47.0858), téléphone, email, `sameAs` → groupe Facebook officiel.
+- **`WebSite`** (global) — `name: "GMT+3 Fianarantsoa"` pour forcer l'affichage du nom de marque dans les SERP (au lieu du domaine brut) ; `creator` = Demondra (créateur du site) ; `publisher` lié au `TravelAgency`.
+- **`TouristTrip`** (par expédition, `events/[id].astro`) — nom, dates ISO 8601, lieu, prix MGA, offre `InStock`. Éligibilité aux résultats enrichis.
+
+### Métadonnées
+- `og:site_name` aligné sur `GMT+3 Fianarantsoa` (cohérence de branding → Google affiche le `+`).
+- Suppression de la balise `<meta keywords>` partout (ignorée par Google depuis 2009, signal de spam).
+- Prop `jsonLd` ajouté à `BaseLayout` pour injecter du schema par page.
+
+### Sitemaps & robots
+- `sitemap-index.xml` (statique, via `@astrojs/sitemap`) — pages `/`, `/events`, `/archives` ; admin exclu.
+- `sitemap-events.xml` (endpoint SSR `src/pages/sitemap-events.xml.ts`) — une `<loc>` par expédition publiée (`estPublie`), interroge l'API backend au runtime.
+- `robots.txt` référence les deux sitemaps ; `Disallow: /admin`.
+
+### Cohérence NAP (Name / Address / Phone)
+Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
+- Coordonnées GPS affichées corrigées (Antananarivo → Fianarantsoa).
+- Email CTA aligné sur `hanitra@great-madagascar-tours.com`.
+- Téléphone placeholder du bouton « Appeler » remplacé par `+261340312401`.
+- Lien Facebook social → groupe officiel `groups/1567275954180870`.
+
+### À déployer / configurer (hors code)
+1. Merger + déployer en prod (Googlebot ne voit rien tant que ce n'est pas en ligne).
+2. Soumettre `sitemap-index.xml` et `sitemap-events.xml` dans Google Search Console + « Demander l'indexation ».
+3. Vérifier la redirection 301 `http → https` côté serveur/reverse-proxy.
+4. Ajouter une image OG dédiée 1200×630 (`og-cover.jpg`) — actuellement le logo carré est utilisé.
+5. Créer les pages footer mortes (Conditions, Confidentialité, Sécurité, Partenaires) et l'URL Instagram réelle.
+
 ## Getting Started
 - `npm run dev` — Starts dev server at http://localhost:5173/
 - `npm run build` — Builds for production, emits to `dist/`

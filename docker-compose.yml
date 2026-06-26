@@ -50,11 +50,16 @@ services:
       - API_BASE_INTERNAL=http://gmt3_backend:3000/api
     labels:
       - traefik.enable=true
-      - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`)
+      - traefik.http.routers.gmt3.rule=Host(`gmt3-fianarantsoa.mg`) || Host(`www.gmt3-fianarantsoa.mg`)
       - traefik.http.routers.gmt3.entrypoints=websecure
       - traefik.http.routers.gmt3.tls.certresolver=myresolver
       - traefik.http.routers.gmt3.priority=1
       - traefik.http.services.gmt3.loadbalancer.server.port=4321
+      # Redirection 301 www -> non-www (canonical SEO)
+      - traefik.http.routers.gmt3.middlewares=gmt3-www-redirect
+      - traefik.http.middlewares.gmt3-www-redirect.redirectregex.regex=^https?://www\.gmt3-fianarantsoa\.mg/(.*)
+      - traefik.http.middlewares.gmt3-www-redirect.redirectregex.replacement=https://gmt3-fianarantsoa.mg/$${1}
+      - traefik.http.middlewares.gmt3-www-redirect.redirectregex.permanent=true
       - traefik.docker.network=traefik_preprod
     healthcheck:
       test: ["CMD", "bun", "-e", "fetch('http://localhost:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
