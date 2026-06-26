@@ -5,7 +5,7 @@ const contacts = [
 		icon: 'location_on',
 		label: 'Adresse',
 		value: 'Anolaka Fianarantsoa, Madagascar',
-		sub: '18.9137° S, 47.5361° E',
+		sub: '21.4536° S, 47.0858° E',
 		delay: 70,
 	},
 	{
@@ -90,14 +90,14 @@ export function ContactSection() {
 				<Reveal animation="fadeUp" delay={350} duration={700}>
 					<div class="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4">
 						<a
-							href="mailto:contact@gmt3madagascar.mg"
+							href="mailto:hanitra@great-madagascar-tours.com"
 							class="group inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-button text-xs tracking-widest font-black uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 hover:scale-105 active:scale-95 cursor-pointer"
 						>
 							ENVOYER UN MESSAGE
 							<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">north_east</span>
 						</a>
 						<a
-							href="tel:+261340000000"
+							href="tel:+261340312401"
 							class="inline-flex items-center gap-2 border border-white/20 text-white/70 hover:text-white hover:border-white/40 px-8 py-4 rounded-full font-button text-[10px] tracking-widest font-bold uppercase transition-all duration-300 cursor-pointer"
 						>
 							<span class="material-symbols-outlined text-sm">phone</span>
