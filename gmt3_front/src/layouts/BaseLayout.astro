@@ -67,6 +67,14 @@ const websiteLd = {
 		name: 'Demondra',
 		url: 'https://www.facebook.com/hajarison.raphael',
 	},
+	potentialAction: {
+		'@type': 'SearchAction',
+		target: {
+			'@type': 'EntryPoint',
+			urlTemplate: `${SITE}/recherche?q={search_term_string}`,
+		},
+		'query-input': 'required name=search_term_string',
+	},
 };
 
 const structuredData = jsonLd

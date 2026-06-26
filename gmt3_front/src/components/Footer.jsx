@@ -32,6 +32,7 @@ const navLinks = [
 const infoLinks = [
 	{ label: 'Contact', href: '/#contact' },
 	{ label: 'FAQ', href: '/faq' },
+	{ label: 'Recherche', href: '/recherche' },
 	{ label: 'Conditions', href: '#' },
 	{ label: 'Confidentialité', href: '#' },
 	{ label: 'Partenaires', href: '#' },

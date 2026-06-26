@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Header } from '../components/Header.jsx';
+import { Footer } from '../components/Footer.jsx';
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
+const PUBLIC_BACKEND = import.meta.env.PUBLIC_BACKEND_URL || SITE;
+
+const q = (Astro.url.searchParams.get('q') || '').trim();
+
+let results: any[] = [];
+if (q) {
+	try {
+		const res = await fetch(`${API_BASE}/evenements`);
+		if (res.ok) {
+			const data = await res.json();
+			const list = Array.isArray(data.data) ? data.data : [];
+			const needle = q.toLowerCase();
+			results = list
+				.filter((e: any) => e.estPublie)
+				.filter((e: any) =>
+					[e.titre, e.lieu, e.description]
+						.filter(Boolean)
+						.some((f: string) => f.toLowerCase().includes(needle)),
+				);
+		}
+	} catch {
+		results = [];
+	}
+}
+
+const breadcrumbLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` },
+		{ '@type': 'ListItem', position: 2, name: 'Recherche', item: `${SITE}/recherche` },
+	],
+};
+
+const pageTitle = q
+	? `Recherche : ${q} — GMT+3 Fianarantsoa`
+	: 'Recherche — GMT+3 Fianarantsoa';
+---
+
+<BaseLayout
+	title={pageTitle}
+	description="Recherchez parmi les expéditions, randonnées et circuits de GMT+3 Fianarantsoa en Haute Matsiatra."
+	noindex={true}
+	jsonLd={breadcrumbLd}
+>
+	<Header client:load />
+
+	<main class="bg-background text-on-background flex-1">
+		<section class="w-full max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop pt-32 pb-24">
+			<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary">Recherche</span>
+			<h1 class="font-h1 text-h1 md:text-5xl font-black uppercase tracking-tighter leading-none mt-3 mb-8">
+				Trouver une expédition
+			</h1>
+
+			<form method="get" action="/recherche" role="search" class="flex gap-3 mb-12">
+				<input
+					type="search"
+					name="q"
+					value={q}
+					placeholder="Randonnée, lieu, circuit…"
+					aria-label="Rechercher une expédition"
+					class="flex-1 rounded-full border border-outline-variant bg-surface-container px-6 py-4 font-body-md text-on-background placeholder:text-on-surface-variant focus:outline-none focus:border-primary"
+				/>
+				<button
+					type="submit"
+					class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-6 py-4 rounded-full font-button text-xs tracking-widest font-black uppercase transition-colors"
+				>
+					<span class="material-symbols-outlined text-base">search</span>
+					<span class="hidden sm:inline">Chercher</span>
+				</button>
+			</form>
+
+			{q && (
+				<p class="font-body-md text-on-surface-variant mb-8">
+					{results.length} résultat{results.length > 1 ? 's' : ''} pour « {q} »
+				</p>
+			)}
+
+			{q && results.length === 0 && (
+				<div class="rounded-2xl border border-outline-variant bg-surface-container px-8 py-16 text-center">
+					<span class="material-symbols-outlined text-4xl text-primary mb-4 block">travel_explore</span>
+					<p class="font-body-lg font-semibold">Aucune expédition trouvée</p>
+					<p class="font-body-md text-on-surface-variant mt-2">
+						Essayez un autre mot-clé, ou consultez toutes nos <a href="/events" class="text-primary underline">expéditions</a>.
+					</p>
+				</div>
+			)}
+
+			{results.length > 0 && (
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+					{results.map((e: any) => (
+						<a
+							href={`/events/${e.id}`}
+							class="group rounded-2xl border border-outline-variant bg-surface-container overflow-hidden hover:border-primary transition-colors"
+						>
+							{e.imagePrincipale && (
+								<img
+									src={`${PUBLIC_BACKEND}${e.imagePrincipale}`}
+									alt={e.titre}
+									loading="lazy"
+									class="w-full h-44 object-cover"
+								/>
+							)}
+							<div class="p-5">
+								<span class="font-mono text-[9px] text-primary tracking-widest uppercase font-bold">
+									{e.lieu || 'Expédition'}
+								</span>
+								<h2 class="font-body-lg font-bold mt-1 group-hover:text-primary transition-colors">
+									{e.titre}
+								</h2>
+								<p class="font-mono text-[10px] text-on-surface-variant tracking-widest uppercase mt-2">
+									{e.dateDepart || e.dateEvenement || '—'}
+								</p>
+							</div>
+						</a>
+					))}
+				</div>
+			)}
+		</section>
+	</main>
+
+	<Footer />
+</BaseLayout>
