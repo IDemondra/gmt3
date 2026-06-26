@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Header } from '../components/Header.jsx';
 import { Footer } from '../components/Footer.jsx';
+import { isDateInFuture } from '../utils/dateFormatter.js';
 
 const SITE = 'https://gmt3-fianarantsoa.mg';
 const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
@@ -18,7 +19,7 @@ if (q) {
 			const list = Array.isArray(data.data) ? data.data : [];
 			const needle = q.toLowerCase();
 			results = list
-				.filter((e: any) => e.estPublie)
+				.filter((e: any) => e.estPublie && isDateInFuture(e.dateDepart || e.dateEvenement))
 				.filter((e: any) =>
 					[e.titre, e.lieu, e.description]
 						.filter(Boolean)
@@ -98,26 +99,47 @@ const pageTitle = q
 					{results.map((e: any) => (
 						<a
 							href={`/events/${e.id}`}
-							class="group rounded-2xl border border-outline-variant bg-surface-container overflow-hidden hover:border-primary transition-colors"
+							class="group relative flex flex-col rounded-2xl border border-outline-variant bg-surface-container overflow-hidden transition-all duration-300 hover:border-primary hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1"
 						>
-							{e.imagePrincipale && (
-								<img
-									src={`${PUBLIC_BACKEND}${e.imagePrincipale}`}
-									alt={e.titre}
-									loading="lazy"
-									class="w-full h-44 object-cover"
-								/>
-							)}
-							<div class="p-5">
-								<span class="font-mono text-[9px] text-primary tracking-widest uppercase font-bold">
-									{e.lieu || 'Expédition'}
+							<div class="relative h-48 overflow-hidden">
+								{e.imagePrincipale ? (
+									<div
+										class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.08]"
+										style={`background-image: url('${PUBLIC_BACKEND}${e.imagePrincipale}')`}
+									/>
+								) : (
+									<div class="absolute inset-0 bg-surface-variant flex items-center justify-center">
+										<span class="material-symbols-outlined text-5xl text-on-surface-variant/30">landscape</span>
+									</div>
+								)}
+								<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+								<span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-primary/90 backdrop-blur-sm px-3 py-1.5 font-label-caps text-label-caps text-white shadow-md shadow-black/20">
+									<span class="material-symbols-outlined text-[14px]">explore</span>
+									Expédition
 								</span>
-								<h2 class="font-body-lg font-bold mt-1 group-hover:text-primary transition-colors">
+
+								<div class="absolute bottom-3 left-3 right-3 flex items-center gap-1.5 text-white/90">
+									<span class="material-symbols-outlined text-[16px] text-primary-container shrink-0">location_on</span>
+									<span class="font-mono text-[10px] tracking-widest uppercase truncate">{e.lieu || 'Haute Matsiatra'}</span>
+								</div>
+							</div>
+
+							<div class="flex flex-col flex-grow p-5">
+								<h2 class="font-h3 text-lg font-black uppercase tracking-tight leading-tight clamp-2 group-hover:text-primary transition-colors">
 									{e.titre}
 								</h2>
-								<p class="font-mono text-[10px] text-on-surface-variant tracking-widest uppercase mt-2">
-									{e.dateDepart || e.dateEvenement || '—'}
-								</p>
+
+								<div class="mt-auto pt-4 flex items-center justify-between">
+									<span class="inline-flex items-center gap-1.5 font-mono text-[10px] text-on-surface-variant tracking-widest uppercase">
+										<span class="material-symbols-outlined text-[15px]">calendar_month</span>
+										{e.dateDepart || e.dateEvenement || '—'}
+									</span>
+									<span class="inline-flex items-center gap-1 font-button text-[10px] tracking-widest uppercase text-primary font-black">
+										Détails
+										<span class="material-symbols-outlined text-[16px] transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+									</span>
+								</div>
 							</div>
 						</a>
 					))}
