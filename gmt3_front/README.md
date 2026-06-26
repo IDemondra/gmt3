@@ -41,6 +41,16 @@ Travaux d'optimisation SEO réalisés sur le site (branche `seo/structured-data-
 - **`TravelAgency`** (global, `BaseLayout.astro`) — nom (`GMT+3 Fianarantsoa` + `alternateName`), adresse Anolaka Fianarantsoa, géo (-21.4536, 47.0858), téléphone, email, `sameAs` → groupe Facebook officiel.
 - **`WebSite`** (global) — `name: "GMT+3 Fianarantsoa"` pour forcer l'affichage du nom de marque dans les SERP (au lieu du domaine brut) ; `creator` = Demondra (créateur du site) ; `publisher` lié au `TravelAgency`.
 - **`TouristTrip`** (par expédition, `events/[id].astro`) — nom, dates ISO 8601, lieu, prix MGA, offre `InStock`. Éligibilité aux résultats enrichis.
+- **`SearchAction`** (dans `WebSite`) — active la *sitelinks searchbox* ; pointe vers la page de recherche SSR `/recherche?q=`.
+- **`FAQPage`** (`faq.astro`) — 8 Q/R synchronisées au contenu visible.
+- **`Article`** (`GuideLayout.astro`) — sur chaque guide de la section Conseils.
+- **`BreadcrumbList`** — sur `/events`, `/archives`, `/faq`, `/recherche`, `/events/[id]` et les pages Conseils.
+
+### Pages de contenu & SEO
+- **`/faq`** — page FAQ (schema `FAQPage` + `BreadcrumbList`).
+- **`/recherche?q=`** — recherche SSR des expéditions publiées et à venir (`isDateInFuture`), en `noindex`, exclue du sitemap.
+- **`/conseils`** + 3 guides cornerstone (`que-faire-a-fianarantsoa`, `randonnee-pays-betsileo`, `quand-partir-a-fianarantsoa`) via `GuideLayout.astro` (DRY).
+- **`/llms.txt`** — fiche structurée de l'entité pour les moteurs IA (GEO).
 
 ### Métadonnées
 - `og:site_name` aligné sur `GMT+3 Fianarantsoa` (cohérence de branding → Google affiche le `+`).
@@ -48,9 +58,13 @@ Travaux d'optimisation SEO réalisés sur le site (branche `seo/structured-data-
 - Prop `jsonLd` ajouté à `BaseLayout` pour injecter du schema par page.
 
 ### Sitemaps & robots
-- `sitemap-index.xml` (statique, via `@astrojs/sitemap`) — pages `/`, `/events`, `/archives` ; admin exclu.
+- `sitemap-index.xml` (statique, via `@astrojs/sitemap`) — pages statiques (`/`, `/events`, `/archives`, `/faq`, `/conseils` + guides) ; `/admin` et `/recherche` exclus via `filter`.
 - `sitemap-events.xml` (endpoint SSR `src/pages/sitemap-events.xml.ts`) — une `<loc>` par expédition publiée (`estPublie`), interroge l'API backend au runtime.
-- `robots.txt` référence les deux sitemaps ; `Disallow: /admin`.
+- `robots.txt` référence les deux sitemaps ; `Disallow: /admin` ; tous crawlers autorisés (`*`, IA incluses).
+
+### Infrastructure (Traefik)
+- Router front : `Host(gmt3-fianarantsoa.mg) || Host(www.gmt3-fianarantsoa.mg)`.
+- Middleware `redirectregex` : **301/308 `www` → non-www** (cohérence canonical, évite le contenu dupliqué).
 
 ### Cohérence NAP (Name / Address / Phone)
 Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
@@ -59,12 +73,26 @@ Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
 - Téléphone placeholder du bouton « Appeler » remplacé par `+261340312401`.
 - Lien Facebook social → groupe officiel `groups/1567275954180870`.
 
-### À déployer / configurer (hors code)
-1. Merger + déployer en prod (Googlebot ne voit rien tant que ce n'est pas en ligne).
-2. Soumettre `sitemap-index.xml` et `sitemap-events.xml` dans Google Search Console + « Demander l'indexation ».
-3. Vérifier la redirection 301 `http → https` côté serveur/reverse-proxy.
-4. Ajouter une image OG dédiée 1200×630 (`og-cover.jpg`) — actuellement le logo carré est utilisé.
-5. Créer les pages footer mortes (Conditions, Confidentialité, Sécurité, Partenaires) et l'URL Instagram réelle.
+### Checklist post-déploiement (Search Console — à faire une fois en ligne)
+1. **Google Search Console → Sitemaps** : soumettre `sitemap-index.xml` **et** `sitemap-events.xml`.
+2. **Inspection d'URL → « Demander l'indexation »** pour les pages prioritaires : `/`, `/conseils/que-faire-a-fianarantsoa`, `/conseils/randonnee-pays-betsileo`, `/faq`, `/events`.
+3. **Test des résultats enrichis** (search.google.com/test/rich-results) : valider 0 erreur sur `TravelAgency`, `Article`, `FAQPage`, `TouristTrip`, `BreadcrumbList`.
+4. **Bing Webmaster Tools** : soumettre le sitemap (Bing alimente ChatGPT/Copilot).
+
+### Timeline d'indexation (réaliste)
+| Délai | Effet attendu |
+| --- | --- |
+| 24–72 h | Pages indexées, `<title>` avec le `+`, nom de site « GMT+3 Fianarantsoa » |
+| 1–2 semaines | Résultats enrichis (FAQ, fil d'Ariane), pages Conseils sur la longue traîne |
+| 2–4 semaines | Premiers sitelinks possibles, citations LLM (si présence externe) |
+| 1–3 mois | Montée en autorité, domination sur « Fianarantsoa / Betsileo » |
+
+### Reste hors-code (non bloquant)
+- **Google Business** actif + avis clients (local pack / Maps).
+- **Backlinks** : annuaires tourisme Madagascar, TripAdvisor, partenaires hôtels.
+- **Image OG dédiée** 1200×630 (actuellement le logo carré est utilisé par défaut).
+- **Relire le contenu** FAQ + guides Conseils (exactitude factuelle).
+- Pages footer mortes restantes (Conditions, Confidentialité, Partenaires) + URL Instagram réelle.
 
 ## Getting Started
 - `npm run dev` — Starts dev server at http://localhost:5173/
