@@ -12,8 +12,8 @@ export default defineConfig({
 	adapter: node({ mode: 'standalone' }),
 	integrations: [
 		preact({ compat: true }),
-		// Exclut l'admin du sitemap (privé / noindex)
-		sitemap({ filter: (page) => !page.includes('/admin') }),
+		// Exclut l'admin et la recherche du sitemap (privé / noindex)
+		sitemap({ filter: (page) => !page.includes('/admin') && !page.includes('/recherche') }),
 	],
 	vite: {
 		// Expose aussi les variables VITE_* aux composants existants (en plus de PUBLIC_*)

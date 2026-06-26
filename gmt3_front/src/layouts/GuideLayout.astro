@@ -1,0 +1,119 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { Header } from '../components/Header.jsx';
+import { Footer } from '../components/Footer.jsx';
+
+export interface Props {
+	title: string;
+	description: string;
+	slug: string;
+	heading: string;
+	intro: string;
+	datePublished?: string;
+	dateModified?: string;
+}
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+const { title, description, slug, heading, intro, datePublished = '2026-06-26', dateModified = '2026-06-26' } = Astro.props;
+
+const url = `${SITE}/conseils/${slug}`;
+
+const articleLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Article',
+	headline: heading,
+	description,
+	inLanguage: 'fr',
+	datePublished,
+	dateModified,
+	mainEntityOfPage: url,
+	image: `${SITE}/assets/logo_gmt3.jpeg`,
+	author: { '@id': `${SITE}/#organization` },
+	publisher: { '@id': `${SITE}/#organization` },
+};
+
+const breadcrumbLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` },
+		{ '@type': 'ListItem', position: 2, name: 'Conseils', item: `${SITE}/conseils` },
+		{ '@type': 'ListItem', position: 3, name: heading, item: url },
+	],
+};
+---
+
+<BaseLayout title={title} description={description} ogType="article" jsonLd={[articleLd, breadcrumbLd]}>
+	<Header client:load />
+
+	<main class="bg-background text-on-background flex-1">
+		<article class="w-full max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop pt-32 pb-24">
+			<nav aria-label="Fil d'Ariane" class="font-mono text-[10px] tracking-widest uppercase text-on-surface-variant mb-8">
+				<a href="/" class="hover:text-primary">Accueil</a>
+				<span class="mx-2 text-primary">/</span>
+				<a href="/conseils" class="hover:text-primary">Conseils</a>
+			</nav>
+
+			<header class="mb-10">
+				<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary">Conseil voyage</span>
+				<h1 class="font-h1 text-h1 md:text-5xl font-black uppercase tracking-tighter leading-none mt-3 mb-6">
+					{heading}
+				</h1>
+				<p class="font-body-lg text-on-surface-variant leading-relaxed">{intro}</p>
+			</header>
+
+			<div class="prose-guide space-y-6">
+				<slot />
+			</div>
+
+			<aside class="mt-16 rounded-2xl border border-outline-variant bg-surface-container p-8 text-center">
+				<h2 class="font-h3 text-xl font-black uppercase tracking-tight mb-3">Prêt à partir ?</h2>
+				<p class="font-body-md text-on-surface-variant mb-6">
+					GMT+3 Fianarantsoa organise vos circuits et randonnées en Haute Matsiatra.
+				</p>
+				<div class="flex flex-wrap items-center justify-center gap-3">
+					<a href="/events" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-6 py-3 rounded-full font-button text-xs tracking-widest font-black uppercase transition-colors">
+						Voir les expéditions
+						<span class="material-symbols-outlined text-base">arrow_forward</span>
+					</a>
+					<a href="/#contact" class="inline-flex items-center gap-2 border border-outline-variant hover:border-primary px-6 py-3 rounded-full font-button text-xs tracking-widest font-bold uppercase transition-colors">
+						Demander un devis
+					</a>
+				</div>
+			</aside>
+		</article>
+	</main>
+
+	<Footer />
+</BaseLayout>
+
+<style is:global>
+	.prose-guide h2 {
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: -0.02em;
+		font-size: 1.5rem;
+		line-height: 1.2;
+		margin-top: 2.5rem;
+		margin-bottom: 0.75rem;
+	}
+	.prose-guide h3 {
+		font-weight: 700;
+		font-size: 1.15rem;
+		margin-top: 1.5rem;
+		margin-bottom: 0.5rem;
+	}
+	.prose-guide p,
+	.prose-guide li {
+		line-height: 1.75;
+		color: var(--color-on-surface-variant);
+	}
+	.prose-guide ul {
+		list-style: disc;
+		padding-left: 1.5rem;
+	}
+	.prose-guide strong {
+		color: var(--color-on-background);
+		font-weight: 700;
+	}
+</style>

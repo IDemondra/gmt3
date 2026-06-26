@@ -26,6 +26,7 @@ const navLinks = [
 	{ label: 'Destinations', href: '/#destinations' },
 	{ label: 'Guides', href: '/#equipes' },
 	{ label: 'Offres', href: '/events' },
+	{ label: 'Conseils', href: '/conseils' },
 	{ label: 'Galerie', href: '/archives' },
 ];
 
