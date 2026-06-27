@@ -73,7 +73,7 @@ const breadcrumbLd = event
 const pageLd = [breadcrumbLd, jsonLd].filter(Boolean);
 ---
 
-<BaseLayout title={title} description={description} image={ogImage} noindex={!event} ogType="article" jsonLd={pageLd}>
+<BaseLayout title={title} description={description} image={ogImage} noindex={!event} ogType="article" jsonLd={pageLd} mobileBottomBar={true}>
 	<Header client:load />
 	<EventDetail client:load params={{ id }} />
 </BaseLayout>
