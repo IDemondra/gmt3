@@ -71,6 +71,11 @@ export function EventDetail({ params }) {
 
 	const handleBooking = async (e) => {
 		e.preventDefault();
+		if (event && getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) !== 'upcoming') {
+			addToast('Les inscriptions sont closes pour cet événement', 'warning');
+			setBookingModal(false);
+			return;
+		}
 		if (!bookingData.nom || !bookingData.contact || !bookingData.nombrePlaces) {
 			addToast('Veuillez remplir tous les champs', 'warning');
 			return;
@@ -308,13 +313,18 @@ export function EventDetail({ params }) {
 											EXPÉDITION TERMINÉE — LAISSER UN AVIS
 											<span class="material-symbols-outlined text-[18px]">rate_review</span>
 										</a>
+									) : isOngoing ? (
+										<div class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/15 px-6 py-4 font-button text-button text-on-primary">
+											EN COURS — INSCRIPTIONS CLOSES
+											<span class="material-symbols-outlined text-[18px]">lock</span>
+										</div>
 									) : (
 										<button
 											type="button"
 											onClick={() => setBookingModal(true)}
 											class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
 										>
-											{isOngoing ? 'REJOINDRE MAINTENANT' : 'PARTICIPER'}
+											PARTICIPER
 											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 										</button>
 									)}
@@ -432,6 +442,11 @@ export function EventDetail({ params }) {
 												LAISSER UN AVIS
 												<span class="material-symbols-outlined text-[18px]">rate_review</span>
 											</a>
+										) : isOngoing ? (
+											<div class="inline-flex items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/10 px-5 py-4 font-button text-button text-secondary">
+												EN COURS — INSCRIPTIONS CLOSES
+												<span class="material-symbols-outlined text-[18px]">lock</span>
+											</div>
 										) : (
 											<button
 												type="button"
