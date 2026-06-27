@@ -269,7 +269,7 @@ export function EventDetail({ params }) {
 									<div class="flex items-center justify-between gap-4 border-b border-primary/20 pb-5">
 										<div>
 											<p class="font-label-caps text-label-caps text-primary/80 font-bold uppercase tracking-wider">À partir de</p>
-											<p class="mt-3 font-h1 text-4xl md:text-5xl font-black text-primary drop-shadow-lg">{normalizedEvent.price}</p>
+											<p class="mt-3 font-h1 text-4xl md:text-5xl font-black text-on-primary drop-shadow-lg">{normalizedEvent.price}</p>
 											<p class="mt-2 text-sm text-on-primary/60">par personne</p>
 										</div>
 										<div class="rounded-2xl bg-primary px-5 py-4 text-white shadow-xl shadow-primary/30 flex items-center justify-center h-fit">
