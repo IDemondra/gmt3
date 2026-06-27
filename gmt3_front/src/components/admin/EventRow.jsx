@@ -1,5 +1,12 @@
 ﻿// @ts-ignore
-import { formatIsoDateFr } from '../../utils/dateFormatter.js';
+import { formatIsoDateFr, getEventStatus } from '../../utils/dateFormatter.js';
+
+const STATUS_STYLES = {
+	upcoming: { label: 'À venir', cls: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500' },
+	ongoing: { label: 'En cours', cls: 'bg-green-50 text-green-700 border-green-200', dot: 'bg-green-500 animate-pulse' },
+	past: { label: 'Terminé', cls: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' },
+	unknown: { label: '—', cls: 'bg-gray-100 text-gray-500 border-gray-200', dot: 'bg-gray-300' },
+};
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 const resolveUrl = (url) => {
 	if (!url) return '';
@@ -11,6 +18,7 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 	const isEven = index % 2 === 0;
 
 	const hasImage = event.imagePrincipale && typeof event.imagePrincipale === 'string' && event.imagePrincipale.length > 0;
+	const timeStatus = STATUS_STYLES[getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement)] || STATUS_STYLES.unknown;
 
 	return (
 		<tr class={`border-b border-outline-variant/30 transition-colors duration-150 ${
@@ -68,14 +76,20 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 				</span>
 			</td>
 			<td class="px-6 py-4">
-				<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-					(event.estPublie || event.published)
-						? 'bg-green-50 text-green-700 border border-green-200'
-						: 'bg-amber-50 text-amber-700 border border-amber-200'
-				}`}>
-					<span class={`w-1.5 h-1.5 rounded-full ${event.published ? 'bg-green-500' : 'bg-amber-500'}`} />
-					{(event.estPublie || event.published) ? 'Publié' : 'Brouillon'}
-				</span>
+				<div class="flex flex-col items-start gap-1.5">
+					<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
+						(event.estPublie || event.published)
+							? 'bg-green-50 text-green-700 border border-green-200'
+							: 'bg-amber-50 text-amber-700 border border-amber-200'
+					}`}>
+						<span class={`w-1.5 h-1.5 rounded-full ${event.published ? 'bg-green-500' : 'bg-amber-500'}`} />
+						{(event.estPublie || event.published) ? 'Publié' : 'Brouillon'}
+					</span>
+					<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${timeStatus.cls}`}>
+						<span class={`w-1.5 h-1.5 rounded-full ${timeStatus.dot}`} />
+						{timeStatus.label}
+					</span>
+				</div>
 			</td>
 			<td class="px-6 py-4 text-right">
 					<div class="flex items-center justify-end gap-1">

@@ -3,7 +3,7 @@ import { Reveal } from '../../components/ui/Reveal.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
-import { isDateInFuture, formatDateFr } from '../../utils/dateFormatter.js';
+import { isEventPast, formatDateFr } from '../../utils/dateFormatter.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -26,7 +26,7 @@ export function Archives() {
 			.then((r) => r.json())
 			.then((response) => {
 				const past = (Array.isArray(response.data) ? response.data : [])
-					.filter((e) => e.estPublie && !isDateInFuture(e.dateDepart || e.dateEvenement) && (e.photosEvenement || []).length > 0);
+					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && (e.photosEvenement || []).length > 0);
 				setEvents(past);
 				// Index plat pour navigation lightbox
 				const flat = [];

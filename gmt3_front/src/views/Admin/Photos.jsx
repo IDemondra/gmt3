@@ -5,7 +5,7 @@ import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { evenementsApi, evenementApi, replacePhotosApi } from '../../api/evenements.js';
-import { isDateInFuture, formatDateFr } from '../../utils/dateFormatter.js';
+import { isEventPast, formatDateFr } from '../../utils/dateFormatter.js';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
 import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
@@ -52,7 +52,7 @@ export function AdminPhotos() {
 			const response = await evenementsApi(accessToken.value);
 			const all = Array.isArray(response.data) ? response.data : [];
 			// Événements passés uniquement
-			const past = all.filter((e) => !isDateInFuture(e.dateDepart || e.dateEvenement));
+			const past = all.filter((e) => isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
 			setEvents(past);
 		} catch {
 			addToast('Erreur de chargement des événements', 'error');

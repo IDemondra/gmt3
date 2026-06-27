@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
-import { formatDateFr, isDateInFuture } from '../../../utils/dateFormatter.js';
+import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -26,7 +26,7 @@ export function ToursSection() {
 			.then((r) => r.json())
 			.then((response) => {
 					const published = (Array.isArray(response.data) ? response.data : [])
-					.filter((e) => e.estPublie && isDateInFuture(e.dateDepart || e.dateEvenement))
+					.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 					.slice(0, 3);
 				setEvents(published);
 			})

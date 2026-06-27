@@ -11,7 +11,7 @@ import { createAvisApi } from '../../api/avis.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
-import { formatDateTimeWithHour, isDateInFuture } from '../../utils/dateFormatter.js';
+import { formatDateTimeWithHour, getEventStatus, isEventActive } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
@@ -134,7 +134,7 @@ export function EventDetail({ params }) {
 					.then((r) => r.json())
 					.then((response) => {
 						const related = (Array.isArray(response.data) ? response.data : [])
-							.filter((e) => e.estPublie && e.id !== eventId && isDateInFuture(e.dateDepart || e.dateEvenement))
+							.filter((e) => e.estPublie && e.id !== eventId && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 							.slice(0, 2)
 							.map(transformEventForCard);
 						setRelatedEvents(related);
@@ -193,7 +193,9 @@ export function EventDetail({ params }) {
 		slug: event.id,
 	};
 
-	const isPast = !isDateInFuture(event.dateDepart || event.dateEvenement);
+	const status = getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement);
+	const isPast = status === 'past';
+	const isOngoing = status === 'ongoing';
 	const showAvis = isPast || (event.avis || []).length > 0;
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
@@ -235,6 +237,15 @@ export function EventDetail({ params }) {
 										<span class="rounded-full border border-white/15 bg-white/12 px-4 py-2 font-label-caps text-label-caps text-on-primary/85">
 											{normalizedEvent.date}
 										</span>
+										{isOngoing && (
+											<span class="inline-flex items-center gap-2 rounded-full bg-green-500/90 px-4 py-2 font-label-caps text-label-caps text-white shadow-lg shadow-green-500/30">
+												<span class="relative flex h-2 w-2">
+													<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+													<span class="relative inline-flex h-2 w-2 rounded-full bg-white" />
+												</span>
+												EN COURS
+											</span>
+										)}
 									</div>
 								</Reveal>
 								<Reveal animation="arc" delay={60} duration={840}>
@@ -303,7 +314,7 @@ export function EventDetail({ params }) {
 											onClick={() => setBookingModal(true)}
 											class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
 										>
-											PARTICIPER
+											{isOngoing ? 'REJOINDRE MAINTENANT' : 'PARTICIPER'}
 											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 										</button>
 									)}

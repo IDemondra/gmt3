@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
-import { formatDateFr, isDateInFuture } from '../../utils/dateFormatter.js';
+import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 
@@ -34,9 +34,9 @@ export function Events() {
 			.finally(() => setLoading(false));
 	}, []);
 
-	const futureEvents = events.filter((e) => isDateInFuture(e.dateDepart || e.dateEvenement));
+	const futureEvents = events.filter((e) => isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement));
 	const pastEventsWithPhotos = events
-		.filter((e) => !isDateInFuture(e.dateDepart || e.dateEvenement) && (e.photosEvenement || []).length > 0);
+		.filter((e) => isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && (e.photosEvenement || []).length > 0);
 
 	const transformEvent = (event) => ({
 		id: event.id,
@@ -44,7 +44,7 @@ export function Events() {
 		description: parseMarkdownInline(event.description),
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
 		date: event.dateDepart || event.dateEvenement || '—',
-		badge: 'EXPEDITION',
+		badge: getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) === 'ongoing' ? 'EN COURS' : 'EXPEDITION',
 		slug: event.id,
 		href: `/events/${event.id}`
 	});

@@ -40,6 +40,31 @@ export function isDateInFuture(dateString) {
 	return eventDate >= today;
 }
 
+/**
+ * Statut d'un événement selon la date du jour.
+ * 'upcoming' (à venir), 'ongoing' (en cours), 'past' (terminé), 'unknown' (date invalide).
+ */
+export function getEventStatus(dateDepart, dateRetour, dateEvenement) {
+	const start = parseFrDate(dateDepart || dateEvenement);
+	if (!start) return 'unknown';
+	const end = parseFrDate(dateRetour) || start;
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	if (today < start) return 'upcoming';
+	if (today > end) return 'past';
+	return 'ongoing';
+}
+
+/** true si l'événement est à venir ou en cours (donc encore actif, non archivé). */
+export function isEventActive(dateDepart, dateRetour, dateEvenement) {
+	return getEventStatus(dateDepart, dateRetour, dateEvenement) !== 'past';
+}
+
+/** true si l'événement est terminé (archivable). */
+export function isEventPast(dateDepart, dateRetour, dateEvenement) {
+	return getEventStatus(dateDepart, dateRetour, dateEvenement) === 'past';
+}
+
 export function formatDateTimeWithHour(dateString, timeString) {
 	if (!dateString) return '';
 	const dateFr = formatDateFr(dateString);
