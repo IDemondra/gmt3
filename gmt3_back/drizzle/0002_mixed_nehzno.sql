@@ -1,0 +1,1 @@
+ALTER TABLE `evenements` ADD `difficulte` text(50);

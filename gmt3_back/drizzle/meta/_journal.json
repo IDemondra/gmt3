@@ -15,6 +15,13 @@
       "when": 1782199285693,
       "tag": "0001_avis",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782590350694,
+      "tag": "0002_mixed_nehzno",
+      "breakpoints": true
     }
   ]
 }

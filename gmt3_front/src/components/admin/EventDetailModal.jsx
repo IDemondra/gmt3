@@ -107,6 +107,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 								<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 									{[
 										{ label: 'Lieu', value: event.lieu || '—' },
+										{ label: 'Difficulté', value: event.difficulte || '—' },
 										{ label: 'Prix', value: event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—' },
 										{ label: 'Départ', value: `${formatIsoDateFr(event.dateDepart || event.dateEvenement || event.date)} ${event.heureDepart || ''}` },
 										{ label: 'Retour', value: `${formatIsoDateFr(event.dateRetour)} ${event.heureRetour || ''}` }

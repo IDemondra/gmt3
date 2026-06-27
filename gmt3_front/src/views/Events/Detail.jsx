@@ -186,7 +186,7 @@ export function EventDetail({ params }) {
 		location: event.lieu || '—',
 		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : '—',
 		duration: event.duration || '—',
-		difficulty: event.difficulty || '—',
+		difficulty: event.difficulte || event.difficulty || '—',
 		groupSize: event.groupSize || '—',
 		season: event.season || '—',
 		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),

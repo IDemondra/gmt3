@@ -30,6 +30,7 @@ export const evenements = sqliteTable('evenements', {
 	heureRetour: text('heure_retour'),
 	dateRetour: text('date_retour'),
 	lieu: text('lieu', { length: 150 }),
+	difficulte: text('difficulte', { length: 50 }),
 	prix: real('prix'),
 	imagePrincipale: text('image_principale', { length: 255 }),
 	estPublie: integer('est_publie', { mode: 'boolean' }).default(true).notNull(),

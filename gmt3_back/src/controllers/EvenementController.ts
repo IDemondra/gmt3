@@ -220,6 +220,7 @@ export const EvenementController = {
 		const dateEvenement = fd.get('dateEvenement') as string;
 		const description = fd.get('description') as string || undefined;
 		const lieu = fd.get('lieu') as string || undefined;
+		const difficulte = fd.get('difficulte') as string || undefined;
 		const prixStr = fd.get('prix') as string;
 		const prix = prixStr ? parseFloat(prixStr) : null;
 		const heureDepart = fd.get('heureDepart') as string || undefined;
@@ -241,6 +242,7 @@ export const EvenementController = {
 			heureRetour: heureRetour ?? null,
 			dateRetour: dateRetour ?? null,
 			lieu: lieu ?? null,
+			difficulte: difficulte ?? null,
 			prix,
 			imagePrincipale: null,
 			estPublie,
@@ -278,6 +280,7 @@ export const EvenementController = {
 		if (dateEvenement) data.dateEvenement = dateEvenement;
 		if (fd.get('description')) data.description = fd.get('description') as string;
 		if (fd.get('lieu')) data.lieu = fd.get('lieu') as string;
+		if (fd.has('difficulte')) data.difficulte = (fd.get('difficulte') as string) || null;
 		if (fd.get('heureDepart')) data.heureDepart = fd.get('heureDepart') as string;
 		if (fd.get('dateDepart')) data.dateDepart = fd.get('dateDepart') as string;
 		if (fd.get('heureRetour')) data.heureRetour = fd.get('heureRetour') as string;

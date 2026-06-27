@@ -124,6 +124,7 @@ export function AdminDashboard() {
 			fd.set('description', data.get('description') || '');
 			fd.set('dateEvenement', data.get('dateEvenement') || data.get('dateDepart') || todayStr);
 			fd.set('lieu', data.get('lieu') || '');
+			fd.set('difficulte', data.get('difficulte') || '');
 			fd.set('prix', data.get('prix') || '');
 			fd.set('heureDepart', data.get('heureDepart') || currentTimeStr);
 			fd.set('dateDepart', data.get('dateDepart') || '');
@@ -360,6 +361,17 @@ export function AdminDashboard() {
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
 					<input id="lieu" name="lieu" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.lieu || editingEvent?.location || ''} />
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="difficulte">Difficulté (randonnée)</label>
+					<select id="difficulte" name="difficulte" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer" defaultValue={editingEvent?.difficulte || ''}>
+						<option value="">— Non applicable —</option>
+						<option value="Accessible">Accessible</option>
+						<option value="Modéré">Modéré</option>
+						<option value="Soutenu">Soutenu</option>
+						<option value="Difficile">Difficile</option>
+						<option value="Extrême">Extrême</option>
+					</select>
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
