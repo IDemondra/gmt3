@@ -11,7 +11,7 @@ import { createAvisApi } from '../../api/avis.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
-import { formatDateTimeWithHour, getEventStatus, isEventActive } from '../../utils/dateFormatter.js';
+import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
 
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
@@ -207,7 +207,7 @@ export function EventDetail({ params }) {
 		{ label: 'Localisation', value: normalizedEvent.location || '—', icon: 'location_on' },
 		{ label: 'Durée', value: normalizedEvent.duration, icon: 'schedule' },
 		{ label: 'Difficulté', value: normalizedEvent.difficulty || '—', icon: 'trending_up' },
-	];
+	].filter((f) => f.value && f.value !== '—');
 
 	const departInfo = event.dateDepart ? {
 		date: event.dateDepart,
@@ -218,9 +218,22 @@ export function EventDetail({ params }) {
 		time: event.heureRetour
 	} : null;
 
+	const ongoingProgress = (() => {
+		if (!isOngoing) return null;
+		const start = parseFrDate(event.dateDepart || event.dateEvenement);
+		if (!start) return null;
+		const end = parseFrDate(event.dateRetour) || start;
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const day = (ms) => Math.round(ms / 86400000);
+		const total = day(end - start) + 1;
+		const current = Math.min(Math.max(day(today - start) + 1, 1), total);
+		return { current, total, percent: Math.round((current / total) * 100) };
+	})();
+
 	return (
 		<>
-			<main class="flex-grow pb-section-gap">
+			<main class="flex-grow pb-28 lg:pb-section-gap">
 				<section class="relative overflow-hidden bg-on-secondary-fixed">
 					<div class="absolute inset-0">
 						<div class="absolute inset-0 bg-cover bg-center scale-105" style={`background-image: url('${normalizedEvent.image}')`} />
@@ -400,6 +413,23 @@ export function EventDetail({ params }) {
 								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-on-secondary-fixed p-6 text-on-primary shadow-md shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Rythme du voyage</p>
 									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Départ &amp; retour</h2>
+										{ongoingProgress && (
+											<div class="mt-5 rounded-2xl border border-green-400/30 bg-green-500/10 p-4">
+												<div class="flex items-center justify-between">
+													<span class="inline-flex items-center gap-2 font-label-caps text-label-caps text-green-300">
+														<span class="relative flex h-2 w-2">
+															<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+															<span class="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+														</span>
+														En cours
+													</span>
+													<span class="font-body-md text-body-md font-semibold text-on-primary">Jour {ongoingProgress.current} / {ongoingProgress.total}</span>
+												</div>
+												<div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
+													<div class="h-full rounded-full bg-green-400 transition-all duration-500" style={`width:${ongoingProgress.percent}%`} />
+												</div>
+											</div>
+										)}
 										{(departInfo || retourInfo) && (
 											<div class="mt-6 space-y-3">
 												{departInfo && (
@@ -584,6 +614,32 @@ export function EventDetail({ params }) {
 					</div>
 				</section>
 			</main>
+
+			<div class="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant/40 bg-background/95 backdrop-blur-md px-margin-mobile py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
+				<div class="flex items-center justify-between gap-3">
+					<div class="min-w-0">
+						<p class="font-label-caps text-label-caps text-secondary">À partir de</p>
+						<p class="font-h3 text-lg font-black text-on-background leading-tight truncate">{normalizedEvent.price}</p>
+					</div>
+					{isPast ? (
+						<a href="#avis" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-outline-variant px-5 py-3.5 font-button text-button text-primary transition-colors duration-200 hover:bg-primary/10 cursor-pointer">
+							LAISSER UN AVIS
+							<span class="material-symbols-outlined text-[18px]">rate_review</span>
+						</a>
+					) : isOngoing ? (
+						<div class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/10 px-5 py-3.5 font-button text-button text-secondary">
+							INSCRIPTIONS CLOSES
+							<span class="material-symbols-outlined text-[18px]">lock</span>
+						</div>
+					) : (
+						<button type="button" onClick={() => setBookingModal(true)} class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 font-button text-button text-on-primary transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer">
+							PARTICIPER
+							<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+						</button>
+					)}
+				</div>
+			</div>
+
 			<Footer />
 			<ImagePreview
 				image={preview}
