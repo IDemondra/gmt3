@@ -187,45 +187,21 @@ export function EventDetail({ params }) {
 		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : '—',
 		duration: event.duration || '—',
 		difficulty: event.difficulte || event.difficulty || '—',
-		groupSize: event.groupSize || '—',
-		season: event.season || '—',
 		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),
 		badge: 'EXPEDITION',
 		date: event.dateDepart || event.dateEvenement || '—',
 		slug: event.id,
-		highlights: event.highlights || [],
-		itinerary: event.itinerary || [],
 	};
 
 	const isPast = !isDateInFuture(event.dateDepart || event.dateEvenement);
 	const showAvis = isPast || (event.avis || []).length > 0;
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
-		{ label: 'Localisation', value: normalizedEvent.location || '—' },
-		{ label: 'Durée', value: event.duration || normalizedEvent.duration || '—' },
-		{ label: 'Difficulté', value: normalizedEvent.difficulty || '—' },
-		{ label: 'Taille du groupe', value: normalizedEvent.groupSize || '—' },
-		{ label: 'Saison', value: normalizedEvent.season || '—' },
-		{ label: 'Prix', value: normalizedEvent.price || '—' },
+		{ label: 'Localisation', value: normalizedEvent.location || '—', icon: 'location_on' },
+		{ label: 'Durée', value: normalizedEvent.duration, icon: 'schedule' },
+		{ label: 'Difficulté', value: normalizedEvent.difficulty || '—', icon: 'trending_up' },
 	];
 
-	const calculateDays = () => {
-		if (!event.dateDepart || !event.dateRetour) return 0;
-		try {
-			const start = new Date(event.dateDepart.split('/').reverse().join('-'));
-			const end = new Date(event.dateRetour.split('/').reverse().join('-'));
-			return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-		} catch {
-			return 0;
-		}
-	};
-	const totalDays = calculateDays();
-	const itineraryWithDays = normalizedEvent.itinerary.map((step, idx) => ({
-		day: idx + 1,
-		description: step,
-		totalDays
-	}));
-	
 	const departInfo = event.dateDepart ? {
 		date: event.dateDepart,
 		time: event.heureDepart
@@ -301,27 +277,14 @@ export function EventDetail({ params }) {
 										</div>
 									</div>
 
-									<div class="mt-5 grid grid-cols-2 gap-3">
-										{facts.slice(0, 4).map((fact) => (
+									<div class="mt-5 grid grid-cols-3 gap-3">
+										{facts.map((fact) => (
 											<div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-												<p class="font-label-caps text-label-caps text-on-primary/60">{fact.label}</p>
-												<p class="mt-2 font-body-md text-body-md font-semibold text-on-primary leading-snug">{fact.value}</p>
+												<span class="material-symbols-outlined text-[20px] text-primary">{fact.icon}</span>
+												<p class="mt-2 font-label-caps text-label-caps text-on-primary/60">{fact.label}</p>
+												<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary leading-snug">{fact.value}</p>
 											</div>
 										))}
-									</div>
-
-									<div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
-										<p class="font-label-caps text-label-caps text-on-primary/60">Points forts de l'expérience</p>
-										<ul class="mt-3 space-y-3">
-											{(event.highlights || []).map((highlight) => (
-												<li class="flex items-start gap-3 font-body-md text-body-md text-on-primary/85 leading-relaxed">
-													<span class="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary">
-														<span class="material-symbols-outlined text-[15px]">check</span>
-													</span>
-													{highlight}
-												</li>
-											))}
-										</ul>
 									</div>
 
 									{isPast ? (
@@ -363,28 +326,16 @@ export function EventDetail({ params }) {
 										<span class="material-symbols-outlined text-3xl">map</span>
 									</div>
 								</div>
-								<p class="mt-6 font-body-lg text-body-lg leading-relaxed text-secondary" dangerouslySetInnerHTML={{ __html: parseMarkdownInline(normalizedEvent.description) }} />
-								<div class="mt-8 grid gap-4 sm:grid-cols-2">
-									{facts.slice(4).map((fact) => (
-										<div class="rounded-2xl border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-5">
-											<p class="font-label-caps text-label-caps text-secondary">{fact.label}</p>
-											<p class="mt-2 font-body-md text-body-md font-semibold text-on-background">{fact.value}</p>
+								<div class="mt-6 grid gap-3 sm:grid-cols-3">
+									{facts.map((fact) => (
+										<div class="flex items-start gap-3 rounded-2xl border border-outline-variant/60 bg-white/40 p-4">
+											<span class="material-symbols-outlined text-[22px] text-primary">{fact.icon}</span>
+											<div>
+												<p class="font-label-caps text-label-caps text-secondary">{fact.label}</p>
+												<p class="mt-1 font-body-md text-body-md font-semibold text-on-background leading-snug">{fact.value}</p>
+											</div>
 										</div>
 									))}
-								</div>
-								<div class="mt-8 rounded-[1.5rem] bg-gradient-to-br from-primary/8 via-primary/4 to-transparent p-5">
-									<p class="font-label-caps text-label-caps text-primary">Ce que vous expérimenterez</p>
-									<ul class="mt-4 space-y-4">
-										{normalizedEvent.highlights.map((highlight, index) => (
-											<li class="flex items-start gap-4">
-												<div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-container text-on-primary shadow-md shadow-primary/15">
-													<span class="font-button text-button text-xs">{index + 1}</span>
-											
-												</div>
-												<p class="font-body-md text-body-md leading-relaxed text-secondary">{highlight}</p>
-											</li>
-										))}
-									</ul>
 								</div>
 								<div class="mt-8">
 									<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -425,10 +376,9 @@ export function EventDetail({ params }) {
 							<aside class="space-y-6 lg:sticky lg:top-24">
 								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-on-secondary-fixed p-6 text-on-primary shadow-md shadow-black/10">
 									<p class="font-label-caps text-label-caps text-on-primary/60">Rythme du voyage</p>
-									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Flux jour par jour</h2>
-									<div class="mt-2 text-sm text-on-primary/60">{totalDays > 0 ? `${totalDays} jours` : ""}</div>
+									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Départ &amp; retour</h2>
 										{(departInfo || retourInfo) && (
-											<div class="mt-6 space-y-3 pb-6 border-b border-primary/20">
+											<div class="mt-6 space-y-3">
 												{departInfo && (
 													<div class="flex items-start gap-3">
 														<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5">flight_takeoff</span>
@@ -449,17 +399,6 @@ export function EventDetail({ params }) {
 												)}
 											</div>
 										)}
-										<div class="mt-6 space-y-4">
-										{itineraryWithDays.map(({ day, description, totalDays: total }) => (
-											<div class="flex gap-4">
-												<div class="flex flex-col h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-on-primary shadow-lg shadow-primary/20">
-													<span class="font-button text-button text-xs">{day}</span>
-											{total > 0 && <span class="text-[10px] text-on-primary/70">/{total}</span>}
-												</div>
-												<p class="pt-1 font-body-md text-body-md leading-relaxed text-on-primary/82">{description}</p>
-											</div>
-										))}
-									</div>
 								</div>
 
 								<div class="rounded-[1.75rem] border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-6 shadow-md shadow-black/5">
