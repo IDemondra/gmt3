@@ -277,12 +277,14 @@ export function EventDetail({ params }) {
 										</div>
 									</div>
 
-									<div class="mt-5 grid grid-cols-3 gap-3">
+									<div class="mt-5 space-y-3">
 										{facts.map((fact) => (
-											<div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-												<span class="material-symbols-outlined text-[20px] text-primary">{fact.icon}</span>
-												<p class="mt-2 font-label-caps text-label-caps text-on-primary/60">{fact.label}</p>
-												<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary leading-snug">{fact.value}</p>
+											<div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+												<span class="material-symbols-outlined text-[20px] text-primary flex-shrink-0 mt-0.5">{fact.icon}</span>
+												<div class="min-w-0">
+													<p class="font-label-caps text-label-caps text-on-primary/60">{fact.label}</p>
+													<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary leading-snug break-words">{fact.value}</p>
+												</div>
 											</div>
 										))}
 									</div>
@@ -326,13 +328,13 @@ export function EventDetail({ params }) {
 										<span class="material-symbols-outlined text-3xl">map</span>
 									</div>
 								</div>
-								<div class="mt-6 grid gap-3 sm:grid-cols-3">
+								<div class="mt-6 space-y-3">
 									{facts.map((fact) => (
 										<div class="flex items-start gap-3 rounded-2xl border border-outline-variant/60 bg-white/40 p-4">
-											<span class="material-symbols-outlined text-[22px] text-primary">{fact.icon}</span>
-											<div>
+											<span class="material-symbols-outlined text-[22px] text-primary flex-shrink-0 mt-0.5">{fact.icon}</span>
+											<div class="min-w-0">
 												<p class="font-label-caps text-label-caps text-secondary">{fact.label}</p>
-												<p class="mt-1 font-body-md text-body-md font-semibold text-on-background leading-snug">{fact.value}</p>
+												<p class="mt-1 font-body-md text-body-md font-semibold text-on-background leading-snug break-words">{fact.value}</p>
 											</div>
 										</div>
 									))}
