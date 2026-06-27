@@ -318,6 +318,7 @@ export function EventDetail({ params }) {
 										))}
 									</div>
 
+									<div class="hidden lg:block">
 									{isPast ? (
 										<a
 											href="#avis"
@@ -341,6 +342,7 @@ export function EventDetail({ params }) {
 											<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 										</button>
 									)}
+									</div>
 								</aside>
 							</Reveal>
 						</div>
