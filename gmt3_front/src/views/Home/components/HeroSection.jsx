@@ -1,7 +1,31 @@
+import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
+import { isEventPast } from '../../../utils/dateFormatter.js';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+const BACKEND = API_BASE.replace(/\/api$/, '');
+
+function resolveImg(url) {
+	if (!url) return '';
+	if (url.startsWith('http') || url.startsWith('blob:')) return url;
+	return `${BACKEND}${url}`;
+}
 
 export function HeroSection() {
+	const [photos, setPhotos] = useState([]);
+
+	useEffect(() => {
+		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
+			.then((r) => r.json())
+			.then((response) => {
+				const past = (Array.isArray(response.data) ? response.data : [])
+					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && e.imagePrincipale);
+				setPhotos(past.slice(0, 5));
+			})
+			.catch(() => {});
+	}, []);
+
 	return (
 		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden select-none">
 
@@ -63,7 +87,7 @@ export function HeroSection() {
 									<span class="material-symbols-outlined text-[18px]">north_east</span>
 								</a>
 								<a
-									href="/contact"
+									href="#contact"
 									class="h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white active:scale-[0.97]"
 								>
 									NOUS CONTACTER
@@ -71,21 +95,43 @@ export function HeroSection() {
 							</div>
 						</Reveal>
 
-						{/* Stats */}
-						<Reveal animation="fadeUp" delay={460} duration={800}>
-							<dl class="mt-14 flex items-center gap-0 border-t border-white/10 pt-8">
-								{[
-									{ val: '10+', label: "Ans d'experience" },
-									{ val: '8', label: 'Max par groupe' },
-									{ val: '100%', label: 'Sur mesure' },
-								].map((s, i) => (
-									<div key={i} class={`flex flex-col ${i > 0 ? 'pl-7 ml-7 border-l border-white/10' : ''}`}>
-										<dt class="font-h2 text-[1.75rem] font-black text-primary-container leading-none">{s.val}</dt>
-										<dd class="mt-1.5 font-mono text-[9px] text-white/30 uppercase tracking-[0.22em]">{s.label}</dd>
+						{/* Gallery strip */}
+						{photos.length > 0 && (
+							<Reveal animation="fadeUp" delay={460} duration={800}>
+								<div class="mt-14 border-t border-white/10 pt-8">
+									<p class="font-mono text-[9px] tracking-[0.3em] text-white/30 uppercase mb-4">Expeditions passees</p>
+									<div class="flex items-center gap-2">
+										{photos.map((evt, i) => (
+											<a
+												key={evt.id}
+												href={`/events/${evt.id}`}
+												class="group relative h-16 rounded-lg overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/50 hover:scale-105 hover:z-10 shrink-0"
+												style={`width: ${i === 0 ? '96px' : '56px'}`}
+												title={evt.titre}
+											>
+												<div
+													class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+													style={`background-image: url('${resolveImg(evt.imagePrincipale)}')`}
+												/>
+												<div class="absolute inset-0 bg-zinc-950/30 group-hover:bg-zinc-950/10 transition-colors duration-300" />
+												{i === 0 && (
+													<div class="absolute inset-x-0 bottom-0 px-2 py-1 bg-gradient-to-t from-zinc-950/80 to-transparent">
+														<p class="font-mono text-[7px] text-white/70 uppercase tracking-wide truncate">{evt.titre}</p>
+													</div>
+												)}
+											</a>
+										))}
+										<a
+											href="/archives"
+											class="shrink-0 h-16 w-14 rounded-lg border border-white/10 flex flex-col items-center justify-center gap-1 text-white/30 hover:text-white/60 hover:border-white/25 transition-all duration-200"
+										>
+											<span class="material-symbols-outlined text-[16px]">photo_library</span>
+											<span class="font-mono text-[7px] tracking-wide uppercase">Tout</span>
+										</a>
 									</div>
-								))}
-							</dl>
-						</Reveal>
+								</div>
+							</Reveal>
+						)}
 					</div>
 
 					{/* RIGHT — Floating photo panel (desktop only) */}
@@ -117,10 +163,16 @@ export function HeroSection() {
 								</div>
 							</div>
 
-							{/* Floating accent chip */}
-							<div class="absolute -top-4 -left-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3">
-								<p class="font-mono text-[9px] tracking-[0.2em] text-white/40 uppercase">Coordonnees</p>
-								<p class="font-mono text-xs text-white/70 mt-0.5">S 21.45 / E 47.08</p>
+							{/* Floating review chip */}
+							<div class="absolute -top-4 -left-4 bg-zinc-900/90 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
+								<div class="flex flex-col">
+									<div class="flex items-center gap-1">
+										{[1,2,3,4,5].map((i) => (
+											<span key={i} class="material-symbols-outlined text-[12px] text-primary-container" style="font-variation-settings:'FILL' 1">star</span>
+										))}
+									</div>
+									<p class="font-mono text-[9px] tracking-[0.15em] text-white/40 uppercase mt-1">120+ avis clients</p>
+								</div>
 							</div>
 
 							{/* GMT+3 tag */}
