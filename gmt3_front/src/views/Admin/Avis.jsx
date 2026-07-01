@@ -4,6 +4,7 @@ import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { Skeleton } from '../../components/ui/Skeleton.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { avisApi, approveAvisApi, deleteAvisApi } from '../../api/avis.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -95,7 +96,7 @@ export function AdminAvis() {
 						</div>
 					</div>
 
-					{loading && <div class="py-20 text-center text-gray-400">Chargement...</div>}
+					{loading && <Skeleton />}
 					{!loading && filtered.length === 0 && (
 						<div class="py-20 text-center">
 							<span class="material-symbols-outlined text-5xl text-gray-200">reviews</span>

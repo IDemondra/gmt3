@@ -28,31 +28,3 @@ export async function logoutApi() {
 		credentials: 'include',
 	});
 }
-
-/**
- * Fetch avec Authorization Bearer + auto-refresh sur 401.
- * @param {string} url
- * @param {RequestInit & { token?: string }} [options]
- */
-export async function apiFetch(url, options = {}) {
-	const { token, ...rest } = options;
-	const headers = { ...rest.headers };
-	// @ts-ignore
-	if (token) headers['Authorization'] = `Bearer ${token}`;
-
-	const res = await fetch(url, { ...rest, headers, credentials: 'include' });
-
-	if (res.status === 401 && token) {
-		try {
-			const data = await refreshApi();
-			// @ts-ignore
-			headers['Authorization'] = `Bearer ${data.accessToken}`;
-			const retry = await fetch(url, { ...rest, headers, credentials: 'include' });
-			return { response: retry, token: data.accessToken };
-		} catch {
-			return { response: res, token: null };
-		}
-	}
-
-	return { response: res, token };
-}

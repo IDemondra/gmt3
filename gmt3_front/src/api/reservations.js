@@ -1,14 +1,11 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+import { apiRequest } from './http.js';
 
 /**
  * @param {string} token
  * @returns {Promise<Array>}
  */
 export async function reservationsApi(token) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/reservations`, { headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_CHARGEMENT');
-	return res.json();
+	return apiRequest('/reservations', { token, defaultError: 'ERREUR_CHARGEMENT' });
 }
 
 /**
@@ -17,10 +14,7 @@ export async function reservationsApi(token) {
  * @returns {Promise<Object>}
  */
 export async function createReservationApi(token, data) {
-	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/reservations`, { method: 'POST', headers, body: JSON.stringify(data), credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CREATION'); }
-	return res.json();
+	return apiRequest('/reservations', { token, method: 'POST', json: data, defaultError: 'ERREUR_CREATION' });
 }
 
 /**
@@ -30,10 +24,7 @@ export async function createReservationApi(token, data) {
  * @returns {Promise<Object>}
  */
 export async function updateReservationApi(token, id, data) {
-	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/reservations/${id}`, { method: 'PUT', headers, body: JSON.stringify(data), credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_MAJ'); }
-	return res.json();
+	return apiRequest(`/reservations/${id}`, { token, method: 'PUT', json: data, defaultError: 'ERREUR_MAJ' });
 }
 
 /**
@@ -42,8 +33,5 @@ export async function updateReservationApi(token, id, data) {
  * @returns {Promise<Object>}
  */
 export async function deleteReservationApi(token, id) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/reservations/${id}`, { method: 'DELETE', headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_SUPPRESSION');
-	return res.json();
+	return apiRequest(`/reservations/${id}`, { token, method: 'DELETE', defaultError: 'ERREUR_SUPPRESSION' });
 }

@@ -1,13 +1,10 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+import { apiRequest } from './http.js';
 
 /**
  * @param {string} token
  */
 export async function clientsApi(token) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/clients`, { headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_CHARGEMENT');
-	return res.json();
+	return apiRequest('/clients', { token, defaultError: 'ERREUR_CHARGEMENT' });
 }
 
 /**
@@ -15,10 +12,7 @@ export async function clientsApi(token) {
  * @param {{ nom: string; contact: string }} data
  */
 export async function createClientApi(token, data) {
-	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/clients`, { method: 'POST', headers, body: JSON.stringify(data), credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_CREATION'); }
-	return res.json();
+	return apiRequest('/clients', { token, method: 'POST', json: data, defaultError: 'ERREUR_CREATION' });
 }
 
 /**
@@ -27,10 +21,7 @@ export async function createClientApi(token, data) {
  * @param {{ nom?: string; contact?: string }} data
  */
 export async function updateClientApi(token, id, data) {
-	const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/clients/${id}`, { method: 'PUT', headers, body: JSON.stringify(data), credentials: 'include' });
-	if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'ERREUR_MAJ'); }
-	return res.json();
+	return apiRequest(`/clients/${id}`, { token, method: 'PUT', json: data, defaultError: 'ERREUR_MAJ' });
 }
 
 /**
@@ -38,8 +29,5 @@ export async function updateClientApi(token, id, data) {
  * @param {number} id
  */
 export async function deleteClientApi(token, id) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/clients/${id}`, { method: 'DELETE', headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_SUPPRESSION');
-	return res.json();
+	return apiRequest(`/clients/${id}`, { token, method: 'DELETE', defaultError: 'ERREUR_SUPPRESSION' });
 }

@@ -16,6 +16,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { EventDetailModal } from '../../components/admin/EventDetailModal.jsx';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
+import { useGalleryUpload, formatMo } from '../../hooks/useGalleryUpload.js';
 import { frDateToTs } from '../../utils/dateFormatter.js';
 
 const DESC_MAX = 1000;
@@ -45,10 +46,11 @@ export function AdminDashboard() {
 	const [showForm, setShowForm] = useState(false);
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
-	const [galleryPreviewSrcs, setGalleryPreviewSrcs] = useState([]);
-	const [galleryFiles, setGalleryFiles] = useState([]);
+	const [existingGalleryUrls, setExistingGalleryUrls] = useState(/** @type {string[]} */([])); // photos déjà en base (édition, lecture seule)
+	const gallery = useGalleryUpload({ addToast });
 	const [uploading, setUploading] = useState(false);
 	const [uploadStatus, setUploadStatus] = useState('');
+	const [uploadProgress, setUploadProgress] = useState(0);
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
 	const [kpis, setKpis] = useState({ totalEvents: 0, totalReservations: 0, limitedEvents: 0 });
@@ -60,14 +62,6 @@ export function AdminDashboard() {
 	const [detailError, setDetailError] = useState(null);
 	const todayStr = toDateInputValue();
 	const currentTimeStr = toTimeInputValue();
-
-	const removeGalleryItem = (indexToRemove) => {
-		setGalleryFiles((current) => current.filter((_, index) => index !== indexToRemove));
-		setGalleryPreviewSrcs((current) => {
-			const next = current.filter((_, index) => index !== indexToRemove);
-			return next;
-		});
-	};
 
 	const handleViewDetails = async (event) => {
 		setDetailError(null);
@@ -105,20 +99,21 @@ export function AdminDashboard() {
 		}
 	};
 
-	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); setShowForm(true); };
+	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setExistingGalleryUrls([]); gallery.reset(); setShowForm(true); };
 
 	const handleEdit = (event) => {
 		setEditingEvent(event);
 		setDescText(event.description || '');
 		setPreviewSrc(event.imagePrincipale ? `${import.meta.env.VITE_BACKEND_URL || ''}${event.imagePrincipale}` : '');
-		setGalleryPreviewSrcs((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || ''}${p.url}`));
-		setGalleryFiles([]);
+		setExistingGalleryUrls((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || ''}${p.url}`));
+		gallery.reset();
 		setShowForm(true);
 	};
 
 	const handleSubmit = async (data) => {
 		try {
 			setUploading(true);
+			setUploadProgress(0);
 			const fd = new FormData();
 			fd.set('titre', data.get('titre'));
 			fd.set('description', data.get('description') || '');
@@ -145,29 +140,29 @@ export function AdminDashboard() {
 				fd.set('imagePrincipale', compressed);
 			}
 
-			for (const [i, file] of galleryFiles.entries()) {
-				setUploadStatus(`Compression photo galerie ${i + 1}/${galleryFiles.length}...`);
-				const compressed = await compressImageIfNeeded(file, MAX_UPLOAD_BYTES);
-				fd.append('photosEvenement', compressed);
+			// Photos de galerie déjà compressées à l'ajout (useGalleryUpload).
+			for (const file of gallery.files) {
+				fd.append('photosEvenement', file);
 			}
 
 			setUploadStatus('Envoi en cours...');
 			if (editingEvent) {
-				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd);
+				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd, setUploadProgress);
 				setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
 			} else {
-				const created = await createEvenementApi(accessToken.value, fd);
+				const created = await createEvenementApi(accessToken.value, fd, setUploadProgress);
 				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
 			}
 			setShowForm(false);
 			setEditingEvent(null);
-			setGalleryFiles([]);
-			setGalleryPreviewSrcs([]);
+			setExistingGalleryUrls([]);
+			gallery.reset();
 		} catch (e) {
 			addToast((e instanceof Error ? e.message : 'Erreur lors de l\'enregistrement'), 'error');
 		} finally {
 			setUploading(false);
 			setUploadStatus('');
+			setUploadProgress(0);
 		}
 	};
 
@@ -308,11 +303,12 @@ export function AdminDashboard() {
 				open={showForm}
 				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setGalleryPreviewSrcs([]); setGalleryFiles([]); }}
+				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setExistingGalleryUrls([]); gallery.reset(); }}
 				onSubmit={handleSubmit}
 				encType="multipart/form-data"
 				submitting={uploading}
 				submittingLabel={uploadStatus || 'Traitement...'}
+				progressPercent={uploadStatus === 'Envoi en cours...' ? uploadProgress : undefined}
 			>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="titre">Titre</label>
@@ -396,17 +392,30 @@ export function AdminDashboard() {
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
 						Galerie photos (optionnel)
 					</label>
-					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" onInput={(e) => {
+					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" disabled={gallery.compressingCount > 0} onInput={(e) => {
 						const files = Array.from(e.currentTarget.files || []);
-						setGalleryFiles((current) => [...current, ...files]);
-						setGalleryPreviewSrcs((current) => [...current, ...files.map((f) => URL.createObjectURL(f))]);
+						e.currentTarget.value = '';
+						gallery.addFiles(files);
 					}} />
-					{galleryPreviewSrcs.length > 0 && (
+					{gallery.compressingCount > 0 && <p class="text-[11px] text-primary mt-2">Compression {gallery.compressingCount} photo(s)...</p>}
+					{(gallery.count > 0 || existingGalleryUrls.length > 0) && (
+						<p class="text-[11px] text-gray-400 mt-2">{formatMo(gallery.totalBytes)} Mo / {formatMo(gallery.maxTotalBytes)} Mo au total (nouvelles photos)</p>
+					)}
+					{existingGalleryUrls.length > 0 && (
 						<div class="mt-4 grid grid-cols-3 gap-3">
-							{galleryPreviewSrcs.map((src, i) => (
-								<div key={i} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100">
-									<img src={src} alt={`Galerie ${i}`} class="w-full h-full object-cover" />
-									<button type="button" onClick={() => removeGalleryItem(i)} class="absolute top-1 right-1 p-1 rounded bg-black/50 text-white hover:bg-black/70 transition-all">
+							{existingGalleryUrls.map((src, i) => (
+								<div key={i} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
+									<img src={src} alt={`Galerie existante ${i}`} class="w-full h-full object-cover" />
+								</div>
+							))}
+						</div>
+					)}
+					{gallery.previews.length > 0 && (
+						<div class="mt-4 grid grid-cols-3 gap-3">
+							{gallery.previews.map((src, i) => (
+								<div key={src} class="relative aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
+									<img src={src} alt={`Nouvelle photo ${i}`} class="w-full h-full object-cover" />
+									<button type="button" onClick={() => gallery.removeFile(i)} class="absolute top-1 right-1 p-1 rounded bg-black/50 text-white hover:bg-black/70 transition-all">
 										<span class="material-symbols-outlined text-[16px]">close</span>
 									</button>
 								</div>

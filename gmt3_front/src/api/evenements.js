@@ -1,62 +1,38 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+import { apiRequest, apiUpload } from './http.js';
 
-async function parseJsonSafe(res) {
-	try {
-		return await res.json();
-	} catch {
-		return { error: res.status === 413 ? 'FICHIER_TROP_LOURD' : 'ERREUR_SERVEUR' };
-	}
-}
-
-/**
- * @param {null} token
- */
 export async function evenementsApi(token) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/evenements`, { headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_CHARGEMENT');
-	return res.json();
+	return apiRequest('/evenements', { token, defaultError: 'ERREUR_CHARGEMENT' });
 }
 
 /**
- * @param {null} token
+ * @param {string|null} token
  * @param {number} id
  */
 export async function evenementApi(token, id) {
-	const headers = token ? { Authorization: `Bearer ${token}` } : {};
-	const res = await fetch(`${API_BASE}/evenements/${id}`, { headers, credentials: 'include' });
-	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_CHARGEMENT'); }
-	return res.json();
-}
-
-export async function createEvenementApi(token, formData) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/evenements`, { method: 'POST', headers, body: formData, credentials: 'include' });
-	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_CREATION'); }
-	return res.json();
+	return apiRequest(`/evenements/${id}`, { token, defaultError: 'ERREUR_CHARGEMENT' });
 }
 
 /**
- * @param {null} token
- * @param {any} id
- * @param {{ titre: string; description: string; dateEvenement: Date; lieu: string; estPublie: boolean; }} data
+ * @param {string|null} token
+ * @param {FormData} formData
+ * @param {(percent: number) => void} [onProgress]
  */
-export async function updateEvenementApi(token, id, formData) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/evenements/${id}`, { method: 'PUT', headers, body: formData, credentials: 'include' });
-	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_MAJ'); }
-	return res.json();
+export async function createEvenementApi(token, formData, onProgress) {
+	return apiUpload('/evenements', { token, method: 'POST', body: formData, defaultError: 'ERREUR_CREATION', onProgress });
 }
 
 /**
- * @param {null} token
- * @param {any} id
+ * @param {string|null} token
+ * @param {number} id
+ * @param {FormData} formData
+ * @param {(percent: number) => void} [onProgress]
  */
+export async function updateEvenementApi(token, id, formData, onProgress) {
+	return apiUpload(`/evenements/${id}`, { token, method: 'PUT', body: formData, defaultError: 'ERREUR_MAJ', onProgress });
+}
+
 export async function deleteEvenementApi(token, id) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/evenements/${id}`, { method: 'DELETE', headers, credentials: 'include' });
-	if (!res.ok) throw new Error('ERREUR_SUPPRESSION');
-	return res.json();
+	return apiRequest(`/evenements/${id}`, { token, method: 'DELETE', defaultError: 'ERREUR_SUPPRESSION' });
 }
 
 /**
@@ -64,10 +40,8 @@ export async function deleteEvenementApi(token, id) {
  * @param {string|null} token
  * @param {number} id
  * @param {FormData} formData FormData contenant les champs `photosEvenement`
+ * @param {(percent: number) => void} [onProgress]
  */
-export async function replacePhotosApi(token, id, formData) {
-	const headers = { Authorization: `Bearer ${token}` };
-	const res = await fetch(`${API_BASE}/evenements/${id}/photos`, { method: 'POST', headers, body: formData, credentials: 'include' });
-	if (!res.ok) { const e = await parseJsonSafe(res); throw new Error(e.error || 'ERREUR_UPLOAD'); }
-	return res.json();
+export async function replacePhotosApi(token, id, formData, onProgress) {
+	return apiUpload(`/evenements/${id}/photos`, { token, method: 'POST', body: formData, defaultError: 'ERREUR_UPLOAD', onProgress });
 }

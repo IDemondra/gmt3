@@ -1,3 +1,5 @@
+import { ProgressBar } from '../ui/ProgressBar.jsx';
+
 /**
  * @param {{
  *   open: boolean;
@@ -9,9 +11,10 @@
  *   encType?: string;
  *   submitting?: boolean;
  *   submittingLabel?: string;
+ *   progressPercent?: number;
  * }} props
  */
-export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, onSubmit, children, encType, submitting = false, submittingLabel = 'Traitement...' }) {
+export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, onSubmit, children, encType, submitting = false, submittingLabel = 'Traitement...', progressPercent }) {
 	if (!open) return null;
 
 	return (
@@ -32,10 +35,14 @@ export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, o
 						{children}
 					</fieldset>
 					{submitting && (
-						<div class="flex items-center gap-2 text-sm text-primary font-medium">
-							<span class="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-							{submittingLabel}
-						</div>
+						typeof progressPercent === 'number'
+							? <ProgressBar percent={progressPercent} label={submittingLabel} />
+							: (
+								<div class="flex items-center gap-2 text-sm text-primary font-medium">
+									<span class="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+									{submittingLabel}
+								</div>
+							)
 					)}
 					<div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
 						<button

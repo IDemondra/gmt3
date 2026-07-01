@@ -16,6 +16,7 @@ const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'i
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_GALLERY_PHOTOS = 10;
+const MAX_GALLERY_TOTAL_SIZE = 40 * 1024 * 1024; // 40 MB — garde-fou avant tout traitement (compression HEIC/sharp coûteuse)
 
 async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: string } | null> {
 	if (file.size > MAX_FILE_SIZE) return null;
@@ -89,6 +90,22 @@ function getGalleryFiles(fd: GalleryFormData): File[] {
 	return fd.getAll('photosEvenement')
 		.filter((value): value is File => value instanceof File && value.size > 0)
 		.slice(0, MAX_GALLERY_PHOTOS);
+}
+
+/**
+ * Rejette tôt si la somme des fichiers dépasse la limite globale, avant toute
+ * conversion HEIC/sharp coûteuse (évite de faire tourner le serveur pour rien
+ * sur un payload voué au rejet).
+ */
+function galleryTotalSizeError(fd: GalleryFormData): Response | null {
+	const totalSize = getGalleryFiles(fd).reduce((sum, file) => sum + file.size, 0);
+	if (totalSize > MAX_GALLERY_TOTAL_SIZE) {
+		return Response.json(
+			{ error: 'GALERIE_TROP_LOURDE', message: `Taille totale des photos trop importante (max ${MAX_GALLERY_TOTAL_SIZE / 1024 / 1024} Mo au total)` },
+			{ status: 413 },
+		);
+	}
+	return null;
 }
 
 const evenementService = new EvenementService(new EvenementRepository());
@@ -210,6 +227,9 @@ export const EvenementController = {
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
 
 		const fd = await req.formData();
+		const sizeError = galleryTotalSizeError(fd);
+		if (sizeError) return sizeError;
+
 		const photos = await storeGalleryPhotos(id, fd);
 		return Response.json({ success: true, photosEvenement: photos }, { status: 201 });
 	},
@@ -261,6 +281,9 @@ export const EvenementController = {
 			await evenementService.update(item.id, { imagePrincipale: `/uploads/evenements/${item.id}/${filename}` });
 		}
 
+		const createSizeError = galleryTotalSizeError(fd);
+		if (createSizeError) { await evenementService.delete(item.id); return createSizeError; }
+
 		await storeGalleryPhotos(item.id, fd);
 		const created = await serializeEvenement(item.id);
 		if (!created) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
@@ -303,6 +326,9 @@ export const EvenementController = {
 
 		const item = await evenementService.update(id, data);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+
+		const updateSizeError = galleryTotalSizeError(fd);
+		if (updateSizeError) return updateSizeError;
 
 		await storeGalleryPhotos(id, fd);
 		const updated = await serializeEvenement(id);

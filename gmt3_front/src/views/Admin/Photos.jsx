@@ -4,14 +4,14 @@ import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
+import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { ProgressBar } from '../../components/ui/ProgressBar.jsx';
 import { evenementsApi, evenementApi, replacePhotosApi } from '../../api/evenements.js';
 import { isEventPast, formatDateFr } from '../../utils/dateFormatter.js';
-import { compressImageIfNeeded } from '../../utils/imageCompress.js';
+import { useGalleryUpload, formatMo } from '../../hooks/useGalleryUpload.js';
 import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 
-const MAX_PHOTOS = 10;
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
 function resolveImg(url) {
@@ -34,10 +34,10 @@ export function AdminPhotos() {
 
 	// État galerie de l'événement sélectionné
 	const [existing, setExisting] = useState(/** @type {any[]} */([])); // photos déjà en base
-	const [newFiles, setNewFiles] = useState(/** @type {File[]} */([])); // nouveaux fichiers
-	const [previews, setPreviews] = useState(/** @type {string[]} */([])); // blob: previews des newFiles
+	const gallery = useGalleryUpload({ addToast });
 	const [uploading, setUploading] = useState(false);
 	const [uploadStatus, setUploadStatus] = useState('');
+	const [uploadProgress, setUploadProgress] = useState(0);
 
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
@@ -62,10 +62,8 @@ export function AdminPhotos() {
 	};
 
 	const selectEvent = async (evt) => {
-		previews.forEach((p) => URL.revokeObjectURL(p));
+		gallery.reset();
 		setSelected(evt);
-		setNewFiles([]);
-		setPreviews([]);
 		setExisting([]);
 		try {
 			const full = await evenementApi(accessToken.value, evt.id);
@@ -75,34 +73,14 @@ export function AdminPhotos() {
 		}
 	};
 
-	// Mode A (remplacement) : la limite porte sur les nouveaux fichiers, l'existant sera écrasé.
-	const count = newFiles.length;
-
 	const handleFileInput = (e) => {
 		const picked = Array.from(e.currentTarget.files || []);
 		e.currentTarget.value = '';
-		if (picked.length === 0) return;
-		const room = MAX_PHOTOS - count;
-		if (room <= 0) {
-			addToast(`Maximum ${MAX_PHOTOS} photos par événement`, 'warning');
-			return;
-		}
-		const accepted = picked.slice(0, room);
-		if (picked.length > room) {
-			addToast(`Seules ${room} photo(s) ajoutée(s) (limite ${MAX_PHOTOS})`, 'warning');
-		}
-		setNewFiles((prev) => [...prev, ...accepted]);
-		setPreviews((prev) => [...prev, ...accepted.map((f) => URL.createObjectURL(f))]);
-	};
-
-	const removeNew = (idx) => {
-		URL.revokeObjectURL(previews[idx]);
-		setNewFiles((prev) => prev.filter((_, i) => i !== idx));
-		setPreviews((prev) => prev.filter((_, i) => i !== idx));
+		gallery.addFiles(picked);
 	};
 
 	const requestSave = () => {
-		if (!selected || newFiles.length === 0) {
+		if (!selected || gallery.count === 0) {
 			addToast('Ajoutez au moins une photo', 'warning');
 			return;
 		}
@@ -116,28 +94,26 @@ export function AdminPhotos() {
 
 	const handleSave = async () => {
 		setConfirm(null);
-		if (!selected || newFiles.length === 0) return;
+		if (!selected || gallery.count === 0) return;
 		setUploading(true);
+		setUploadProgress(0);
 		try {
 			const fd = new FormData();
-			// Mode A : l'envoi REMPLACE toute la galerie par les nouveaux fichiers.
-			for (const [i, file] of newFiles.entries()) {
-				setUploadStatus(`Compression ${i + 1}/${newFiles.length}...`);
-				const compressed = await compressImageIfNeeded(file, MAX_UPLOAD_BYTES);
-				fd.append('photosEvenement', compressed);
+			// Mode A : l'envoi REMPLACE toute la galerie par les nouveaux fichiers (déjà compressés à l'ajout).
+			for (const file of gallery.files) {
+				fd.append('photosEvenement', file);
 			}
 			setUploadStatus('Envoi...');
-			const res = await replacePhotosApi(accessToken.value, selected.id, fd);
+			const res = await replacePhotosApi(accessToken.value, selected.id, fd, setUploadProgress);
 			setExisting(res.photosEvenement || []);
-			previews.forEach((p) => URL.revokeObjectURL(p));
-			setNewFiles([]);
-			setPreviews([]);
+			gallery.reset();
 			addToast('Galerie enregistrée', 'success');
 		} catch (e) {
 			addToast(e?.message || 'Erreur lors de l\'envoi', 'error');
 		} finally {
 			setUploading(false);
 			setUploadStatus('');
+			setUploadProgress(0);
 		}
 	};
 
@@ -149,7 +125,7 @@ export function AdminPhotos() {
 				<main class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
 					<div class="mb-10">
 						<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">Photos — Preuves de Terrain</h1>
-						<p class="text-gray-500 mt-2 text-base">Associez jusqu'à {MAX_PHOTOS} photos aux événements passés.</p>
+						<p class="text-gray-500 mt-2 text-base">Associez jusqu'à {gallery.maxPhotos} photos aux événements passés.</p>
 					</div>
 
 					<div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8">
@@ -160,7 +136,7 @@ export function AdminPhotos() {
 								<span class="px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 text-[11px] font-bold border border-gray-100">{events.length}</span>
 							</div>
 							<div class="max-h-[60vh] overflow-y-auto custom-scrollbar divide-y divide-gray-50">
-								{loading && <div class="p-6 text-center text-gray-400 text-sm">Chargement...</div>}
+								{loading && <Skeleton label="Chargement..." />}
 								{!loading && events.length === 0 && (
 									<div class="p-6 text-center text-gray-400 text-sm">Aucun événement passé.</div>
 								)}
@@ -197,10 +173,16 @@ export function AdminPhotos() {
 								<div class="p-6 md:p-8">
 									<div class="flex items-center justify-between gap-4 mb-2">
 										<h2 class="text-xl font-extrabold text-gray-900 tracking-tight">{selected.titre}</h2>
-										<span class={`px-3 py-1 rounded-full text-[11px] font-bold border ${count >= MAX_PHOTOS ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
-											{count} / {MAX_PHOTOS}
+										<span class={`px-3 py-1 rounded-full text-[11px] font-bold border ${gallery.count >= gallery.maxPhotos ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+											{gallery.count} / {gallery.maxPhotos}
 										</span>
 									</div>
+									{(gallery.count > 0 || gallery.compressingCount > 0) && (
+										<p class={`text-[11px] mb-4 flex items-center gap-2 ${gallery.totalBytes > gallery.maxTotalBytes ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
+											<span>{formatMo(gallery.totalBytes)} Mo / {formatMo(gallery.maxTotalBytes)} Mo au total</span>
+											{gallery.compressingCount > 0 && <span class="text-primary">— compression {gallery.compressingCount} photo(s)...</span>}
+										</p>
+									)}
 
 									<div class="mb-6 flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-100 px-4 py-3 text-[12px] text-amber-700">
 										<span class="material-symbols-outlined text-[16px] mt-0.5">warning</span>
@@ -222,14 +204,14 @@ export function AdminPhotos() {
 									)}
 
 									{/* Nouvelles photos */}
-									{previews.length > 0 && (
+									{gallery.previews.length > 0 && (
 										<div class="mb-6">
-											<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-3">À envoyer ({previews.length})</p>
+											<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-3">À envoyer ({gallery.previews.length})</p>
 											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-												{previews.map((src, idx) => (
+												{gallery.previews.map((src, idx) => (
 													<div key={src} class="relative group aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
 														<img src={src} class="h-full w-full object-cover" />
-														<button onClick={() => removeNew(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+														<button onClick={() => gallery.removeFile(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
 															<span class="material-symbols-outlined text-[14px]">close</span>
 														</button>
 													</div>
@@ -239,18 +221,19 @@ export function AdminPhotos() {
 									)}
 
 									{/* Zone upload */}
-									<label class={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-10 transition-colors cursor-pointer ${count >= MAX_PHOTOS ? 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-primary/40 hover:bg-primary/5'}`}>
+									<label class={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-10 transition-colors cursor-pointer ${gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0 ? 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-primary/40 hover:bg-primary/5'}`}>
 										<span class="material-symbols-outlined text-3xl text-gray-300">add_photo_alternate</span>
-										<span class="text-sm font-semibold text-gray-500">{count >= MAX_PHOTOS ? `Limite ${MAX_PHOTOS} atteinte` : 'Cliquez pour ajouter des photos'}</span>
+										<span class="text-sm font-semibold text-gray-500">{gallery.count >= gallery.maxPhotos ? `Limite ${gallery.maxPhotos} atteinte` : gallery.compressingCount > 0 ? 'Compression en cours...' : 'Cliquez pour ajouter des photos'}</span>
 										<span class="text-[11px] text-gray-400">JPEG / PNG / WEBP / GIF / HEIC — max 5 Mo</span>
-										<input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="hidden" disabled={count >= MAX_PHOTOS} onInput={handleFileInput} />
+										<input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="hidden" disabled={gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0} onInput={handleFileInput} />
 									</label>
 
+									{uploading && <ProgressBar percent={uploadProgress} label={uploadStatus} class="mt-6" />}
+
 									<div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-50">
-										{uploading && <span class="text-xs text-gray-400">{uploadStatus}</span>}
 										<button
 											onClick={requestSave}
-											disabled={uploading || newFiles.length === 0}
+											disabled={uploading || gallery.compressingCount > 0 || gallery.count === 0}
 											class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
 										>
 											<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
@@ -267,7 +250,7 @@ export function AdminPhotos() {
 			</div>
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
-			<ConfirmDialog open={confirm?.type === 'replace'} title="Remplacer la galerie" message={`Les ${existing.length} photo(s) actuellement en ligne seront définitivement remplacées par les ${newFiles.length} nouvelle(s). Continuer ?`} confirmLabel="Remplacer" icon="sync" variant="danger" onConfirm={handleSave} onCancel={() => setConfirm(null)} />
+			<ConfirmDialog open={confirm?.type === 'replace'} title="Remplacer la galerie" message={`Les ${existing.length} photo(s) actuellement en ligne seront définitivement remplacées par les ${gallery.count} nouvelle(s). Continuer ?`} confirmLabel="Remplacer" icon="sync" variant="danger" onConfirm={handleSave} onCancel={() => setConfirm(null)} />
 			<ToastContainer toasts={toasts} onRemove={removeToast} />
 		</div>
 	);
