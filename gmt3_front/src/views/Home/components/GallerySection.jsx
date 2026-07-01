@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { ImagePreview } from '../../../components/ui/ImagePreview.jsx';
 import { img } from '../../../utils/images.js';
 import { isEventPast, formatDateFr } from '../../../utils/dateFormatter.js';
 
@@ -185,6 +186,15 @@ export function GallerySection() {
                     </a>
                 </div>
             </div>
+
+            <ImagePreview
+                image={lightbox !== null ? { url: cards[lightbox]?.src, title: cards[lightbox]?.label } : null}
+                onClose={() => setLightbox(null)}
+                onNext={() => setLightbox((i) => (i + 1) % cards.length)}
+                onPrev={() => setLightbox((i) => (i - 1 + cards.length) % cards.length)}
+                hasNext={cards.length > 1}
+                hasPrev={cards.length > 1}
+            />
         </section>
     );
 }

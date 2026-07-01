@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
+import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
@@ -18,6 +19,7 @@ function resolveImg(url) {
 export function Events() {
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [preview, setPreview] = useState(/** @type {{ eventId: number; index: number } | null} */(null));
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
@@ -37,6 +39,9 @@ export function Events() {
 	const futureEvents = events.filter((e) => isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement));
 	const pastEventsWithPhotos = events
 		.filter((e) => isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && (e.photosEvenement || []).length > 0);
+
+	const previewEvent = preview ? pastEventsWithPhotos.find((e) => e.id === preview.eventId) : null;
+	const previewPhotos = previewEvent ? (previewEvent.photosEvenement || []).map((p) => resolveImg(p.url)) : [];
 
 	const transformEvent = (event) => ({
 		id: event.id,
@@ -192,11 +197,10 @@ export function Events() {
 									<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 										{photos.map((photo, idx) => (
 											<Reveal key={`${event.id}-photo-${idx}`} animation="fadeUp" delay={idx * 40} duration={600}>
-												<a
-													href={photo}
-													target="_blank"
-													rel="noopener noreferrer"
-													class="group relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50"
+												<button
+													type="button"
+													onClick={() => setPreview({ eventId: event.id, index: idx })}
+													class="group relative aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50"
 												>
 													<img
 														src={photo}
@@ -206,7 +210,10 @@ export function Events() {
 														referrerPolicy="no-referrer"
 													/>
 													<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-												</a>
+													<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+														<span class="material-symbols-outlined text-white text-3xl drop-shadow">zoom_in</span>
+													</div>
+												</button>
 											</Reveal>
 										))}
 									</div>
@@ -218,6 +225,14 @@ export function Events() {
 			)}
 		</main>
 		<Footer />
+		<ImagePreview
+			image={preview ? { url: previewPhotos[preview.index], title: `${previewEvent?.titre || ''} photo ${preview.index + 1}` } : null}
+			onClose={() => setPreview(null)}
+			onNext={() => setPreview((p) => ({ ...p, index: (p.index + 1) % previewPhotos.length }))}
+			onPrev={() => setPreview((p) => ({ ...p, index: (p.index - 1 + previewPhotos.length) % previewPhotos.length }))}
+			hasNext={previewPhotos.length > 1}
+			hasPrev={previewPhotos.length > 1}
+		/>
 		</>
 	);
 }
