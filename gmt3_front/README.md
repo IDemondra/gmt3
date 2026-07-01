@@ -94,6 +94,29 @@ Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
 - **Relire le contenu** FAQ + guides Conseils (exactitude factuelle).
 - Pages footer mortes restantes (Conditions, Confidentialité, Partenaires) + URL Instagram réelle.
 
+## Corrections & Refactors (session courante)
+
+### Upload photo — bug production (timeout + duplication)
+- **Cause racine** : `Bun.serve` utilisait l'`idleTimeout` par défaut (10s), insuffisant pour un upload multi-photos depuis mobile (réseau lent + conversion HEIC/sharp côté serveur) → connexion coupée avant la réponse JSON, d'où le toast "erreur serveur" générique. Fix : `idleTimeout: 120` (`gmt3_back/index.ts`).
+- Le middleware de debug clonait et loggait le **corps entier** de chaque requête, y compris les uploads binaires multipart — surcharge mémoire inutile sur mobile. Fix : exclusion des requêtes `multipart/form-data` du logging (`gmt3_back/index.ts`).
+- Backend : conversion image systématique en **WebP** (`gmt3_back/src/utils/imageOptimize.ts`), garde-fou taille totale de galerie (40 Mo, rejet 413 avant tout traitement HEIC/sharp coûteux) dans `EvenementController.ts`.
+- Frontend : logique d'upload de galerie (limite, compression à l'ajout, previews, révocation blob) mutualisée dans `src/hooks/useGalleryUpload.js`, utilisée par `Photos.jsx` et `Dashboard.jsx` — corrige au passage un bug latent où supprimer une photo existante pouvait retirer la mauvaise nouvelle photo.
+- Barre de progression d'upload réelle (0-100%, XHR) via `src/api/http.js` (`apiUpload`) et `src/components/ui/ProgressBar.jsx`.
+
+### Couche API front — duplication éliminée
+- `src/api/http.js` : `apiRequest`/`apiUpload` uniques (fetch + auth + parsing JSON + fallback message/error), utilisés par tous les modules `api/*` (`evenements.js`, `avis.js`, `kpis.js`, `clients.js`, `reservations.js`, `users.js`) au lieu de dupliquer le pattern fetch dans chaque fichier.
+- Suppression du code mort `apiFetch` dans `auth.js` (fonction avec logique de refresh sur 401, jamais importée).
+- `src/components/ui/Skeleton.jsx` : état de chargement uniforme, remplace les "Chargement..." ad-hoc dupliqués (`Photos.jsx`, `Avis.jsx`).
+
+### Audit anti-slop (site public — Home, Events, Detail)
+- Eyebrows en excès supprimés (max ~1 par 3 sections au lieu d'un label sur quasi chaque section).
+- Tous les tirets cadratins (`—`) visibles retirés (textes, boutons, valeurs de repli).
+- Fausses données décoratives supprimées (serials `MOD-01`, codes `L-24`/`S-01` inventés dans `ActivitiesSection.jsx`).
+- `<br/>` forcés retirés sur les titres courts (Home + Events) qui coupaient artificiellement la ligne sans raison.
+- Calques de transition morts/dangereux supprimés (fondus sombre-vers-transparent posés sur fond clair qui lessivaient le texte ou créaient une bande grise ; calque "Banner → Contact" obsolète dans `ContactSection.jsx`).
+- `text-gradient` (dégradé rouge monochrome) recentré sur Hero/Activités/Testimonials au lieu d'être répété sur tous les titres de section.
+- **Bug réel corrigé** : lightbox de `GallerySection.jsx` (Home) — `setLightbox()` mettait à jour un état jamais consommé, aucun aperçu ne s'ouvrait au clic malgré l'icône "zoom". Branché sur `ImagePreview`. Même correction sur la galerie "Preuves de Terrain" de `Events/index.jsx` (ouvrait un nouvel onglet au lieu d'un aperçu in-page).
+
 ## Getting Started
 - `npm run dev` — Starts dev server at http://localhost:5173/
 - `npm run build` — Builds for production, emits to `dist/`
