@@ -2,7 +2,7 @@ import { handleRequest } from './src/app.js';
 import { db, sqlite } from './src/config/database.js';
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 import { resolve } from 'path';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 
 const DATA_DIR = resolve(import.meta.dir, 'data');
 const DB_PATH = resolve(DATA_DIR, 'gmt3.db');
@@ -24,7 +24,7 @@ console.log('[DB] Migrations applied');
 Bun.serve({
 	port: PORT,
 	idleTimeout: 120, // uploads photo mobile (réseau lent + conversion HEIC/sharp) dépassent le défaut de 10s
-	fetch(req) {
+	async fetch(req) {
 		const url = new URL(req.url);
 		const path = url.pathname;
 
@@ -60,20 +60,32 @@ Bun.serve({
 			);
 		}
 
-		// Serve uploaded files
+		// Serve uploaded files — Bun.file() (streaming, non-bloquant) + cache conditionnel.
+		// Les galeries peuvent être remplacées en conservant le même nom de fichier
+		// (photoGallery.ts), donc pas de cache "immutable" : max-age modéré + revalidation
+		// via Last-Modified pour que le navigateur détecte un remplacement (304 sinon).
 		if (path.startsWith('/uploads/') && req.method === 'GET') {
 			const filePath = resolve(import.meta.dir, `.${path}`);
-			if (existsSync(filePath)) {
-				try {
-					const file = readFileSync(filePath);
-					const ext = path.split('.').pop() || '';
-					const mime: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
-					return new Response(file, { headers: { 'Content-Type': mime[ext] || 'application/octet-stream' } });
-				} catch {
-					return new Response('Not Found', { status: 404 });
-				}
+			const file = Bun.file(filePath);
+			if (!(await file.exists())) {
+				return new Response('Not Found', { status: 404 });
 			}
-			return new Response('Not Found', { status: 404 });
+
+			const lastModified = new Date(file.lastModified).toUTCString();
+			const ifModifiedSince = req.headers.get('if-modified-since');
+			if (ifModifiedSince && ifModifiedSince === lastModified) {
+				return new Response(null, { status: 304 });
+			}
+
+			const ext = path.split('.').pop() || '';
+			const mime: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
+			return new Response(file, {
+				headers: {
+					'Content-Type': mime[ext] || 'application/octet-stream',
+					'Cache-Control': 'public, max-age=3600, must-revalidate',
+					'Last-Modified': lastModified,
+				},
+			});
 		}
 		const start = performance.now();
 		const method = req.method;
