@@ -52,7 +52,7 @@ export function TestimonialsSection() {
 								<span class="font-label-caps text-[10px] tracking-[0.3em] text-on-background/60 font-bold uppercase">Retours terrain</span>
 							</div>
 							<h2 class="font-h2 text-h2 md:text-5xl text-on-background font-black uppercase tracking-tighter leading-none">
-								Ils ont vécu <br /><span class="text-primary">l'expédition</span>
+								Ils ont vécu <span class="text-gradient">l'expédition</span>
 							</h2>
 						</Reveal>
 					</div>

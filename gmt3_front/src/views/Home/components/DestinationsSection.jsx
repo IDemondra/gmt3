@@ -56,10 +56,6 @@ export function DestinationsSection() {
 				<div class="mb-16 grid lg:grid-cols-[1fr_auto] items-end gap-10">
 					<div class="max-w-2xl">
 						<Reveal animation="fadeUp">
-							<div class="flex items-center gap-3 mb-6">
-								<span class="h-px w-12 bg-primary/40" />
-								<span class="font-label-caps text-label-caps tracking-[0.3em] text-primary font-bold uppercase">Mapping des Régions</span>
-							</div>
 							<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none">
 								Destinations <span class="text-primary">Phares</span>
 							</h2>

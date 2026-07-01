@@ -49,12 +49,8 @@ export function ContactSection() {
 			<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
 				<Reveal animation="fadeUp" duration={700}>
 					<div class="text-center mb-16">
-						<div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2 rounded-full mb-6">
-							<div class="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-							<span class="font-mono text-[10px] text-white/70 tracking-[0.3em] uppercase font-bold">Canal Ouvert</span>
-						</div>
 						<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
-							Prêt pour <br /><span class="text-white/50">l'Aventure?</span>
+							Prêt pour <span class="text-white/50">l'Aventure?</span>
 						</h2>
 						<p class="font-body-lg text-white/70 max-w-xl mx-auto leading-relaxed">
 							Contactez-nous pour planifier votre voyage sur mesure ou pour toute question sur nos circuits.

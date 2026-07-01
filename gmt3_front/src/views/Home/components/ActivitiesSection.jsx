@@ -67,7 +67,7 @@ export function ActivitiesSection() {
 							<span class="font-label-caps text-[10px] tracking-[0.4em] text-primary font-bold">CORE CAPABILITIES</span>
 						</div>
 						<h2 class="font-h2 text-h2 md:text-5xl text-white font-black uppercase tracking-tighter leading-none">
-							Nos <span class="text-primary">Spécialités</span>
+							Nos <span class="text-gradient">Spécialités</span>
 						</h2>
 						<p class="mt-6 font-body-lg text-white/50 leading-relaxed max-w-xl">
 							Des modules d'exploration conçus pour l'efficacité brute. Chaque spécialité est une brique de votre aventure, calibrée pour le terrain malgache.
@@ -87,28 +87,20 @@ export function ActivitiesSection() {
 
 						return (
 							<Reveal key={index} animation="fadeUp" delay={index * 100} className={spanClass}>
-								<a href="#contact" aria-label={`${activity.title} — nous contacter`} class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
-									
+								<a href="#contact" aria-label={`${activity.title}, nous contacter`} class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
+
 									{/* Corner Accents */}
 									<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-primary transition-colors" />
 									<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-primary transition-colors" />
 									<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-primary transition-colors" />
 									<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-primary transition-colors" />
 
-									{/* Header: Icon + Serial */}
+									{/* Header: Icon */}
 									<div class="flex items-start justify-between mb-auto">
 										<div class={`flex h-12 w-12 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-white`}>
 											<span class="material-symbols-outlined text-2xl">
 												{activity.icon}
 											</span>
-										</div>
-										<div class="text-right">
-											<p class="font-mono text-[10px] text-white/20 tracking-tighter">MOD-0{index + 1}</p>
-											<div class="flex gap-1 justify-end mt-1">
-												<div class="h-1 w-1 bg-primary rounded-full" />
-												<div class="h-1 w-1 bg-white/10 rounded-full" />
-												<div class="h-1 w-1 bg-white/10 rounded-full" />
-											</div>
 										</div>
 									</div>
 
@@ -134,21 +126,6 @@ export function ActivitiesSection() {
 							</Reveal>
 						);
 					})}
-				</div>
-
-				{/* ── Expertise footer ── */}
-				<div class="mt-16 flex flex-wrap justify-center gap-8 border-t border-white/5 pt-12">
-					{[
-						{ label: "LOGISTICS", val: "L-24" },
-						{ label: "EXPLORATION", val: "E-12" },
-						{ label: "SECURITY", val: "S-01" },
-						{ label: "PROTOCOL", val: "P-09" }
-					].map((tag, i) => (
-						<div key={i} class="flex items-center gap-3">
-							<span class="text-[10px] font-bold text-white/20 tracking-[0.3em]">{tag.label}</span>
-							<span class="font-mono text-xs text-primary">{tag.val}</span>
-						</div>
-					))}
 				</div>
 			</div>
 		</section>

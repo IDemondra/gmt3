@@ -38,10 +38,6 @@ export function ToursSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="expeditions">
-			{/* Transition dark → light */}
-			<div class="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#1c1b1b] via-[#1c1b1b]/70 via-40% to-transparent pointer-events-none z-10" />
-			<div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#ba0013]/5 to-transparent pointer-events-none z-10" />
-
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -57,12 +53,8 @@ export function ToursSection() {
 				<div class="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-10">
 					<div class="max-w-2xl">
 						<Reveal animation="fadeUp">
-							<div class="flex items-center gap-3 mb-6">
-								<div class="h-2 w-2 rounded-full bg-primary" />
-								<span class="font-label-caps text-label-caps tracking-[0.3em] text-on-background/70 font-bold uppercase">Chronologie Terrain</span>
-							</div>
 							<h2 class="font-h2 text-h2 md:text-6xl text-on-background font-black uppercase tracking-tighter leading-none">
-								Prochains <br /> <span class="text-primary">Événements</span>
+								Prochains <span class="text-primary">Événements</span>
 							</h2>
 							<p class="mt-8 font-body-lg text-on-background font-medium leading-relaxed">
 								Suivez le fil de nos prochaines incursions. Des dates fermes, des groupes restreints et une logistique sans faille pour une immersion totale.
@@ -94,7 +86,7 @@ export function ToursSection() {
 							<span class="material-symbols-outlined text-3xl text-primary">event_busy</span>
 						</div>
 						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Aucune expédition planifiée</p>
-						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt — nouvelles missions en cours</p>
+						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt, nouvelles missions en cours</p>
 					</div>
 				)}
 
@@ -106,7 +98,7 @@ export function ToursSection() {
 						<div class="space-y-24 relative">
 							{events.map((event, i) => {
 								const imgUrl = resolveImg(event.imagePrincipale);
-								const date = formatDateFr(event.dateDepart || event.dateEvenement) || '—';
+								const date = formatDateFr(event.dateDepart || event.dateEvenement) || 'Date à confirmer';
 								const prix = formatPrix(event.prix);
 
 								return (

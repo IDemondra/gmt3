@@ -22,7 +22,7 @@ export function EventDetail({ params }) {
 		title: evt.titre,
 		description: parseMarkdownInline(evt.description),
 		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
-		date: evt.dateDepart || evt.dateEvenement || '—',
+		date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
 		badge: 'EXPEDITION',
 		slug: evt.id,
 		href: `/events/${evt.id}`
@@ -188,13 +188,13 @@ export function EventDetail({ params }) {
 		title: event.titre,
 		description: event.description,
 		image: event.imagePrincipale ? `${BACKEND}${event.imagePrincipale}` : '',
-		location: event.lieu || '—',
-		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : '—',
-		duration: event.duration || '—',
-		difficulty: event.difficulte || event.difficulty || '—',
+		location: event.lieu || 'Non précisé',
+		price: event.prix ? `${Number(event.prix).toLocaleString('fr-FR')} Ar` : 'Non précisé',
+		duration: event.duration || 'Non précisé',
+		difficulty: event.difficulte || event.difficulty || 'Non précisé',
 		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),
 		badge: 'EXPEDITION',
-		date: event.dateDepart || event.dateEvenement || '—',
+		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		slug: event.id,
 	};
 
@@ -204,10 +204,10 @@ export function EventDetail({ params }) {
 	const showAvis = isPast || (event.avis || []).length > 0;
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
-		{ label: 'Localisation', value: normalizedEvent.location || '—', icon: 'location_on' },
+		{ label: 'Localisation', value: normalizedEvent.location || 'Non précisé', icon: 'location_on' },
 		{ label: 'Durée', value: normalizedEvent.duration, icon: 'schedule' },
-		{ label: 'Difficulté', value: normalizedEvent.difficulty || '—', icon: 'trending_up' },
-	].filter((f) => f.value && f.value !== '—');
+		{ label: 'Difficulté', value: normalizedEvent.difficulty || 'Non précisé', icon: 'trending_up' },
+	].filter((f) => f.value && f.value !== 'Non précisé');
 
 	const departInfo = event.dateDepart ? {
 		date: event.dateDepart,
@@ -324,12 +324,12 @@ export function EventDetail({ params }) {
 											href="#avis"
 											class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-6 py-4 font-button text-button text-on-primary transition-all duration-300 hover:bg-white/10 cursor-pointer"
 										>
-											EXPÉDITION TERMINÉE — LAISSER UN AVIS
+											EXPÉDITION TERMINÉE, LAISSER UN AVIS
 											<span class="material-symbols-outlined text-[18px]">rate_review</span>
 										</a>
 									) : isOngoing ? (
 										<div class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/15 px-6 py-4 font-button text-button text-on-primary">
-											EN COURS — INSCRIPTIONS CLOSES
+											EN COURS, INSCRIPTIONS CLOSES
 											<span class="material-symbols-outlined text-[18px]">lock</span>
 										</div>
 									) : (
@@ -355,9 +355,8 @@ export function EventDetail({ params }) {
 							<article class="rounded-[1.75rem] border border-white/20 bg-gradient-to-br from-white/90 via-white/65 to-white/30 backdrop-blur-md p-6 shadow-md shadow-black/5 md:p-8">
 								<div class="flex items-center justify-between gap-4">
 									<div>
-										<p class="font-label-caps text-label-caps text-secondary">Aperçu de l'expérience</p>
-										<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight text-on-background">
-											Conçu pour l'immersion
+										<h2 class="font-h2 text-h2 font-black uppercase tracking-tight text-on-background">
+											Aperçu de l'expérience
 										</h2>
 									</div>
 									<div class="hidden sm:flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -476,7 +475,7 @@ export function EventDetail({ params }) {
 											</a>
 										) : isOngoing ? (
 											<div class="inline-flex items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/10 px-5 py-4 font-button text-button text-secondary">
-												EN COURS — INSCRIPTIONS CLOSES
+												EN COURS, INSCRIPTIONS CLOSES
 												<span class="material-symbols-outlined text-[18px]">lock</span>
 											</div>
 										) : (
@@ -598,8 +597,7 @@ export function EventDetail({ params }) {
 					<Reveal animation="fadeUp" duration={760}>
 						<div class="flex items-end justify-between gap-4 mb-8">
 							<div>
-								<p class="font-label-caps text-label-caps text-secondary">Continuer l'exploration</p>
-								<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight text-on-background">Expéditions connexes</h2>
+								<h2 class="font-h2 text-h2 font-black uppercase tracking-tight text-on-background">Expéditions connexes</h2>
 							</div>
 							<a href="/events" class="hidden md:inline-flex items-center gap-2 font-button text-button text-primary transition-colors hover:text-primary-container">
 								VOIR TOUT

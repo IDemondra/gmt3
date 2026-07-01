@@ -88,12 +88,8 @@ export function AboutSection() {
 				{/* ── Header ── */}
 				<div class="mb-16 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
 					<div class="max-w-2xl">
-						<div class="flex items-center gap-3">
-							<span class="h-px w-12 bg-primary/40" />
-							<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary">L'ÂME DE GMT+3</span>
-						</div>
-						<h2 class="mt-4 font-h2 text-h2 md:text-[clamp(2.5rem,4vw,4rem)] text-on-background font-black uppercase tracking-tighter leading-[0.95]">
-							Passeurs <br class="hidden md:block" /> d'Horizons
+						<h2 class="font-h2 text-h2 md:text-[clamp(2.5rem,4vw,4rem)] text-on-background font-black uppercase tracking-tighter leading-[0.95]">
+							Passeurs <span class="text-primary">d'Horizons</span>
 						</h2>
 						<p class="font-body-lg text-body-lg text-secondary mt-6 max-w-xl leading-relaxed">
 							Plus que des guides, ils sont les gardiens des secrets de l'île. Chaque membre de notre équipe est un expert du terrain, choisi pour son lien viscéral avec sa terre.
@@ -235,8 +231,6 @@ export function AboutSection() {
 					</Reveal>
 				</div>
 			</div>
-			{/* Transition light → dark (About → Offers) */}
-			<div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent pointer-events-none z-10" />
 		</section>
 	);
 }

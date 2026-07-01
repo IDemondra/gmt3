@@ -33,7 +33,7 @@ export function GallerySection() {
 							label: evt.titre || 'Sans titre',
 							meta: formatDateFr(evt.dateDepart || evt.dateEvenement) || 'Expedition GMT3',
 							note: photo.legende || evt.lieu || '',
-							coord: evt.lieu || '—',
+							coord: evt.lieu || 'Non précisé',
 						});
 					}
 				}
@@ -75,7 +75,7 @@ export function GallerySection() {
                             [ System_Archives ]
                         </span>
                         <h2 class="mt-6 font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none">
-                            Preuves de <br /> <span class="text-primary">Terrain</span>
+                            Preuves de <span class="text-primary">Terrain</span>
                         </h2>
                         <p class="mt-8 max-w-xl font-body-lg text-white/50 leading-relaxed">
                             Chaque image est une donnée brute extraite de nos expéditions. Plus qu'une galerie, c'est l'historique visuel de nos incursions au cœur de Madagascar.

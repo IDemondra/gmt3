@@ -43,7 +43,7 @@ export function Events() {
 		title: event.titre,
 		description: parseMarkdownInline(event.description),
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
-		date: event.dateDepart || event.dateEvenement || '—',
+		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		badge: getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) === 'ongoing' ? 'EN COURS' : 'EXPEDITION',
 		slug: event.id,
 		href: `/events/${event.id}`
@@ -86,7 +86,7 @@ export function Events() {
 							</Reveal>
 							<Reveal animation="arc" delay={60} duration={820}>
 								<h1 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
-									Prochaines <br /><span class="text-primary">Expéditions</span>
+									Prochaines <span class="text-primary">Expéditions</span>
 								</h1>
 							</Reveal>
 							<Reveal animation="fadeUp" delay={120} duration={760}>
@@ -134,7 +134,7 @@ export function Events() {
 							<span class="material-symbols-outlined text-3xl text-primary">event_busy</span>
 						</div>
 						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Aucune expédition planifiée</p>
-						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt — nouvelles missions en cours</p>
+						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt, nouvelles missions en cours</p>
 					</div>
 				)}
 
@@ -163,7 +163,7 @@ export function Events() {
 					</Reveal>
 					<Reveal animation="arc" delay={60} duration={820}>
 						<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
-							Preuves de <br /><span class="text-primary">Terrain</span>
+							Preuves de <span class="text-primary">Terrain</span>
 						</h2>
 					</Reveal>
 					<Reveal animation="fadeUp" delay={120} duration={760}>
