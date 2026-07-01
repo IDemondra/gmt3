@@ -81,7 +81,8 @@ Bun.serve({
 		// Ne jamais logger le corps des routes d'authentification (mots de passe en clair).
 		const SENSITIVE_PATHS = ['/api/utilisateurs/login', '/api/utilisateurs/refresh', '/api/utilisateurs/logout'];
 		const isSensitive = SENSITIVE_PATHS.includes(path) || (method !== 'GET' && path.startsWith('/api/utilisateurs'));
-		if (req.body && !isSensitive) {
+		const isMultipart = (req.headers.get('content-type') || '').startsWith('multipart/form-data');
+		if (req.body && !isSensitive && !isMultipart) {
 			try {
 				const cloned = req.clone();
 				cloned.text().then((body) => {
