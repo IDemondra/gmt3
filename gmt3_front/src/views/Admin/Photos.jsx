@@ -62,6 +62,7 @@ export function AdminPhotos() {
 	};
 
 	const selectEvent = async (evt) => {
+		previews.forEach((p) => URL.revokeObjectURL(p));
 		setSelected(evt);
 		setNewFiles([]);
 		setPreviews([]);
