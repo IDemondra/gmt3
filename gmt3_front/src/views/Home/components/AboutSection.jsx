@@ -73,9 +73,6 @@ export function AboutSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-[#faf9f6] px-margin-mobile py-section-gap md:px-margin-desktop w-full" id="equipes" style="content-visibility: auto; contain-intrinsic-size: auto 1400px;">
-			{/* Transition light → light (Tours → About) */}
-			<div class="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#faf9f6] via-[#faf9f6]/50 to-transparent pointer-events-none z-10" />
-			
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />

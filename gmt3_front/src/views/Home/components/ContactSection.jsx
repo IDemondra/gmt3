@@ -27,9 +27,6 @@ const contacts = [
 export function ContactSection() {
 	return (
 		<section id="contact" class="relative bg-primary py-24 overflow-hidden">
-			{/* Transition dark → primary-red (Banner → Contact) */}
-			<div class="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-primary-container via-primary-container/50 via-40% to-transparent pointer-events-none z-10" />
-
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
