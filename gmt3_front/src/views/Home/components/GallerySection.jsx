@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { ImagePreview } from '../../../components/ui/ImagePreview.jsx';
+import { BlurImg } from '../../../components/ui/BlurImg.jsx';
 import { img } from '../../../utils/images.js';
 import { isEventPast, formatDateFr } from '../../../utils/dateFormatter.js';
 
@@ -123,9 +124,9 @@ export function GallerySection() {
                                         <span class="font-mono text-[9px] text-white/40">{card.coord}</span>
                                     </div>
 
-									<img
+									<BlurImg
 										alt={card.alt}
-										class="absolute inset-0 h-full w-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
+										class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
 										loading={card.priority ? 'eager' : 'lazy'}
 										decoding="async"
 										referrerPolicy="no-referrer"

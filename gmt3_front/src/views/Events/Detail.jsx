@@ -3,6 +3,8 @@ import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
+import { BlurBackgroundImage } from '../../components/ui/BlurBackgroundImage.jsx';
+import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { buildPreviewGallery } from '../../utils/gallery.js';
 import { img } from '../../utils/images.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
@@ -236,7 +238,7 @@ export function EventDetail({ params }) {
 			<main class="flex-grow pb-28 lg:pb-section-gap">
 				<section class="relative overflow-hidden bg-on-secondary-fixed">
 					<div class="absolute inset-0">
-						<div class="absolute inset-0 bg-cover bg-center scale-105" style={`background-image: url('${normalizedEvent.image}')`} />
+						<BlurBackgroundImage src={normalizedEvent.image} class="absolute inset-0" />
 						<div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/30" />
 						<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(227,30,36,0.35),_transparent_55%)]" />
 					</div>
@@ -394,10 +396,10 @@ export function EventDetail({ params }) {
 												onClick={() => { setPreviewIndex(idx); setPreview({ url: img(src), title: `${normalizedEvent.title} photo ${idx + 1}` }); }}
 												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-black/10 cursor-pointer"
 											>
-												<img
+												<BlurImg
 													src={img(src)}
 													alt={`${normalizedEvent.title} preview ${idx + 1}`}
-													class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+													class="h-full w-full object-cover group-hover:scale-105"
 													loading="lazy"
 													referrerPolicy="no-referrer"
 												/>
@@ -541,7 +543,7 @@ export function EventDetail({ params }) {
 									</div>
 									{a.commentaire && <p class="mt-3 font-body-md text-secondary leading-relaxed">{a.commentaire}</p>}
 									{a.photoUrl && (
-										<img src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="mt-3 h-40 w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" />
+										<BlurImg src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="mt-3 h-40 w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" />
 									)}
 								</article>
 							))}

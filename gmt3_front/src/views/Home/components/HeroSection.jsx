@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { img } from '../../../utils/images.js';
 import { isEventPast } from '../../../utils/dateFormatter.js';
 
@@ -109,10 +110,7 @@ export function HeroSection() {
 												style={`width: ${i === 0 ? '96px' : '56px'}`}
 												title={evt.titre}
 											>
-												<div
-													class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-													style={`background-image: url('${resolveImg(evt.imagePrincipale)}')`}
-												/>
+												<BlurBackgroundImage src={resolveImg(evt.imagePrincipale)} class="absolute inset-0 group-hover:scale-110" />
 												<div class="absolute inset-0 bg-zinc-950/30 group-hover:bg-zinc-950/10 transition-colors duration-300" />
 												{i === 0 && (
 													<div class="absolute inset-x-0 bottom-0 px-2 py-1 bg-gradient-to-t from-zinc-950/80 to-transparent">

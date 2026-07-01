@@ -1,4 +1,5 @@
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { BlurImg } from '../../../components/ui/BlurImg.jsx';
 import { img } from '../../../utils/images.js';
 
 export function AboutSection() {
@@ -148,9 +149,9 @@ export function AboutSection() {
 
 									{/* Main Photo area: Inset and slightly aged */}
 									<div class="relative aspect-[4/5] overflow-hidden rounded-sm bg-stone-200 shadow-inner">
-										<img
+										<BlurImg
 											alt={member.name}
-											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											class="h-full w-full object-cover group-hover:scale-105"
 											loading="lazy"
 											decoding="async"
 											src={img(member.src)}

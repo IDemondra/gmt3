@@ -3,6 +3,7 @@ import { Reveal } from '../../components/ui/Reveal.jsx';
 import { TourCard } from '../../components/ui/TourCard.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
+import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
@@ -202,10 +203,10 @@ export function Events() {
 													onClick={() => setPreview({ eventId: event.id, index: idx })}
 													class="group relative aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50"
 												>
-													<img
+													<BlurImg
 														src={photo}
 														alt={`${event.titre} photo ${idx + 1}`}
-														class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+														class="h-full w-full object-cover group-hover:scale-110"
 														loading="lazy"
 														referrerPolicy="no-referrer"
 													/>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 
@@ -109,10 +110,7 @@ export function ToursSection() {
 											<div class="w-full md:w-1/2">
 												<a href={`/events/${event.id}`} class="group block relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white hover:shadow-2xl transition-shadow">
 													{imgUrl ? (
-														<div
-															class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-															style={`background-image: url('${imgUrl}')`}
-														/>
+														<BlurBackgroundImage src={imgUrl} class="absolute inset-0 group-hover:scale-110" />
 													) : (
 														<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
 															<span class="material-symbols-outlined text-6xl text-primary/30">landscape</span>

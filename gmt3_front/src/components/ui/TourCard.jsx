@@ -1,22 +1,12 @@
-import { useState } from 'preact/hooks';
 import { Card } from './Card.jsx';
+import { BlurBackgroundImage } from './BlurBackgroundImage.jsx';
 import { img } from '../../utils/images.js';
 
 export function TourCard({ image, badge, date, title, description, href }) {
-  const [loaded, setLoaded] = useState(false);
-  const resolvedImage = img(image);
-
   return (
     <Card className="group h-full min-h-[36rem] overflow-hidden border border-outline-variant/70 bg-white/90">
       <div class="relative aspect-[4/5] min-h-[24rem] w-full overflow-hidden sm:aspect-[16/11] lg:min-h-[28rem]">
-        {/* Image cachée : sert uniquement à détecter la fin du chargement pour lever le flou. */}
-        {resolvedImage && (
-          <img src={resolvedImage} alt="" aria-hidden="true" class="hidden" onLoad={() => setLoaded(true)} />
-        )}
-        <div
-          class={`absolute inset-0 bg-cover bg-center transition-all duration-700 group-hover:scale-[1.06] ${loaded ? 'blur-0 scale-100' : 'blur-xl scale-110'}`}
-          style={`background-image: url('${resolvedImage}');`}
-        />
+        <BlurBackgroundImage src={img(image)} class="absolute inset-0 group-hover:scale-[1.06]" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
         <div class="absolute inset-x-0 top-0 p-4 sm:p-5">
           <div class="flex max-w-full flex-wrap items-center gap-2">

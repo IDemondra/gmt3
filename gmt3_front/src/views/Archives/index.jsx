@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
+import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { isEventPast, formatDateFr } from '../../utils/dateFormatter.js';
 
@@ -145,10 +146,10 @@ export function Archives() {
 													onClick={() => openPhoto(photo, evt.titre)}
 													class="group relative aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-stone-900 shadow-lg transition-all duration-300 hover:border-primary/40 cursor-pointer"
 												>
-													<img
+													<BlurImg
 														src={photo}
 														alt={`${evt.titre} ${idx + 1}`}
-														class="absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
+														class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
 														loading="lazy"
 														referrerPolicy="no-referrer"
 													/>
