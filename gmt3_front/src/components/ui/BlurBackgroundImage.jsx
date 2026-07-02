@@ -9,9 +9,16 @@ export function BlurBackgroundImage({ src, class: className = '' }) {
 	const [loaded, setLoaded] = useState(false);
 	if (!src) return null;
 
+	// Si l'image est déjà en cache, le navigateur peut avoir déclenché `load`
+	// avant que Preact n'attache le handler (hydratation) — on vérifie `.complete`
+	// via le ref callback pour ne pas rester bloqué flouté indéfiniment.
+	const checkComplete = (el) => {
+		if (el && el.complete) setLoaded(true);
+	};
+
 	return (
 		<>
-			<img src={src} alt="" aria-hidden="true" class="hidden" onLoad={() => setLoaded(true)} />
+			<img ref={checkComplete} src={src} alt="" aria-hidden="true" class="hidden" onLoad={() => setLoaded(true)} />
 			<div
 				class={`bg-cover bg-center transition-all duration-700 ${loaded ? 'blur-0 scale-100' : 'blur-lg scale-105'} ${className}`}
 				style={`background-image: url('${src}');`}
