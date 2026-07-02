@@ -31,10 +31,7 @@ export function HeroSection() {
 		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden select-none">
 
 			{/* Background — overlay intentionally light on the right to let the photo breathe */}
-			<div
-				class="absolute inset-0 z-0 bg-cover bg-center"
-				style={`background-image: url('${img('/assets/hero.jpg')}')`}
-			/>
+			<BlurBackgroundImage src={img('/assets/hero.jpg')} class="absolute inset-0 z-0" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-r from-zinc-950/96 via-zinc-950/75 lg:to-zinc-950/15 to-zinc-950/60" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/50" />
 
@@ -141,10 +138,7 @@ export function HeroSection() {
 								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
 								style="transform: rotate(1.5deg);"
 							>
-								<div
-									class="absolute inset-0 bg-cover bg-center scale-105"
-									style={`background-image: url('${img('/assets/hero.jpg')}')`}
-								/>
+								<BlurBackgroundImage src={img('/assets/hero.jpg')} class="absolute inset-0" />
 								<div class="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-zinc-950/10" />
 
 								{/* Inset badge */}
