@@ -1,4 +1,5 @@
 import { HeroSection } from './components/HeroSection.jsx';
+import { ProofSection } from './components/ProofSection.jsx';
 import { ActivitiesSection } from './components/ActivitiesSection.jsx';
 import { DestinationsSection } from './components/DestinationsSection.jsx';
 import { ToursSection } from './components/ToursSection.jsx';
@@ -14,6 +15,7 @@ export function Home() {
 		<div class="home">
 			<ScrollProgress />
 			<HeroSection />
+			<ProofSection />
 			<ActivitiesSection />
 			<DestinationsSection />
 			<ToursSection />

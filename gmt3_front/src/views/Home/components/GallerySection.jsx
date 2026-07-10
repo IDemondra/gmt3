@@ -80,7 +80,7 @@ export function GallerySection() {
                             Preuves de <span class="text-primary">Terrain</span>
                         </h2>
                         <p class="mt-8 max-w-xl font-body-lg text-white/50 leading-relaxed">
-                            Chaque image est une donnée brute extraite de nos expéditions. Plus qu'une galerie, c'est l'historique visuel de nos incursions au cœur de Madagascar.
+                            Des paysages, des visages et des instants partagés. Un aperçu de ce que vous vivrez sur le terrain avec GMT+3.
                         </p>
                     </div>
                 </div>
@@ -99,7 +99,7 @@ export function GallerySection() {
 							<span class="material-symbols-outlined text-3xl text-primary">image_not_supported</span>
 						</div>
 						<p class="font-h3 text-xl text-white/40 uppercase tracking-tight">Aucune photo pour le moment</p>
-						<p class="mt-2 font-mono text-[10px] text-white/20 tracking-widest uppercase">Archive en cours de remplissage</p>
+                        <p class="mt-2 font-mono text-[10px] text-white/20 tracking-widest uppercase">De nouvelles photos arrivent bientôt</p>
 					</div>
 				)}
 
@@ -174,7 +174,7 @@ export function GallerySection() {
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-2">
                             <div class="h-1 w-8 bg-primary animate-pulse" />
-                            <span class="font-mono text-[10px] text-white/40 tracking-widest uppercase">Encryption Active</span>
+                            <span class="font-mono text-[10px] text-white/40 tracking-widest uppercase">Carnet de voyage GMT+3</span>
                         </div>
                     </div>
                     <a

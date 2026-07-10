@@ -46,12 +46,12 @@ export function ActivitiesSection() {
 
 	return (
 		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="specialites">
-			{/* Technical Bridge from Hero */}
+			{/* Transition visuelle légère depuis le hero */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 			</div>
 
-			{/* Technical Background Accents */}
+			{/* Texture discrète */}
 			<div class="absolute inset-0 opacity-[0.03] pointer-events-none" 
 				style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;" />
 			<div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent" />
@@ -64,13 +64,13 @@ export function ActivitiesSection() {
 					<div class="max-w-2xl">
 						<div class="flex items-center gap-3 mb-4">
 							<div class="h-2 w-2 bg-primary animate-pulse" />
-							<span class="font-label-caps text-[10px] tracking-[0.4em] text-primary font-bold">CORE CAPABILITIES</span>
+							<span class="font-label-caps text-[10px] tracking-[0.25em] text-primary font-bold">Vivre Madagascar</span>
 						</div>
 						<h2 class="font-h2 text-h2 md:text-5xl text-white font-black uppercase tracking-tighter leading-none">
 							Nos <span class="text-gradient">Spécialités</span>
 						</h2>
 						<p class="mt-6 font-body-lg text-white/50 leading-relaxed max-w-xl">
-							Des modules d'exploration conçus pour l'efficacité brute. Chaque spécialité est une brique de votre aventure, calibrée pour le terrain malgache.
+							Des expériences pensées avec soin pour découvrir les paysages, les cultures et les personnes qui font la richesse de Madagascar.
 						</p>
 					</div>
 				</div>
@@ -114,9 +114,9 @@ export function ActivitiesSection() {
 										</p>
 									</div>
 
-									{/* Footer: CTA contact */}
+										{/* Footer: CTA */}
 									<div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-										<span class="text-[9px] font-bold tracking-widest text-primary uppercase">Nous contacter</span>
+											<span class="text-[9px] font-bold tracking-widest text-primary uppercase">En savoir plus</span>
 										<span class="material-symbols-outlined text-sm text-primary group-hover:translate-x-1 transition-transform">north_east</span>
 									</div>
 

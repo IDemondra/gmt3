@@ -19,8 +19,8 @@ export function Header() {
 	const navLinks = [
 		{ href: '/#expeditions', label: 'EXPÉDITIONS' },
 		{ href: '/#destinations', label: 'DESTINATIONS' },
-		{ href: '/#specialites', label: 'SPÉCIALITÉS' },
-		{ href: '/#gallery', label: 'ARCHIVES' },
+		{ href: '/#equipes', label: 'NOTRE ÉQUIPE' },
+		{ href: '/#gallery', label: 'GALERIE' },
 	];
 
 	return (
@@ -72,7 +72,7 @@ export function Header() {
 							href="/#contact"
 							class="hidden lg:flex items-center gap-2 bg-primary hover:bg-primary-container text-white px-4 xl:px-5 py-2.5 rounded-full font-button text-[10px] tracking-widest font-black uppercase transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-primary/20 cursor-pointer"
 						>
-							NOUS CONTACTER
+							DEMANDER UN ITINÉRAIRE
 							<span class="material-symbols-outlined text-sm">sensors</span>
 						</a>
 
@@ -80,6 +80,8 @@ export function Header() {
 							class={`lg:hidden h-10 w-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${scrolled ? 'text-white bg-white/5' : 'text-white bg-black/20'}`}
 							onClick={toggleMenu}
 							aria-label={mobileMenuOpen.value ? 'Fermer le menu' : 'Ouvrir le menu'}
+							aria-expanded={mobileMenuOpen.value}
+							aria-controls="mobile-navigation"
 						>
 							<span class="material-symbols-outlined text-xl leading-none">
 								{mobileMenuOpen.value ? 'close' : 'grid_view'}
@@ -90,7 +92,7 @@ export function Header() {
 			</div>
 
 			{/* Mobile Menu Overlay — visible below lg */}
-			<div class={`fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl transition-all duration-500 lg:hidden ${
+			<div id="mobile-navigation" class={`fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl transition-all duration-500 lg:hidden ${
 				mobileMenuOpen.value ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
 			}`}>
 				<div class="flex flex-col h-full p-8">

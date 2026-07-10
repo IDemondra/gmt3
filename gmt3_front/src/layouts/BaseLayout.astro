@@ -95,9 +95,10 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="color-scheme" content="light dark" />
+		<meta name="color-scheme" content="light" />
 		<meta name="theme-color" content="#ba0013" />
 		<link rel="icon" type="image/jpeg" href="/assets/logo_gmt3.jpeg" />
+		<link rel="preload" as="image" href="/assets/hero.jpg" fetchpriority="high" />
 
 		<title>{title}</title>
 		<meta name="description" content={description} />

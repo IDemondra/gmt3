@@ -47,10 +47,10 @@ export function ContactSection() {
 				<Reveal animation="fadeUp" duration={700}>
 					<div class="text-center mb-16">
 						<h2 class="font-h2 text-h2 md:text-6xl text-white font-black uppercase tracking-tighter leading-none mb-6">
-							Prêt pour <span class="text-white/50">l'Aventure?</span>
+							Prêt à <span class="text-white/50">partir ?</span>
 						</h2>
 						<p class="font-body-lg text-white/70 max-w-xl mx-auto leading-relaxed">
-							Contactez-nous pour planifier votre voyage sur mesure ou pour toute question sur nos circuits.
+							Parlez-nous de vos envies. Nous vous répondrons directement pour imaginer un voyage qui vous ressemble.
 						</p>
 					</div>
 				</Reveal>
@@ -86,7 +86,7 @@ export function ContactSection() {
 							href="mailto:hanitra@great-madagascar-tours.com"
 							class="group inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-button text-xs tracking-widest font-black uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 hover:scale-105 active:scale-95 cursor-pointer"
 						>
-							ENVOYER UN MESSAGE
+							PRÉPARER MON VOYAGE
 							<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">north_east</span>
 						</a>
 						<a

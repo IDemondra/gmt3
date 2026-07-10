@@ -28,10 +28,10 @@ export function HeroSection() {
 	}, []);
 
 	return (
-		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden select-none">
+		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden">
 
 			{/* Background — overlay intentionally light on the right to let the photo breathe */}
-			<BlurBackgroundImage src={img('/assets/hero.jpg')} class="absolute inset-0 z-0" />
+			<BlurBackgroundImage src={img('/assets/hero.jpg')} alt="Groupe de voyageurs GMT+3 au sommet, au-dessus des paysages de Fianarantsoa" decorative={false} class="absolute inset-0 z-0" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-r from-zinc-950/96 via-zinc-950/75 lg:to-zinc-950/15 to-zinc-950/60" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/50" />
 
@@ -51,7 +51,7 @@ export function HeroSection() {
 							<div class="flex items-center gap-4 mb-10">
 								<div class="h-px w-8 bg-primary" />
 								<span class="font-label-caps text-[10px] tracking-[0.35em] text-white/45 font-bold uppercase">
-									Fianarantsoa, Madagascar
+									Voyages responsables depuis Fianarantsoa
 								</span>
 							</div>
 						</Reveal>
@@ -60,17 +60,17 @@ export function HeroSection() {
 						<Reveal animation="arc" delay={80} duration={950}>
 							<h1
 								class="font-h1 leading-[0.88] tracking-tighter uppercase font-black text-white overflow-visible"
-								style="font-size: clamp(3rem, 8.5vw, 8rem);"
+								style="font-size: clamp(2.75rem, 6.5vw, 6rem);"
 							>
-								Explorez<br />
-								<span class="text-gradient">L'Ile<br />Rouge</span>
+								Découvrez<br />
+								<span class="text-gradient">Madagascar<br />autrement</span>
 							</h1>
 						</Reveal>
 
 						{/* Subtext */}
 						<Reveal animation="fadeUp" delay={220} duration={800}>
 							<p class="mt-8 font-body-lg text-base md:text-[17px] text-white/55 max-w-sm leading-relaxed pl-5 border-l border-primary/35">
-								Aventures authentiques au coeur de la Grande Ile, guidees par ceux qui l'appellent maison.
+								Randonnées, rencontres et voyages sur mesure, guidés par ceux qui vivent et aiment la Grande Île.
 							</p>
 						</Reveal>
 
@@ -78,17 +78,17 @@ export function HeroSection() {
 						<Reveal animation="fadeUp" delay={340} duration={800}>
 							<div class="mt-10 flex flex-wrap items-center gap-4">
 								<a
-									href="#expeditions"
+									href="#contact"
 									class="h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container hover:scale-[1.03] active:scale-[0.97]"
 								>
-									VOIR LES EXPEDITIONS
+									PRÉPARER MON VOYAGE
 									<span class="material-symbols-outlined text-[18px]">north_east</span>
 								</a>
 								<a
-									href="#contact"
+									href="#expeditions"
 									class="h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white active:scale-[0.97]"
 								>
-									NOUS CONTACTER
+									VOIR LES RANDONNÉES
 								</a>
 							</div>
 						</Reveal>
@@ -97,7 +97,7 @@ export function HeroSection() {
 						{photos.length > 0 && (
 							<Reveal animation="fadeUp" delay={460} duration={800}>
 								<div class="mt-14 border-t border-white/10 pt-8">
-									<p class="font-mono text-[9px] tracking-[0.3em] text-white/30 uppercase mb-4">Expeditions passees</p>
+								<p class="font-mono text-[9px] tracking-[0.3em] text-white/30 uppercase mb-4">Quelques souvenirs de terrain</p>
 									<div class="flex items-center gap-2">
 										{photos.map((evt, i) => (
 											<a
@@ -163,7 +163,7 @@ export function HeroSection() {
 											<span key={i} class="material-symbols-outlined text-[12px] text-primary-container" style="font-variation-settings:'FILL' 1">star</span>
 										))}
 									</div>
-									<p class="font-mono text-[9px] tracking-[0.15em] text-white/40 uppercase mt-1">120+ avis clients</p>
+							<p class="font-mono text-[9px] tracking-[0.15em] text-white/40 uppercase mt-1">Voyages accompagnés localement</p>
 								</div>
 							</div>
 

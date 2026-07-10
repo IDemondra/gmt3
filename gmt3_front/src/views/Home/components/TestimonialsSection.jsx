@@ -49,10 +49,10 @@ export function TestimonialsSection() {
 						<Reveal animation="fadeUp">
 							<div class="flex items-center gap-3 mb-5">
 								<div class="h-2 w-2 rounded-full bg-primary" />
-								<span class="font-label-caps text-[10px] tracking-[0.3em] text-on-background/60 font-bold uppercase">Retours terrain</span>
+								<span class="font-label-caps text-[10px] tracking-[0.25em] text-on-background/60 font-bold uppercase">Leurs souvenirs</span>
 							</div>
 							<h2 class="font-h2 text-h2 md:text-5xl text-on-background font-black uppercase tracking-tighter leading-none">
-								Ils ont vécu <span class="text-gradient">l'expédition</span>
+								Ils sont partis avec <span class="text-gradient">GMT+3</span>
 							</h2>
 						</Reveal>
 					</div>

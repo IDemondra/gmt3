@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks';
  * avec flou progressif à la Facebook. Une <img> cachée détecte la fin du
  * chargement réel puisque `background-image` n'émet pas d'événement `load`.
  */
-export function BlurBackgroundImage({ src, class: className = '' }) {
+export function BlurBackgroundImage({ src, class: className = '', alt = '', decorative = true }) {
 	const [loaded, setLoaded] = useState(false);
 	if (!src) return null;
 
@@ -18,7 +18,7 @@ export function BlurBackgroundImage({ src, class: className = '' }) {
 
 	return (
 		<>
-			<img ref={checkComplete} src={src} alt="" aria-hidden="true" class="hidden" onLoad={() => setLoaded(true)} />
+			<img ref={checkComplete} src={src} alt={alt} aria-hidden={decorative ? 'true' : undefined} class="hidden" onLoad={() => setLoaded(true)} />
 			<div
 				class={`bg-cover bg-center transition-all duration-700 ${loaded ? 'blur-0 scale-100' : 'blur-lg scale-105'} ${className}`}
 				style={`background-image: url('${src}');`}

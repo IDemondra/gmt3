@@ -60,8 +60,7 @@ export function DestinationsSection() {
 								Destinations <span class="text-primary">Phares</span>
 							</h2>
 							<p class="mt-8 font-body-lg text-white/50 leading-relaxed">
-								Chaque coordonnée est une porte d'entrée vers une facette unique de l'Île Rouge. 
-								Exploration cartographiée pour une immersion totale.
+									Des hauts plateaux aux forêts tropicales, chaque étape révèle une autre facette de Madagascar.
 							</p>
 						</Reveal>
 					</div>
@@ -92,8 +91,8 @@ export function DestinationsSection() {
 								<div class="absolute inset-0 z-30 p-8 flex flex-col justify-between">
 									<div class="flex justify-between items-start translate-y-[-10px] opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
 										<div class="flex flex-col gap-1">
-											<span class="font-mono text-[9px] text-primary font-black tracking-widest">{s.id}</span>
-											<span class="font-mono text-[9px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
+															<span class="font-mono text-[9px] text-primary font-black tracking-widest">{String(i + 1).padStart(2, '0')}</span>
+															<span class="font-mono text-[9px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
 										</div>
 										<div class="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center">
 											<span class="material-symbols-outlined text-sm text-white/40">radar</span>
@@ -114,12 +113,12 @@ export function DestinationsSection() {
 										{/* Expanded Specs on Hover */}
 										<div class="mt-6 flex items-center gap-6 opacity-0 translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 border-t border-white/10 pt-6">
 											<div class="flex flex-col">
-												<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Elevation</span>
+																<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Altitude</span>
 												<span class="font-mono text-xs font-bold text-white">{s.elev}</span>
 											</div>
 											<div class="flex flex-col">
-												<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Status</span>
-												<span class="font-mono text-xs font-bold text-white uppercase">Explorable</span>
+																<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">À découvrir</span>
+																<span class="font-mono text-xs font-bold text-white uppercase">Toute l'année</span>
 											</div>
 											<div class="ml-auto h-10 w-10 rounded-full bg-white text-on-secondary-fixed flex items-center justify-center transition-transform hover:scale-110">
 												<span class="material-symbols-outlined text-sm">arrow_outward</span>

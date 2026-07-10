@@ -58,14 +58,14 @@ export function ToursSection() {
 								Prochains <span class="text-primary">Événements</span>
 							</h2>
 							<p class="mt-8 font-body-lg text-on-background font-medium leading-relaxed">
-								Suivez le fil de nos prochaines incursions. Des dates fermes, des groupes restreints et une logistique sans faille pour une immersion totale.
+									Choisissez une date ou racontez-nous votre projet. Nous construisons le bon itinéraire, au bon rythme.
 							</p>
 						</Reveal>
 					</div>
 
 					<Reveal animation="fadeLeft">
 						<a href="/events" class="group flex items-center gap-4 px-8 py-4 rounded-full border border-outline-variant bg-white shadow-sm hover:shadow-xl hover:bg-primary hover:text-white transition-all duration-500">
-							<span class="font-button text-xs tracking-widest font-bold">CALENDRIER COMPLET</span>
+							<span class="font-button text-xs tracking-widest font-bold">VOIR TOUTES LES DATES</span>
 							<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">calendar_month</span>
 						</a>
 					</Reveal>
@@ -87,7 +87,7 @@ export function ToursSection() {
 							<span class="material-symbols-outlined text-3xl text-primary">event_busy</span>
 						</div>
 						<p class="font-h3 text-xl text-on-background/40 uppercase tracking-tight">Aucune expédition planifiée</p>
-						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Revenez bientôt, nouvelles missions en cours</p>
+						<p class="mt-2 font-mono text-[10px] text-on-background/20 tracking-widest uppercase">Écrivez-nous pour créer un départ sur mesure</p>
 					</div>
 				)}
 
@@ -165,7 +165,7 @@ export function ToursSection() {
 														href={`/events/${event.id}`}
 														class="mt-4 flex items-center gap-2 font-button text-xs tracking-widest text-on-background hover:text-primary transition-colors group"
 													>
-														CONSULTER LA FICHE MISSION
+															DÉCOUVRIR L'EXPÉDITION
 														<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">north_east</span>
 													</a>
 												</div>

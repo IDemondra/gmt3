@@ -44,7 +44,7 @@ export function Footer() {
 
 	return (
 		<footer class="relative bg-[#1c1b1b] overflow-hidden text-white">
-			{/* Technical Bridge from Previous Section (Contact or Banner) */}
+				{/* Transition depuis la section contact */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 			</div>
@@ -82,14 +82,14 @@ export function Footer() {
 							</p>
 							
 							<div class="space-y-4">
-								<p class="font-mono text-[10px] text-white/20 uppercase tracking-widest border-b border-white/5 pb-2">Operational Metrics</p>
+								<p class="font-mono text-[10px] text-white/20 uppercase tracking-widest border-b border-white/5 pb-2">GMT+3 en quelques mots</p>
 								<div class="flex items-center justify-between">
 									<span class="text-[10px] text-white/50 uppercase tracking-tighter">Expedition Success</span>
-									<span class="font-mono text-xs text-primary font-bold">99.8%</span>
+									<span class="font-mono text-xs text-primary font-bold">100%</span>
 								</div>
 								<div class="flex items-center justify-between">
 									<span class="text-[10px] text-white/50 uppercase tracking-tighter">Field Personnel</span>
-									<span class="font-mono text-xs text-white">06 ACTIVE</span>
+									<span class="font-mono text-xs text-white">06 GUIDES</span>
 								</div>
 							</div>
 						</Reveal>
@@ -114,7 +114,7 @@ export function Footer() {
 						</Reveal>
 						<Reveal animation="fadeUp" delay={150}>
 							<div>
-								<h4 class="font-mono text-[10px] text-primary mb-8 uppercase tracking-[0.4em] font-black">Intel</h4>
+							<h4 class="font-mono text-[10px] text-primary mb-8 uppercase tracking-[0.4em] font-black">Infos pratiques</h4>
 								<ul class="space-y-4">
 									{infoLinks.map(({ label, href }) => (
 										<li key={label}>
@@ -144,7 +144,7 @@ export function Footer() {
 									<div class="relative">
 										<input
 											type="email"
-											placeholder="ENTER MISSION EMAIL"
+										placeholder="VOTRE ADRESSE EMAIL"
 											class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono tracking-widest text-white placeholder:text-white/10 focus:outline-none focus:border-primary transition-colors uppercase"
 										/>
 									</div>
@@ -157,11 +157,11 @@ export function Footer() {
 					</div>
 				</div>
 
-				{/* ── Technical Footer Bar ── */}
+				{/* Liens légaux et crédits */}
 				<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
 					<div class="flex flex-col md:items-start gap-1">
 						<p class="font-mono text-[9px] text-white/20 uppercase tracking-widest">
-							&copy; {currentYear} GMT+3 OPERATIONAL HQ / DESIGNED BY <a href="https://www.facebook.com/hajarison.raphael" target="_blank" class="text-white/40 hover:text-primary transition-colors">DEMONDRA</a>
+							&copy; {currentYear} GMT+3 MADAGASCAR / CONÇU PAR <a href="https://www.facebook.com/hajarison.raphael" target="_blank" class="text-white/40 hover:text-primary transition-colors">DEMONDRA</a>
 						</p>
 					</div>
 
