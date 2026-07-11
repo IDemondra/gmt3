@@ -1,8 +1,8 @@
-import type { IRepository } from '../repositories/interfaces/IRepository.js';
+import type { ReservationRepository } from '../repositories/ReservationRepository.js';
 import type { NewReservation, Reservation } from '../types/index.js';
 
 export class ReservationService {
-	constructor(private readonly reservationRepo: IRepository<Reservation, NewReservation>) {}
+	constructor(private readonly reservationRepo: ReservationRepository) {}
 
 	async getAll(): Promise<Reservation[]> {
 		return this.reservationRepo.findAll();
@@ -10,6 +10,10 @@ export class ReservationService {
 
 	async getById(id: number): Promise<Reservation | undefined> {
 		return this.reservationRepo.findById(id);
+	}
+
+	async getReservedPlaces(evenementId: number, excludeReservationId?: number): Promise<number> {
+		return this.reservationRepo.getReservedPlaces(evenementId, excludeReservationId);
 	}
 
 	async create(data: NewReservation): Promise<Reservation> {

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../config/database.js';
 import { utilisateurs } from '../models/schema.js';
 import type { IUserRepository } from './interfaces/IUserRepository.js';
@@ -32,5 +32,10 @@ export class UserRepository implements IUserRepository {
 	async delete(id: number): Promise<boolean> {
 		const rows = await db.delete(utilisateurs).where(eq(utilisateurs.id, id)).returning({ id: utilisateurs.id });
 		return rows.length > 0;
+	}
+
+	async countAdmins(): Promise<number> {
+		const rows = await db.select({ value: sql<number>`count(*)` }).from(utilisateurs).where(eq(utilisateurs.role, 'admin'));
+		return Number(rows[0]?.value ?? 0);
 	}
 }

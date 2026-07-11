@@ -21,6 +21,7 @@ import { frDateToTs } from '../../utils/dateFormatter.js';
 
 const DESC_MAX = 1000;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+const ROWS_PER_PAGE = 10;
 
 const toDateInputValue = (date = new Date()) => {
 	if (typeof date === 'string') {
@@ -43,6 +44,7 @@ export function AdminDashboard() {
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
+	const [page, setPage] = useState(0);
 	const [showForm, setShowForm] = useState(false);
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
@@ -121,6 +123,7 @@ export function AdminDashboard() {
 			fd.set('lieu', data.get('lieu') || '');
 			fd.set('difficulte', data.get('difficulte') || '');
 			fd.set('prix', data.get('prix') || '');
+			fd.set('capaciteMax', data.get('capaciteMax') || '');
 			fd.set('heureDepart', data.get('heureDepart') || currentTimeStr);
 			fd.set('dateDepart', data.get('dateDepart') || '');
 			fd.set('heureRetour', data.get('heureRetour') || currentTimeStr);
@@ -183,6 +186,8 @@ export function AdminDashboard() {
 	)
 		.slice()
 		.sort((a, b) => frDateToTs(b.dateDepart || b.date) - frDateToTs(a.dateDepart || a.date));
+	const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
+	const paged = filtered.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
 	return (
 		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
@@ -227,7 +232,7 @@ export function AdminDashboard() {
 										placeholder="Rechercher..."
 										type="text"
 										value={search}
-										onInput={(e) => setSearch(e.currentTarget.value)}
+										onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }}
 									/>
 								</div>
 								<button class="p-2 rounded-lg border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all">
@@ -249,7 +254,7 @@ export function AdminDashboard() {
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-gray-50">
-									{filtered.map((event, i) => (
+									{paged.map((event, i) => (
 										<EventRow key={event.id} event={event} index={i} onEdit={handleEdit} onDelete={(id) => setConfirm({ type: 'delete-event', eventId: id })} onImageClick={(url) => setPreviewImage({ url, title: event.title })} onViewDetails={handleViewDetails} />
 									))}
 								</tbody>
@@ -257,12 +262,12 @@ export function AdminDashboard() {
 						</div>
 
 						<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
-							<span class="text-xs text-gray-400 font-medium">Affichage de {filtered.length} résultats</span>
+							<span class="text-xs text-gray-400 font-medium">{filtered.length === 0 ? 'Aucun résultat' : `${page * ROWS_PER_PAGE + 1}-${Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur ${filtered.length}`}</span>
 							<div class="flex gap-2">
-								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
+								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((current) => current - 1)}>
 									<span class="material-symbols-outlined text-[18px]">chevron_left</span>
 								</button>
-								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled>
+								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((current) => current + 1)}>
 									<span class="material-symbols-outlined text-[18px]">chevron_right</span>
 								</button>
 							</div>
@@ -300,6 +305,7 @@ export function AdminDashboard() {
 			/>
 
 			<FormModal
+				key={editingEvent?.id ?? 'new-event'}
 				open={showForm}
 				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
@@ -339,7 +345,7 @@ export function AdminDashboard() {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="dateDepart">Date départ</label>
-						<input id="dateDepart" name="dateDepart" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={todayStr} defaultValue={editingEvent?.dateDepart ? toDateInputValue(editingEvent.dateDepart) : todayStr} />
+						<input id="dateDepart" name="dateDepart" type="date" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" min={editingEvent ? undefined : todayStr} defaultValue={editingEvent?.dateDepart ? toDateInputValue(editingEvent.dateDepart) : ''} />
 					</div>
 					<div>
 						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="heureDepart">Heure départ</label>
@@ -372,6 +378,10 @@ export function AdminDashboard() {
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
 					<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: 150000" defaultValue={editingEvent?.prix ?? editingEvent?.price ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />
+				</div>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="capaciteMax">Capacité maximale</label>
+					<input id="capaciteMax" name="capaciteMax" type="number" min="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Illimitée" defaultValue={editingEvent?.capaciteMax ?? ''} />
 				</div>
 				<div class="flex items-center gap-3">
 					<input id="estPublie" name="estPublie" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary/20 cursor-pointer" defaultChecked={editingEvent?.estPublie || editingEvent?.published || false} />

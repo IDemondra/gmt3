@@ -1,33 +1,46 @@
 import { ReservationRepository } from '../repositories/ReservationRepository.js';
 import { ReservationService } from '../services/ReservationService.js';
 import { ClientRepository } from '../repositories/ClientRepository.js';
+import { EvenementRepository } from '../repositories/EvenementRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Reservation } from '../types/index.js';
-import { formatDateToDDMMYYYY } from '../utils/date.js';
+import { formatDateFields, parseCalendarDate } from '../utils/date.js';
+import { parseId, toPositiveInteger } from '../utils/validation.js';
 
 type ReservationBody = {
 	clientId?: number;
 	evenementId?: number;
 	nombrePlaces?: number;
 	dateReservation?: string;
+	statut?: 'en_attente' | 'confirmee' | 'annulee';
 	nom?: string;
 	contact?: string;
 };
 
 function formatReservationDates<T extends { dateReservation?: string | null }>(reservation: T): T {
-	return {
-		...reservation,
-		dateReservation: formatDateToDDMMYYYY(reservation.dateReservation),
-	};
-}
-
-function toPositiveInteger(value: unknown): number | null {
-	const numericValue = Number(value);
-	return Number.isInteger(numericValue) && numericValue > 0 ? numericValue : null;
+	return formatDateFields(reservation, ['dateReservation']);
 }
 
 const reservationService = new ReservationService(new ReservationRepository());
 const clientRepository = new ClientRepository();
+const evenementRepository = new EvenementRepository();
+
+async function validateAvailability(evenementId: number, nombrePlaces: number, excludeReservationId?: number): Promise<string | null> {
+	const evenement = await evenementRepository.findById(evenementId);
+	if (!evenement) return 'EVENEMENT_INTROUVABLE';
+	if (!evenement.estPublie || parseCalendarDate(evenement.dateDepart || evenement.dateEvenement) < new Date()) return 'EVENEMENT_INDISPONIBLE';
+	if (evenement.capaciteMax !== null && evenement.capaciteMax !== undefined) {
+		const reserved = await reservationService.getReservedPlaces(evenementId, excludeReservationId);
+		if (reserved + nombrePlaces > evenement.capaciteMax) return 'CAPACITE_INSUFFISANTE';
+	}
+	return null;
+}
+
+function availabilityMessage(error: string): string {
+	if (error === 'CAPACITE_INSUFFISANTE') return 'Capacité maximale atteinte pour cet événement';
+	if (error === 'EVENEMENT_INDISPONIBLE') return 'Les inscriptions sont closes pour cet événement';
+	return error;
+}
 
 export const ReservationController = {
 	async getAll(req: BunRequest): Promise<Response> {
@@ -39,8 +52,8 @@ export const ReservationController = {
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const reservation = await reservationService.getById(id);
 		if (!reservation) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });
@@ -59,22 +72,28 @@ export const ReservationController = {
 				message: 'Veuillez remplir tous les champs obligatoires'
 			}, { status: 400 });
 		}
+		const availabilityError = await validateAvailability(evenementId, nombrePlaces);
+		if (availabilityError) return Response.json({ error: availabilityError, message: availabilityMessage(availabilityError) }, { status: availabilityError === 'EVENEMENT_INTROUVABLE' ? 404 : 409 });
 
 		let clientId = toPositiveInteger(body.clientId);
+		if (clientId && !(await clientRepository.findById(clientId))) {
+			return Response.json({ error: 'CLIENT_INTROUVABLE', message: 'Client introuvable' }, { status: 404 });
+		}
 
 		// Si clientId n'est pas fourni, créer ou récupérer un client avec nom et contact
 		if (!clientId) {
-			if (!body.nom || !body.contact) {
+			const contact = body.contact?.replace(/\D/g, '');
+			if (!body.nom || !contact) {
 				return Response.json({
 					error: 'CHAMPS_OBLIGATOIRES_MANQUANTS',
 					message: 'Le nom et le contact sont obligatoires'
 				}, { status: 400 });
 			}
-			const existingClient = await clientRepository.findByContact(body.contact);
+			const existingClient = await clientRepository.findByContact(contact);
 			if (existingClient) {
 				clientId = existingClient.id;
 			} else {
-				const newClient = await clientRepository.create({ nom: body.nom, contact: body.contact });
+				const newClient = await clientRepository.create({ nom: body.nom.trim(), contact });
 				clientId = newClient.id;
 			}
 		}
@@ -83,6 +102,7 @@ export const ReservationController = {
 			clientId,
 			evenementId,
 			nombrePlaces,
+			statut: req.user ? body.statut ?? 'confirmee' : 'en_attente',
 			dateReservation: body.dateReservation || new Date().toISOString(),
 		});
 
@@ -93,34 +113,32 @@ export const ReservationController = {
 	},
 
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const body = await req.json() as ReservationBody;
+		const allowedFields = new Set(['nombrePlaces', 'statut']);
+		if (Object.keys(body).some((field) => !allowedFields.has(field))) {
+			return Response.json({ error: 'CLIENT_ET_EVENEMENT_NON_MODIFIABLES', message: 'Client et événement ne sont pas modifiables' }, { status: 400 });
+		}
 		const data: Partial<Reservation> = {};
-
-		if (body.clientId !== undefined) {
-			const clientId = toPositiveInteger(body.clientId);
-			if (!clientId) return Response.json({ error: 'CLIENT_ID_INVALIDE' }, { status: 400 });
-			data.clientId = clientId;
-		}
-
-		if (body.evenementId !== undefined) {
-			const evenementId = toPositiveInteger(body.evenementId);
-			if (!evenementId) return Response.json({ error: 'EVENEMENT_ID_INVALIDE' }, { status: 400 });
-			data.evenementId = evenementId;
-		}
 
 		if (body.nombrePlaces !== undefined) {
 			const nombrePlaces = toPositiveInteger(body.nombrePlaces);
 			if (!nombrePlaces) return Response.json({ error: 'NOMBRE_PLACES_INVALIDE' }, { status: 400 });
 			data.nombrePlaces = nombrePlaces;
 		}
+		if (body.statut !== undefined && !['en_attente', 'confirmee', 'annulee'].includes(body.statut)) return Response.json({ error: 'STATUT_INVALIDE' }, { status: 400 });
+		if (body.statut !== undefined) data.statut = body.statut;
 
-		if (body.dateReservation !== undefined) {
-			data.dateReservation = body.dateReservation || new Date().toISOString();
+		const current = await reservationService.getById(id);
+		if (!current) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });
+		const targetEventId = current.evenementId;
+		const targetPlaces = data.nombrePlaces ?? current.nombrePlaces;
+		if (targetEventId && targetPlaces && data.statut !== 'annulee') {
+			const availabilityError = await validateAvailability(targetEventId, targetPlaces, id);
+			if (availabilityError) return Response.json({ error: availabilityError, message: availabilityMessage(availabilityError) }, { status: 409 });
 		}
-
 		const reservation = await reservationService.update(id, data);
 		if (!reservation) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });
 
@@ -128,8 +146,8 @@ export const ReservationController = {
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const ok = await reservationService.delete(id);
 		if (!ok) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });

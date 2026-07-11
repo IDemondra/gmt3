@@ -6,6 +6,7 @@ import {
 	photosEvenement,
 	reservations,
 	avis,
+	journalAudit,
 } from '../models/schema.js';
 
 // ── Infered types from Drizzle schema ──
@@ -26,3 +27,5 @@ export type NewReservation = InferInsertModel<typeof reservations>;
 
 export type Avis = InferSelectModel<typeof avis>;
 export type NewAvis = InferInsertModel<typeof avis>;
+
+export type JournalAudit = InferSelectModel<typeof journalAudit>;

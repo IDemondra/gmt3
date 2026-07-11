@@ -7,4 +7,5 @@ export interface IUserRepository {
 	create(data: Omit<Utilisateur, 'id' | 'dateCreation'>): Promise<Utilisateur>;
 	update(id: number, data: Partial<Utilisateur>): Promise<Utilisateur | undefined>;
 	delete(id: number): Promise<boolean>;
+	countAdmins(): Promise<number>;
 }

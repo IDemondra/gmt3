@@ -6,6 +6,7 @@ import { db } from '../config/database.js';
 import { refreshTokens } from '../models/schema.js';
 import type { IUserRepository } from '../repositories/interfaces/IUserRepository.js';
 import type { Utilisateur } from '../types/index.js';
+import '../config/env.js';
 
 const JWT_SECRET = Bun.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = Bun.env.JWT_REFRESH_SECRET;
@@ -41,7 +42,7 @@ export class UserService {
 		}
 		const salt = await bcrypt.genSalt(12);
 		const hashed = await bcrypt.hash(data.motDePasse, salt);
-		return this.userRepo.create({ nom: data.nom ?? null, nomUtilisateur: data.nomUtilisateur, motDePasse: hashed, email: data.email ?? null, role: data.role ?? 'editeur' });
+		return this.userRepo.create({ nom: data.nom ?? null, nomUtilisateur: data.nomUtilisateur, motDePasse: hashed, email: data.email ?? null, role: data.role ?? 'editeur', actif: true, derniereConnexion: null });
 	}
 
 	async update(id: number, data: Partial<Utilisateur>): Promise<Utilisateur | undefined> {
@@ -52,6 +53,10 @@ export class UserService {
 		return this.userRepo.update(id, data);
 	}
 
+	async countAdmins(): Promise<number> {
+		return this.userRepo.countAdmins();
+	}
+
 	async delete(id: number): Promise<boolean> {
 		return this.userRepo.delete(id);
 	}
@@ -59,9 +64,11 @@ export class UserService {
 	async authenticate(nomUtilisateur: string, motDePasse: string): Promise<{ user: Omit<Utilisateur, 'motDePasse'>; accessToken: string; refreshToken: string }> {
 		const user = await this.userRepo.findByNomUtilisateur(nomUtilisateur);
 		if (!user) throw new Error('IDENTIFIANTS_INVALIDES');
+		if (!user.actif) throw new Error('COMPTE_DESACTIVE');
 
 		const match = await bcrypt.compare(motDePasse, user.motDePasse);
 		if (!match) throw new Error('IDENTIFIANTS_INVALIDES');
+		await this.userRepo.update(user.id, { derniereConnexion: new Date().toISOString() });
 
 		const payload = { id: user.id, nomUtilisateur: user.nomUtilisateur, role: user.role };
 		const accessToken = jwt.sign(payload, _JWT_SECRET, { expiresIn: '15m' });
@@ -92,10 +99,10 @@ export class UserService {
 			await db.delete(refreshTokens).where(eq(refreshTokens.tokenHash, hash));
 
 			const user = await this.userRepo.findById(decoded.id);
-			if (!user) return null;
+			if (!user || !user.actif) return null;
 
 			// Issue new tokens
-			const payload = { id: decoded.id, nomUtilisateur: decoded.nomUtilisateur, role: decoded.role };
+			const payload = { id: user.id, nomUtilisateur: user.nomUtilisateur, role: user.role };
 			const accessToken = jwt.sign(payload, _JWT_SECRET, { expiresIn: '15m' });
 			const newRefreshToken = jwt.sign(payload, _JWT_REFRESH_SECRET, { expiresIn: '7d' });
 

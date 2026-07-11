@@ -1,6 +1,6 @@
 import type { IRepository } from './interfaces/IRepository.js';
 import type { Reservation, NewReservation } from '../types/index.js';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne, sql } from 'drizzle-orm';
 import { db } from '../config/database.js';
 import { reservations } from '../models/schema.js';
 
@@ -14,6 +14,15 @@ export class ReservationRepository implements IRepository<Reservation, NewReserv
     }
     async findByClientId(clientId: number): Promise<Reservation[]> {
         return db.select().from(reservations).where(eq(reservations.clientId, clientId));
+    }
+    async getReservedPlaces(evenementId: number, excludeReservationId?: number): Promise<number> {
+        const conditions = [eq(reservations.evenementId, evenementId), ne(reservations.statut, 'annulee')];
+        if (excludeReservationId) conditions.push(ne(reservations.id, excludeReservationId));
+        const rows = await db
+            .select({ value: sql<number>`coalesce(sum(${reservations.nombrePlaces}), 0)` })
+            .from(reservations)
+            .where(and(...conditions));
+        return Number(rows[0]?.value ?? 0);
     }
     async create(data: NewReservation): Promise<Reservation> {
         const rows = await db.insert(reservations).values(data).returning();
