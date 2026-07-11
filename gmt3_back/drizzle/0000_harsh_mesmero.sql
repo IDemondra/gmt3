@@ -1,4 +1,4 @@
-CREATE TABLE `avis` (
+CREATE TABLE IF NOT EXISTS `avis` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`evenement_id` integer NOT NULL,
 	`nom` text(100) NOT NULL,
@@ -10,14 +10,14 @@ CREATE TABLE `avis` (
 	FOREIGN KEY (`evenement_id`) REFERENCES `evenements`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `clients` (
+CREATE TABLE IF NOT EXISTS `clients` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`nom` text(100) NOT NULL,
 	`contact` text(100) NOT NULL,
 	`date_ajout` text
 );
 --> statement-breakpoint
-CREATE TABLE `evenements` (
+CREATE TABLE IF NOT EXISTS `evenements` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`titre` text(150) NOT NULL,
 	`description` text,
@@ -35,7 +35,7 @@ CREATE TABLE `evenements` (
 	`date_creation` text
 );
 --> statement-breakpoint
-CREATE TABLE `journal_audit` (
+CREATE TABLE IF NOT EXISTS `journal_audit` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`utilisateur_id` integer,
 	`action` text(20) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE `journal_audit` (
 	FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE TABLE `photos_evenement` (
+CREATE TABLE IF NOT EXISTS `photos_evenement` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`evenement_id` integer NOT NULL,
 	`url` text(255) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE `photos_evenement` (
 	FOREIGN KEY (`evenement_id`) REFERENCES `evenements`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `refresh_tokens` (
+CREATE TABLE IF NOT EXISTS `refresh_tokens` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`token_hash` text(64) NOT NULL,
 	`utilisateur_id` integer NOT NULL,
@@ -62,8 +62,8 @@ CREATE TABLE `refresh_tokens` (
 	FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `refresh_tokens_token_hash_unique` ON `refresh_tokens` (`token_hash`);--> statement-breakpoint
-CREATE TABLE `reservations` (
+CREATE UNIQUE INDEX IF NOT EXISTS `refresh_tokens_token_hash_unique` ON `refresh_tokens` (`token_hash`);--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS `reservations` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`client_id` integer,
 	`evenement_id` integer,
@@ -75,7 +75,7 @@ CREATE TABLE `reservations` (
 	FOREIGN KEY (`evenement_id`) REFERENCES `evenements`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `utilisateurs` (
+CREATE TABLE IF NOT EXISTS `utilisateurs` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`nom` text(100),
 	`nom_utilisateur` text(50) NOT NULL,
@@ -87,4 +87,4 @@ CREATE TABLE `utilisateurs` (
 	`date_creation` text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `utilisateurs_nom_utilisateur_unique` ON `utilisateurs` (`nom_utilisateur`);
+CREATE UNIQUE INDEX IF NOT EXISTS `utilisateurs_nom_utilisateur_unique` ON `utilisateurs` (`nom_utilisateur`);
