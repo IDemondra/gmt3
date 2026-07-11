@@ -19,6 +19,22 @@ if (!existsSync(DB_PATH)) {
 }
 
 migrate(db, { migrationsFolder: resolve(import.meta.dir, 'drizzle') });
+
+// Compatibilité bases historiques: migrations initiales créaient déjà les tables
+// mais ne pouvaient pas ajouter les colonnes introduites ensuite.
+const ensureColumn = (table: string, column: string, definition: string) => {
+	const columns = sqlite.query(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
+	if (!columns.some((entry) => entry.name === column)) {
+		sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+		console.log(`[DB] Added missing column ${table}.${column}`);
+	}
+};
+
+ensureColumn('reservations', 'statut', "TEXT DEFAULT 'confirmee' NOT NULL");
+ensureColumn('reservations', 'montant', 'REAL');
+ensureColumn('evenements', 'capacite_max', 'INTEGER');
+ensureColumn('utilisateurs', 'actif', 'INTEGER DEFAULT true NOT NULL');
+ensureColumn('utilisateurs', 'derniere_connexion', 'TEXT');
 console.log('[DB] Migrations applied');
 
 Bun.serve({
