@@ -5,12 +5,16 @@ import { AvisRepository } from '../repositories/AvisRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Evenement } from '../types/index.js';
 import { buildGalleryUploadPlan } from '../utils/photoGallery.js';
-import { formatDateToDDMMYYYY } from '../utils/date.js';
+import { formatDateFields } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
 import heicConvert from 'heic-convert';
 import { optimizeImage } from '../utils/imageOptimize.js';
+import { parseId } from '../utils/validation.js';
+import { db } from '../config/database.js';
+import { reservations } from '../models/schema.js';
+import { and, eq, ne, sql } from 'drizzle-orm';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
@@ -42,13 +46,7 @@ async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: stri
 }
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {
-	return {
-		...e,
-		dateEvenement: formatDateToDDMMYYYY(e.dateEvenement),
-		dateDepart: formatDateToDDMMYYYY(e.dateDepart),
-		dateRetour: formatDateToDDMMYYYY(e.dateRetour),
-		dateCreation: formatDateToDDMMYYYY(e.dateCreation),
-	};
+	return formatDateFields(e, ['dateEvenement', 'dateDepart', 'dateRetour', 'dateCreation']);
 }
 
 function calculateDuration(e: { dateDepart?: string | null; heureDepart?: string | null; dateRetour?: string | null; heureRetour?: string | null }): string | null {
@@ -66,6 +64,14 @@ function calculateDuration(e: { dateDepart?: string | null; heureDepart?: string
 	} catch {
 		return null;
 	}
+}
+
+function validEventData(input: { titre?: string | null; dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; prix?: number | null; capaciteMax?: number | null }): boolean {
+	if (input.titre !== undefined && (input.titre === null || input.titre.trim().length < 3 || input.titre.length > 150)) return false;
+	if (input.dateEvenement !== undefined && (input.dateEvenement === null || Number.isNaN(new Date(input.dateEvenement).getTime()))) return false;
+	if (input.dateDepart && input.dateRetour && new Date(input.dateRetour) < new Date(input.dateDepart)) return false;
+	if (input.prix !== undefined && input.prix !== null && (!Number.isFinite(input.prix) || input.prix < 0)) return false;
+	return input.capaciteMax === undefined || input.capaciteMax === null || (Number.isInteger(input.capaciteMax) && input.capaciteMax > 0);
 }
 
 const UPLOADS_ROOT = resolve(import.meta.dir, '..', '..', 'uploads', 'evenements');
@@ -123,7 +129,8 @@ async function serializeEvenement(id: number) {
 	const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
 	const avis = await avisRepository.findApprovedByEvenementId(id);
 	const formatted = formatEvenementDates(item);
-	return { ...formatted, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, duration: calculateDuration(item) };
+	const reservationRows = await db.select({ places: sql<number>`coalesce(sum(${reservations.nombrePlaces}), 0)` }).from(reservations).where(and(ne(reservations.statut, 'annulee'), eq(reservations.evenementId, id)));
+	return { ...formatted, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, placesReservees: Number(reservationRows[0]?.places ?? 0), duration: calculateDuration(item) };
 }
 
 async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
@@ -164,6 +171,8 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 export const EvenementController = {
 	async getAll(req: BunRequest): Promise<Response> {
 		const items = await evenementService.getAll();
+		const reservationTotals = await db.select({ evenementId: reservations.evenementId, places: sql<number>`coalesce(sum(${reservations.nombrePlaces}), 0)` }).from(reservations).where(ne(reservations.statut, 'annulee')).groupBy(reservations.evenementId);
+		const placesByEvent = new Map(reservationTotals.map((row) => [row.evenementId, Number(row.places)]));
 		const allPhotos = await photoRepository.findAll();
 		const photosByEvent = new Map<number, typeof allPhotos>();
 		for (const photo of allPhotos) {
@@ -192,6 +201,7 @@ export const EvenementController = {
 					avis,
 					noteMoyenne: avgNote(avis),
 					nombreAvis: avis.length,
+					placesReservees: placesByEvent.get(item.id) ?? 0,
 				};
 			}),
 			message: `${items.length} événement(s) trouvé(s)`
@@ -199,8 +209,8 @@ export const EvenementController = {
 	},
 
 	async getById(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 
 		const item = await serializeEvenement(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
@@ -209,8 +219,8 @@ export const EvenementController = {
 	},
 
 	async getPhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
@@ -220,8 +230,8 @@ export const EvenementController = {
 	},
 
 	async replacePhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
@@ -243,13 +253,15 @@ export const EvenementController = {
 		const difficulte = fd.get('difficulte') as string || undefined;
 		const prixStr = fd.get('prix') as string;
 		const prix = prixStr ? parseFloat(prixStr) : null;
+		const capaciteMaxStr = fd.get('capaciteMax') as string;
+		const capaciteMax = capaciteMaxStr ? Number(capaciteMaxStr) : null;
 		const heureDepart = fd.get('heureDepart') as string || undefined;
 		const dateDepart = fd.get('dateDepart') as string || undefined;
 		const heureRetour = fd.get('heureRetour') as string || undefined;
 		const dateRetour = fd.get('dateRetour') as string || undefined;
 		const estPublie = fd.get('estPublie') === 'on';
 
-		if (!titre || !dateEvenement) {
+		if (!titre || !dateEvenement || !validEventData({ titre, dateEvenement, dateDepart, dateRetour, prix, capaciteMax })) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
 		}
 
@@ -264,6 +276,7 @@ export const EvenementController = {
 			lieu: lieu ?? null,
 			difficulte: difficulte ?? null,
 			prix,
+			capaciteMax,
 			imagePrincipale: null,
 			estPublie,
 		});
@@ -291,8 +304,8 @@ export const EvenementController = {
 	},
 
 	async update(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 
 		const fd = await req.formData();
 		const data: Partial<Evenement> = {};
@@ -310,7 +323,12 @@ export const EvenementController = {
 		if (fd.get('dateRetour')) data.dateRetour = fd.get('dateRetour') as string;
 		const prixStr = fd.get('prix') as string;
 		if (prixStr) data.prix = parseFloat(prixStr);
+		if (fd.has('capaciteMax')) {
+			const value = fd.get('capaciteMax') as string;
+			data.capaciteMax = value ? Number(value) : null;
+		}
 		data.estPublie = fd.get('estPublie') === 'on';
+		if (!validEventData(data)) return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
 
 		const imageFile = fd.get('imagePrincipale') as File | null;
 		if (imageFile && imageFile.size > 0) {
@@ -337,8 +355,8 @@ export const EvenementController = {
 	},
 
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		const ok = await evenementService.delete(id);
 		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		return Response.json({ success: true, message: 'Événement supprimé avec succès' });

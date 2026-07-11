@@ -153,7 +153,7 @@ export function AdminClients() {
 								</thead>
 								<tbody class="divide-y divide-gray-50">
 									{paged.map((c, i) => (
-										<tr key={c.id} class="hover:bg-gray-50/50 transition-colors">
+										<tr key={c.id} onClick={() => handleEdit(c)} class="cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 hover:bg-primary/5">
 											<td class="px-6 py-4 text-xs text-gray-500 font-medium">{page * ROWS_PER_PAGE + i + 1}</td>
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{c.nom}</td>
 											<td class="px-6 py-4 text-sm text-gray-600 font-mono">{c.contact}</td>

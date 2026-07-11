@@ -13,6 +13,11 @@ import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const ROWS_PER_PAGE = 10;
+const RESERVATION_STATUS_STYLES = {
+	confirmee: { label: 'Confirmée', cls: 'bg-green-50 text-green-700 border-green-200', dot: 'bg-green-500' },
+	en_attente: { label: 'En attente', cls: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' },
+	annulee: { label: 'Annulée', cls: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' },
+};
 
 export function AdminReservations() {
 	const { route } = useLocation();
@@ -29,6 +34,7 @@ export function AdminReservations() {
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; id?: number } | null} */(null));
 	const [formClientId, setFormClientId] = useState('');
 	const [formEvenementId, setFormEvenementId] = useState('');
+	const [formStatut, setFormStatut] = useState('confirmee');
 	const [formPlaces, setFormPlaces] = useState(1);
 	const [formError, setFormError] = useState('');
 	const [page, setPage] = useState(0);
@@ -58,13 +64,20 @@ export function AdminReservations() {
 	const clientMap = /** @type {Record<number, string>} */({});
 	clients.forEach((c) => { clientMap[c.id] = c.nom; });
 
-	const evenementMap = /** @type {Record<number, string>} */({});
-	evenements.forEach((e) => { evenementMap[e.id] = e.titre; });
+	const evenementMap = /** @type {Record<number, { titre: string; date: string }>} */({});
+	evenements.forEach((e) => {
+		evenementMap[e.id] = {
+			titre: e.titre,
+			date: e.dateDepart || e.dateEvenement || 'Date inconnue',
+			capaciteMax: e.capaciteMax,
+		};
+	});
 
 	const handleCreate = () => {
 		setEditing(null);
 		setFormClientId('');
 		setFormEvenementId('');
+		setFormStatut('confirmee');
 		setFormPlaces(1);
 		setFormError('');
 		setShowForm(true);
@@ -74,6 +87,7 @@ export function AdminReservations() {
 		setEditing(r);
 		setFormClientId(String(r.clientId));
 		setFormEvenementId(String(r.evenementId));
+		setFormStatut(r.statut || 'confirmee');
 		setFormPlaces(r.nombrePlaces ?? 1);
 		setFormError('');
 		setShowForm(true);
@@ -85,12 +99,12 @@ export function AdminReservations() {
 		const evenementId = Number(formEvenementId);
 		const nombrePlaces = Number(formPlaces);
 
-		if (!clientId || !evenementId || nombrePlaces < 1) {
+		if ((!editing && (!clientId || !evenementId)) || nombrePlaces < 1) {
 			setFormError('Tous les champs sont obligatoires.');
 			return;
 		}
 
-		const data = { clientId, evenementId, nombrePlaces };
+		const data = editing ? { nombrePlaces, statut: formStatut } : { clientId, evenementId, nombrePlaces, statut: formStatut };
 		try {
 			if (editing) {
 				const updated = await updateReservationApi(accessToken.value, editing.id, data);
@@ -164,17 +178,32 @@ export function AdminReservations() {
 										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Client</th>
 										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Événement</th>
 										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Places</th>
+										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Statut</th>
 										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Date</th>
 										<th class="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-gray-50">
 									{paged.map((r, i) => (
-										<tr key={r.id} class="hover:bg-gray-50/50 transition-colors">
+										<tr key={r.id} onClick={() => handleEdit(r)} class="cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 hover:bg-primary/5">
 											<td class="px-6 py-4 text-xs text-gray-500 font-medium">{page * ROWS_PER_PAGE + i + 1}</td>
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{clientMap[r.clientId] || '—'}</td>
-											<td class="px-6 py-4 text-sm text-gray-600">{evenementMap[r.evenementId] || '—'}</td>
+											<td class="px-6 py-4 text-sm text-gray-600">
+												{evenementMap[r.evenementId] ? (
+													<div class="flex flex-col gap-0.5">
+														<span class="font-semibold text-gray-900">{evenementMap[r.evenementId].titre}</span>
+														<span class="text-xs text-gray-400">Départ : {evenementMap[r.evenementId].date}</span>
+														<span class="text-xs text-gray-500">Places : {r.nombrePlaces} / {evenementMap[r.evenementId].capaciteMax ?? 'Illimitée'}</span>
+													</div>
+												) : '—'}
+											</td>
 											<td class="px-6 py-4 text-sm font-mono text-gray-900">{r.nombrePlaces}</td>
+											<td class="px-6 py-4">
+												{(() => {
+													const status = RESERVATION_STATUS_STYLES[r.statut] || RESERVATION_STATUS_STYLES.confirmee;
+													return <span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${status.cls}`}><span class={`w-1.5 h-1.5 rounded-full ${status.dot}`} />{status.label}</span>;
+												})()}
+											</td>
 											<td class="px-6 py-4 text-sm text-gray-600">{r.dateReservation || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
@@ -185,7 +214,7 @@ export function AdminReservations() {
 										</tr>
 									))}
 									{paged.length === 0 && (
-										<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">Aucune réservation trouvée.</td></tr>
+										<tr><td colspan="7" class="px-6 py-12 text-center text-gray-400 text-sm">Aucune réservation trouvée.</td></tr>
 									)}
 								</tbody>
 							</table>
@@ -218,7 +247,19 @@ export function AdminReservations() {
 							<button onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all"><span class="material-symbols-outlined">close</span></button>
 						</div>
 						<form onSubmit={handleSubmit} class="space-y-6">
-							<div>
+							{editing ? (
+								<div class="grid grid-cols-2 gap-4">
+									<div class="rounded-lg bg-gray-50 border border-gray-100 px-4 py-3">
+										<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Client</p>
+										<p class="mt-1 text-sm font-semibold text-gray-700">{clientMap[editing.clientId] || '—'}</p>
+									</div>
+									<div class="rounded-lg bg-gray-50 border border-gray-100 px-4 py-3">
+										<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Événement</p>
+																<p class="mt-1 text-sm font-semibold text-gray-700">{evenementMap[editing.evenementId]?.titre || '—'}</p>
+																<p class="text-xs text-gray-400">Départ : {evenementMap[editing.evenementId]?.date || '—'}</p>
+									</div>
+								</div>
+							) : <div>
 								<SearchableSelect
 									id="clientId"
 									label="Client"
@@ -228,8 +269,8 @@ export function AdminReservations() {
 									value={formClientId}
 									onChange={(val) => setFormClientId(val)}
 								/>
-							</div>
-							<div>
+							</div>}
+							{!editing && <div>
 								<SearchableSelect
 									id="evenementId"
 									label="Événement"
@@ -239,6 +280,14 @@ export function AdminReservations() {
 									value={formEvenementId}
 									onChange={(val) => setFormEvenementId(val)}
 								/>
+							</div>}
+							<div>
+								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="statut">Statut</label>
+								<select id="statut" name="statut" value={formStatut} onInput={(e) => setFormStatut(e.currentTarget.value)} class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+									<option value="confirmee">Confirmée</option>
+									<option value="en_attente">En attente</option>
+									<option value="annulee">Annulée</option>
+								</select>
 							</div>
 							<div>
 								<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="nombrePlaces">Nombre de personne</label>

@@ -197,12 +197,16 @@ export function EventDetail({ params }) {
 		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),
 		badge: 'EXPEDITION',
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
+		placesReservees: event.placesReservees ?? 0,
+		capaciteMax: event.capaciteMax ?? null,
 		slug: event.id,
 	};
 
 	const status = getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement);
 	const isPast = status === 'past';
 	const isOngoing = status === 'ongoing';
+	const placesRestantes = normalizedEvent.capaciteMax === null ? null : Math.max(0, normalizedEvent.capaciteMax - normalizedEvent.placesReservees);
+	const isFull = placesRestantes === 0;
 	const showAvis = isPast || (event.avis || []).length > 0;
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
@@ -333,6 +337,11 @@ export function EventDetail({ params }) {
 										<div class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/15 px-6 py-4 font-button text-button text-on-primary">
 											EN COURS, INSCRIPTIONS CLOSES
 											<span class="material-symbols-outlined text-[18px]">lock</span>
+										</div>
+									) : isFull ? (
+										<div class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-red-400/40 bg-red-500/15 px-6 py-4 font-button text-button text-on-primary">
+											PLACES COMPLÈTES
+											<span class="material-symbols-outlined text-[18px]">block</span>
 										</div>
 									) : (
 										<button
@@ -477,8 +486,13 @@ export function EventDetail({ params }) {
 											</a>
 										) : isOngoing ? (
 											<div class="inline-flex items-center justify-center gap-2 rounded-2xl border border-green-400/40 bg-green-500/10 px-5 py-4 font-button text-button text-secondary">
-												EN COURS, INSCRIPTIONS CLOSES
-												<span class="material-symbols-outlined text-[18px]">lock</span>
+											EN COURS, INSCRIPTIONS CLOSES
+											<span class="material-symbols-outlined text-[18px]">lock</span>
+										</div>
+										) : isFull ? (
+											<div class="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/40 bg-red-500/10 px-5 py-4 font-button text-button text-secondary">
+												PLACES COMPLÈTES
+												<span class="material-symbols-outlined text-[18px]">block</span>
 											</div>
 										) : (
 											<button
@@ -633,6 +647,11 @@ export function EventDetail({ params }) {
 							INSCRIPTIONS CLOSES
 							<span class="material-symbols-outlined text-[18px]">lock</span>
 						</div>
+					) : isFull ? (
+						<div class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-red-400/40 bg-red-500/15 px-6 py-4 font-button text-button text-on-primary">
+											PLACES COMPLÈTES
+							<span class="material-symbols-outlined text-[18px]">block</span>
+						</div>
 					) : (
 						<button type="button" onClick={() => setBookingModal(true)} class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 font-button text-button text-on-primary transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer">
 							PARTICIPER
@@ -696,11 +715,14 @@ export function EventDetail({ params }) {
 							</div>
 							<div>
 								<label class="text-sm font-semibold text-gray-700 block mb-2" for="nombrePlaces">Nombre de personne</label>
+								<p class={`text-xs mb-2 ${placesRestantes === 0 ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
+									{placesRestantes === null ? 'Places disponibles : illimitées' : placesRestantes === 0 ? 'Événement complet' : `${placesRestantes} place(s) restante(s)`}
+								</p>
 								<input
 									id="nombrePlaces"
 									type="number"
 									min="1"
-									max="10"
+									max={placesRestantes ?? 10}
 									value={bookingData.nombrePlaces}
 									onInput={(e) => setBookingData({ ...bookingData, nombrePlaces: parseInt(e.currentTarget.value, 10) || 1 })}
 									class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
@@ -719,9 +741,9 @@ export function EventDetail({ params }) {
 								<button
 									type="submit"
 									class="px-5 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-50"
-									disabled={bookingLoading}
+									disabled={bookingLoading || placesRestantes === 0}
 								>
-									{bookingLoading ? 'En cours...' : 'Confirmer'}
+									{bookingLoading ? 'En cours...' : placesRestantes === 0 ? 'Complet' : 'Confirmer'}
 								</button>
 							</div>
 						</form>

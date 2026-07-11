@@ -10,7 +10,7 @@ export async function reservationsApi(token) {
 
 /**
  * @param {string} token
- * @param {{ clientId: number; evenementId: number; nombrePlaces: number }} data
+ * @param {{ clientId: number; evenementId: number; nombrePlaces: number; statut?: 'en_attente'|'confirmee'|'annulee' }} data
  * @returns {Promise<Object>}
  */
 export async function createReservationApi(token, data) {
@@ -20,7 +20,7 @@ export async function createReservationApi(token, data) {
 /**
  * @param {string} token
  * @param {number} id
- * @param {{ clientId?: number; evenementId?: number; nombrePlaces?: number }} data
+ * @param {{ clientId?: number; evenementId?: number; nombrePlaces?: number; statut?: 'en_attente'|'confirmee'|'annulee' }} data
  * @returns {Promise<Object>}
  */
 export async function updateReservationApi(token, id, data) {

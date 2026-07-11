@@ -2,11 +2,12 @@ import { AvisService } from '../services/AvisService.js';
 import { AvisRepository } from '../repositories/AvisRepository.js';
 import { EvenementRepository } from '../repositories/EvenementRepository.js';
 import type { BunRequest } from '../types/http.js';
-import { formatDateToDDMMYYYY } from '../utils/date.js';
+import { formatDateFields, parseCalendarDate } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
 import { optimizeImage } from '../utils/imageOptimize.js';
+import { parseId, toPositiveInteger } from '../utils/validation.js';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -16,12 +17,7 @@ const avisService = new AvisService(new AvisRepository());
 const evenementRepository = new EvenementRepository();
 
 function formatAvisDates<T extends { dateCreation?: string | null }>(a: T): T {
-	return { ...a, dateCreation: formatDateToDDMMYYYY(a.dateCreation) };
-}
-
-function toPositiveInteger(value: unknown): number | null {
-	const n = Number(value);
-	return Number.isInteger(n) && n > 0 ? n : null;
+	return formatDateFields(a, ['dateCreation']);
 }
 
 async function storeAvisPhoto(evenementId: number, file: File): Promise<string | null> {
@@ -57,7 +53,7 @@ export const AvisController = {
 
 		// On ne peut donner un avis que sur une expédition déjà passée.
 		const refDate = evenement.dateDepart || evenement.dateEvenement;
-		const eventDate = refDate ? new Date(refDate) : null;
+		const eventDate = refDate ? parseCalendarDate(refDate) : null;
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		if (!eventDate || Number.isNaN(eventDate.getTime()) || eventDate >= today) {
@@ -100,8 +96,8 @@ export const AvisController = {
 
 	// ── Admin : approuver ──
 	async approve(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 		const updated = await avisService.approve(id);
 		if (!updated) return Response.json({ error: 'AVIS_INTROUVABLE' }, { status: 404 });
 		return Response.json({ ...formatAvisDates(updated), message: 'Avis approuvé' });
@@ -109,8 +105,8 @@ export const AvisController = {
 
 	// ── Admin : supprimer ──
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = parseId(params.id);
+		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
 		const ok = await avisService.delete(id);
 		if (!ok) return Response.json({ error: 'AVIS_INTROUVABLE' }, { status: 404 });
 		return Response.json({ success: true, message: 'Avis supprimé' });

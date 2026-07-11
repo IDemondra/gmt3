@@ -21,7 +21,7 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 	const timeStatus = STATUS_STYLES[getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement)] || STATUS_STYLES.unknown;
 
 	return (
-		<tr class={`border-b border-outline-variant/30 transition-colors duration-150 ${
+		<tr onClick={() => onViewDetails?.(event)} class={`cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 ${
 			isEven ? 'bg-transparent' : 'bg-surface-container/40'
 		} hover:bg-primary/5`}>
 			<td class="px-6 py-4">
@@ -51,7 +51,10 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 							<span class="material-symbols-outlined text-primary-container text-[18px]">landscape</span>
 						</div>
 					)}
-					<span class="font-body-md text-body-md text-on-background font-semibold">{event.titre || event.title}</span>
+					<div class="flex flex-col gap-0.5">
+						<span class="font-body-md text-body-md text-on-background font-semibold">{event.titre || event.title}</span>
+						<span class="text-xs text-secondary">Places : {event.placesReservees ?? 0} / {event.capaciteMax ?? 'Illimitée'}</span>
+					</div>
 				</div>
 			</td>
 			<td class="px-6 py-4 text-sm text-secondary whitespace-nowrap">
@@ -93,22 +96,19 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 			</td>
 			<td class="px-6 py-4 text-right">
 					<div class="flex items-center justify-end gap-1">
-						<button onClick={() => onViewDetails?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
+										<button onClick={(e) => { e.stopPropagation(); onViewDetails?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
 							<span class="material-symbols-outlined text-[20px]">visibility</span>
 						</button>
-						<button onClick={() => onEdit?.(event)} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
+										<button onClick={(e) => { e.stopPropagation(); onEdit?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
 							<span class="material-symbols-outlined text-[20px]">edit</span>
 						</button>
 					<button
-						onClick={() => onDelete?.(event.id)}
+						onClick={(e) => { e.stopPropagation(); onDelete?.(event.id); }}
 						class="p-2.5 rounded-xl text-secondary hover:text-red-600 hover:bg-red-50 transition-all duration-150"
 						title="Supprimer"
 					>
 						<span class="material-symbols-outlined text-[20px]">delete</span>
 					</button>
-						<button type="button" class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Plus">
-							<span class="material-symbols-outlined text-[20px]">more_vert</span>
-						</button>
 				</div>
 			</td>
 		</tr>

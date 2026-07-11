@@ -1,9 +1,90 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4903f1c4-613e-4d8d-8d17-e8bb7f3fee7a",
+  "id": "a3ad604a-111b-4ed0-9df2-e025652a0be9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "avis": {
+      "name": "avis",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "evenement_id": {
+          "name": "evenement_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "note": {
+          "name": "note",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commentaire": {
+          "name": "commentaire",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "photo_url": {
+          "name": "photo_url",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "est_approuve": {
+          "name": "est_approuve",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "date_creation": {
+          "name": "date_creation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "avis_evenement_id_evenements_id_fk": {
+          "name": "avis_evenement_id_evenements_id_fk",
+          "tableFrom": "avis",
+          "tableTo": "evenements",
+          "columnsFrom": [
+            "evenement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "clients": {
       "name": "clients",
       "columns": {
@@ -33,8 +114,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "'2026-06-16T03:22:32.626Z'"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -109,9 +189,23 @@
           "notNull": false,
           "autoincrement": false
         },
+        "difficulte": {
+          "name": "difficulte",
+          "type": "text(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "prix": {
           "name": "prix",
           "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "capacite_max": {
+          "name": "capacite_max",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -136,12 +230,77 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "'2026-06-16T03:22:32.626Z'"
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "journal_audit": {
+      "name": "journal_audit",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "utilisateur_id": {
+          "name": "utilisateur_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "action": {
+          "name": "action",
+          "type": "text(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ressource": {
+          "name": "ressource",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adresse_ip": {
+          "name": "adresse_ip",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "date_creation": {
+          "name": "date_creation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "journal_audit_utilisateur_id_utilisateurs_id_fk": {
+          "name": "journal_audit_utilisateur_id_utilisateurs_id_fk",
+          "tableFrom": "journal_audit",
+          "tableTo": "utilisateurs",
+          "columnsFrom": [
+            "utilisateur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -298,13 +457,27 @@
           "autoincrement": false,
           "default": 1
         },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'confirmee'"
+        },
+        "montant": {
+          "name": "montant",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "date_reservation": {
           "name": "date_reservation",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "'2026-06-16T03:22:32.627Z'"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -386,13 +559,27 @@
           "autoincrement": false,
           "default": "'editeur'"
         },
+        "actif": {
+          "name": "actif",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "derniere_connexion": {
+          "name": "derniere_connexion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "date_creation": {
           "name": "date_creation",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "'2026-06-16T03:22:32.625Z'"
+          "autoincrement": false
         }
       },
       "indexes": {

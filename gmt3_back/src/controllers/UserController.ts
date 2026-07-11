@@ -2,7 +2,8 @@ import type { BunRequest } from '../types/http.js';
 import { UserService } from '../services/UserService.js';
 import { UserRepository } from '../repositories/UserRepository.js';
 import type { Utilisateur } from '../types/index.js';
-import { formatDateToDDMMYYYY } from '../utils/date.js';
+import { formatDateFields } from '../utils/date.js';
+import { parseId } from '../utils/validation.js';
 
 const userService = new UserService(new UserRepository());
 
@@ -12,10 +13,7 @@ const SET_COOKIE_OPTS = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-
 const SET_COOKIE_OPTS_LOGOUT = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-Age=0`;
 
 function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T {
-	return {
-		...user,
-		dateCreation: formatDateToDDMMYYYY(user.dateCreation),
-	};
+	return formatDateFields(user, ['dateCreation']);
 }
 
 /** Retire le hash du mot de passe avant de renvoyer un utilisateur au client. */
@@ -34,8 +32,8 @@ export const UserController = {
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) {
+		const id = parseId(params.id);
+		if (!id) {
 			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
 		const user = await userService.getById(id);
@@ -54,7 +52,7 @@ export const UserController = {
 			role?: 'admin' | 'editeur';
 		};
 
-		if (!body.nomUtilisateur || !body.motDePasse) {
+		if (!body.nomUtilisateur?.trim() || !body.motDePasse || body.motDePasse.length < 12 || (body.email && !/^\S+@\S+\.\S+$/.test(body.email)) || (body.role && !['admin', 'editeur'].includes(body.role))) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS', message: 'Le nom d\'utilisateur et le mot de passe sont obligatoires' }, { status: 400 });
 		}
 
@@ -71,8 +69,8 @@ export const UserController = {
 	},
 
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) {
+		const id = parseId(params.id);
+		if (!id) {
 			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
 		const body = await req.json() as Partial<{
@@ -83,7 +81,21 @@ export const UserController = {
 			role: 'admin' | 'editeur';
 		}>;
 
-		const updated = await userService.update(id, body);
+		const existing = await userService.getById(id);
+		if (!existing) return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+		const data = {
+			nomUtilisateur: body.nomUtilisateur?.trim(),
+			email: body.email?.trim(),
+			motDePasse: body.motDePasse,
+			role: body.role,
+		};
+		if ((data.nomUtilisateur !== undefined && !data.nomUtilisateur) || (data.email !== undefined && data.email && !/^\S+@\S+\.\S+$/.test(data.email)) || (data.motDePasse && data.motDePasse.length < 12) || (data.role && !['admin', 'editeur'].includes(data.role))) {
+			return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
+		}
+		if (existing.role === 'admin' && data.role === 'editeur' && await userService.countAdmins() <= 1) {
+			return Response.json({ error: 'DERNIER_ADMIN', message: 'Le dernier administrateur ne peut pas être rétrogradé' }, { status: 409 });
+		}
+		const updated = await userService.update(id, Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined)));
 		if (!updated) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		}
@@ -91,10 +103,14 @@ export const UserController = {
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = Number(params.id);
-		if (Number.isNaN(id)) {
+		const id = parseId(params.id);
+		if (!id) {
 			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
 		}
+		const existing = await userService.getById(id);
+		if (!existing) return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+		if (req.user?.id === id) return Response.json({ error: 'AUTO_SUPPRESSION_INTERDITE' }, { status: 409 });
+		if (existing.role === 'admin' && await userService.countAdmins() <= 1) return Response.json({ error: 'DERNIER_ADMIN' }, { status: 409 });
 		const deleted = await userService.delete(id);
 		if (!deleted) {
 			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });

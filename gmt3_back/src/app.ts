@@ -5,6 +5,8 @@ import { reservationRoutes } from './routes/reservationRoutes.js';
 import { kpiRoutes } from './routes/kpiRoutes.js';
 import { avisRoutes } from './routes/avisRoutes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
+import { db } from './config/database.js';
+import { journalAudit } from './models/schema.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
@@ -15,6 +17,8 @@ const STATIC_UPLOADS_ROOT = resolve(import.meta.dir, '..', 'uploads');
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const publicAttempts = new Map<string, { count: number; resetAt: number }>();
+const PUBLIC_RATE_LIMIT_MAX = 20;
 
 function checkLoginRateLimit(ip: string): boolean {
 	const now = Date.now();
@@ -24,6 +28,18 @@ function checkLoginRateLimit(ip: string): boolean {
 		return true;
 	}
 	if (entry.count >= RATE_LIMIT_MAX) return false;
+	entry.count++;
+	return true;
+}
+
+function checkPublicRateLimit(ip: string): boolean {
+	const now = Date.now();
+	const entry = publicAttempts.get(ip);
+	if (!entry || now > entry.resetAt) {
+		publicAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+		return true;
+	}
+	if (entry.count >= PUBLIC_RATE_LIMIT_MAX) return false;
 	entry.count++;
 	return true;
 }
@@ -39,9 +55,16 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 
 // Routes nécessitant le rôle "admin" (gestion des comptes).
 const ADMIN_ONLY_ROUTES = new Set([
+	'GET /api/utilisateurs',
+	'GET /api/utilisateurs/:id',
 	'POST /api/utilisateurs',
 	'PUT /api/utilisateurs/:id',
 	'DELETE /api/utilisateurs/:id',
+	'DELETE /api/clients/:id',
+	'DELETE /api/evenements/:id',
+	'DELETE /api/reservations/:id',
+	'DELETE /api/avis/:id',
+	'PUT /api/avis/:id/approuver',
 ]);
 
 const PROTECTED_ROUTES = new Set([
@@ -53,6 +76,7 @@ const PROTECTED_ROUTES = new Set([
 	// clients
 	'GET /api/clients',
 	'GET /api/clients/:id',
+	'POST /api/clients',
 	'PUT /api/clients/:id',
 	'DELETE /api/clients/:id',
 	// evenements (mutations only)
@@ -159,6 +183,10 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 			return Response.json({ error: 'TROP_DE_TENTATIVES', message: 'Trop de tentatives. Réessayez dans 15 minutes.' }, { status: 429, headers: corsHeaders });
 		}
 	}
+	if (req.method === 'POST' && (pathname === '/api/reservations' || pathname === '/api/avis')) {
+		const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP') ?? 'unknown';
+		if (!checkPublicRateLimit(ip)) return Response.json({ error: 'TROP_DE_TENTATIVES' }, { status: 429, headers: corsHeaders });
+	}
 
 	// ── Auth guard ──
 	if (matched.isProtected || matched.isAdminOnly) {
@@ -180,6 +208,10 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	try {
 		const result = await matched.handler(req, matched.params);
 		const response = result instanceof Response ? result : Response.json(result);
+		if (matched.isProtected && ['POST', 'PUT', 'DELETE'].includes(req.method) && response.ok && req.user) {
+			const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP');
+			await db.insert(journalAudit).values({ utilisateurId: req.user.id, action: req.method, ressource: pathname, adresseIp: ip ?? null, dateCreation: new Date().toISOString() });
+		}
 		for (const [key, value] of Object.entries(corsHeaders)) {
 			response.headers.set(key, value);
 		}

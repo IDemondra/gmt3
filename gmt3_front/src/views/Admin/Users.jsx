@@ -27,6 +27,7 @@ export function AdminUsers() {
 	useEffect(() => {
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
+			if (currentUser.value.role !== 'admin') { route('/admin/dashboard', true); return; }
 			loadUsers();
 		});
 	}, []);
@@ -138,7 +139,7 @@ export function AdminUsers() {
 								</thead>
 								<tbody class="divide-y divide-gray-50">
 									{filtered.map((u, i) => (
-										<tr key={u.id} class="hover:bg-gray-50/50 transition-colors">
+										<tr key={u.id} onClick={() => openEdit(u)} class="cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 hover:bg-primary/5">
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{u.nomUtilisateur}</td>
 											<td class="px-6 py-4 text-sm text-gray-600">{u.email}</td>
 											<td class="px-6 py-4"><span class="px-2 py-1 text-[11px] font-bold text-gray-600 bg-gray-100 rounded uppercase">{u.role}</span></td>
@@ -188,7 +189,7 @@ export function AdminUsers() {
 				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="motDePasse">Mot de passe</label>
-					<input id="motDePasse" name="motDePasse" type="password" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder={editingUser ? '••••••••' : 'Mot de passe'} required={!editingUser} />
+					<input id="motDePasse" name="motDePasse" type="password" minLength="12" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder={editingUser ? '••••••••' : '12 caractères minimum'} required={!editingUser} />
 				</div>
 			</FormModal>
 		</div>

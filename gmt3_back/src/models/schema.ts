@@ -8,7 +8,9 @@ export const utilisateurs = sqliteTable('utilisateurs', {
 	motDePasse: text('mot_de_passe', { length: 255 }).notNull(),
 	email: text('email', { length: 100 }),
 	role: text('role', { enum: ['admin', 'editeur'] }).default('editeur').notNull(),
-	dateCreation: text('date_creation').default(new Date().toISOString()),
+	actif: integer('actif', { mode: 'boolean' }).default(true).notNull(),
+	derniereConnexion: text('derniere_connexion'),
+	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
 });
 
 // ── Clients ──
@@ -16,7 +18,7 @@ export const clients = sqliteTable('clients', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	nom: text('nom', { length: 100 }).notNull(),
 	contact: text('contact', { length: 100 }).notNull(),
-	dateAjout: text('date_ajout').default(new Date().toISOString()),
+	dateAjout: text('date_ajout').$defaultFn(() => new Date().toISOString()),
 });
 
 // ── Événements ──
@@ -32,9 +34,10 @@ export const evenements = sqliteTable('evenements', {
 	lieu: text('lieu', { length: 150 }),
 	difficulte: text('difficulte', { length: 50 }),
 	prix: real('prix'),
+	capaciteMax: integer('capacite_max'),
 	imagePrincipale: text('image_principale', { length: 255 }),
 	estPublie: integer('est_publie', { mode: 'boolean' }).default(true).notNull(),
-	dateCreation: text('date_creation').default(new Date().toISOString()),
+	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
 });
 
 // ── Photos Événement ──
@@ -55,7 +58,7 @@ export const avis = sqliteTable('avis', {
 	commentaire: text('commentaire'),
 	photoUrl: text('photo_url', { length: 255 }),
 	estApprouve: integer('est_approuve', { mode: 'boolean' }).default(false).notNull(),
-	dateCreation: text('date_creation').default(new Date().toISOString()),
+	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
 });
 
 // ── Refresh Tokens (rotation) ──
@@ -72,5 +75,16 @@ export const reservations = sqliteTable('reservations', {
 	clientId: integer('client_id').references(() => clients.id),
 	evenementId: integer('evenement_id').references(() => evenements.id),
 	nombrePlaces: integer('nombre_places').default(1).notNull(),
-	dateReservation: text('date_reservation').default(new Date().toISOString()),
+	statut: text('statut', { enum: ['en_attente', 'confirmee', 'annulee'] }).default('confirmee').notNull(),
+	montant: real('montant'),
+	dateReservation: text('date_reservation').$defaultFn(() => new Date().toISOString()),
+});
+
+export const journalAudit = sqliteTable('journal_audit', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	utilisateurId: integer('utilisateur_id').references(() => utilisateurs.id, { onDelete: 'set null' }),
+	action: text('action', { length: 20 }).notNull(),
+	ressource: text('ressource', { length: 255 }).notNull(),
+	adresseIp: text('adresse_ip', { length: 64 }),
+	dateCreation: text('date_creation').notNull(),
 });
