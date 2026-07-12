@@ -22,12 +22,10 @@ const socialLinks = [
 ];
 
 const navLinks = [
-	{ label: 'Expéditions', href: '/#expeditions' },
-	{ label: 'Destinations', href: '/#destinations' },
-	{ label: 'Guides', href: '/#equipes' },
-	{ label: 'Offres', href: '/events' },
+	{ label: 'Expéditions', href: '/events' },
 	{ label: 'Conseils', href: '/conseils' },
 	{ label: 'Galerie', href: '/archives' },
+	{ label: 'FAQ', href: '/faq' },
 ];
 
 const infoLinks = [

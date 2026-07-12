@@ -17,10 +17,10 @@ export function Header() {
 	};
 
 	const navLinks = [
-		{ href: '/#expeditions', label: 'EXPÉDITIONS' },
-		{ href: '/#destinations', label: 'DESTINATIONS' },
-		{ href: '/#equipes', label: 'NOTRE ÉQUIPE' },
-		{ href: '/#gallery', label: 'GALERIE' },
+		{ href: '/events', label: 'EXPÉDITIONS' },
+		{ href: '/conseils', label: 'CONSEILS' },
+		{ href: '/archives', label: 'GALERIE' },
+		{ href: '/faq', label: 'FAQ' },
 	];
 
 	return (
