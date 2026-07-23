@@ -4,6 +4,7 @@ import { ImagePreview } from '../../../components/ui/ImagePreview.jsx';
 import { BlurImg } from '../../../components/ui/BlurImg.jsx';
 import { img } from '../../../utils/images.js';
 import { isEventPast, formatDateFr } from '../../../utils/dateFormatter.js';
+import { buildDailyGallery, getLocalDayKey } from '../../../utils/dailyGallery.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -17,6 +18,8 @@ function resolveImg(url) {
 export function GallerySection() {
 	const [lightbox, setLightbox] = useState(null);
 	const [cards, setCards] = useState([]);
+	const [pastEvents, setPastEvents] = useState([]);
+	const [dayKey, setDayKey] = useState(() => getLocalDayKey());
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -25,33 +28,38 @@ export function GallerySection() {
 			.then((response) => {
 				const events = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
-				// Aplatit les photos des événements passés en une archive visuelle.
-				const flat = [];
-				for (const evt of events) {
-					for (const photo of (evt.photosEvenement || [])) {
-						flat.push({
-							src: resolveImg(photo.url),
-							alt: evt.titre || 'Photo terrain',
-							label: evt.titre || 'Sans titre',
-							meta: formatDateFr(evt.dateDepart || evt.dateEvenement) || 'Expedition GMT3',
-							note: photo.legende || evt.lieu || '',
-							coord: evt.lieu || 'Non précisé',
-						});
-					}
-				}
-				const photos = flat.slice(0, 5).map((p, idx) => ({
-					...p,
-					id: `IMG-${String(idx + 1).padStart(4, '0')}`,
-					span: ['xl:col-span-8', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4'][idx] || 'xl:col-span-4',
-					priority: idx === 0,
-				}));
-				setCards(photos);
+				setPastEvents(events);
 			})
 			.catch((err) => {
 				setCards([]);
 			})
 			.finally(() => setLoading(false));
 	}, []);
+
+	useEffect(() => {
+		const dailyPhotos = buildDailyGallery(pastEvents, 5, dayKey);
+		const photos = dailyPhotos.map(({ event: evt, photo }, idx) => ({
+			src: resolveImg(photo.url),
+			alt: evt.titre || 'Photo terrain',
+			label: evt.titre || 'Sans titre',
+			meta: formatDateFr(evt.dateDepart || evt.dateEvenement) || 'Expedition GMT3',
+			note: photo.legende || evt.lieu || '',
+			coord: evt.lieu || 'Non précisé',
+			id: `IMG-${String(idx + 1).padStart(4, '0')}`,
+			span: ['xl:col-span-8', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4', 'xl:col-span-4'][idx] || 'xl:col-span-4',
+			priority: idx === 0,
+		}));
+		setCards(photos);
+	}, [pastEvents, dayKey]);
+
+	useEffect(() => {
+		const now = new Date();
+		const nextDay = new Date(now);
+		nextDay.setHours(24, 0, 0, 0);
+		const timer = window.setTimeout(() => setDayKey(getLocalDayKey()), nextDay.getTime() - now.getTime() + 1000);
+
+		return () => window.clearTimeout(timer);
+	}, [dayKey]);
 
     return (
         <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
