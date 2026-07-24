@@ -45,24 +45,22 @@ jobs:
       - name: Recuperation du code source
         uses: actions/checkout@v4
 
-      - name: Configuration de Node.js
-        uses: actions/setup-node@v4
+      - name: Configuration de Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: gmt3_front/package-lock.json
+          bun-version: latest
 
       - name: Installation des dépendances frontend
         working-directory: gmt3_front
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: React Doctor
         working-directory: gmt3_front
-        run: npx react-doctor@latest --verbose --no-color
+        run: bun x react-doctor@latest --verbose --no-color
 
       - name: Build frontend
         working-directory: gmt3_front
-        run: npm run build
+        run: bun run build
 
   construction-images:
     name: Construction et envoi des images
