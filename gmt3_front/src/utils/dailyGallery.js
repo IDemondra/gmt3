@@ -41,20 +41,20 @@ export function buildDailyGallery(events = [], maxItems = 5, dayKey = getLocalDa
 	if (!Array.isArray(events) || maxItems <= 0) return [];
 
 	const usedUrls = new Set();
-	const eventsWithPhotos = events
-		.map((event) => ({ event, photos: getEventPhotos(event, usedUrls) }))
-		.filter(({ photos }) => photos.length > 0);
+	const eventsWithPhotos = events.reduce((result, event) => {
+		const photos = getEventPhotos(event, usedUrls);
+		if (photos.length > 0) result.push({ event, photos });
+		return result;
+	}, []);
 	const orderedEvents = seededShuffle(eventsWithPhotos, `${dayKey}:events`);
-	const firstPhotoByEvent = orderedEvents
-		.map(({ event, photos }) => seededShuffle(photos, `${dayKey}:event:${event.id}`)[0])
-		.filter(Boolean)
-		.slice(0, maxItems)
-		.map((photo, index) => ({ event: orderedEvents[index].event, photo }));
+	const firstPhotoByEvent = orderedEvents.flatMap(({ event, photos }) => {
+		const photo = seededShuffle(photos, `${dayKey}:event:${event.id}`)[0];
+		return photo ? [{ event, photo }] : [];
+	}).slice(0, maxItems);
 	const selectedKeys = new Set(firstPhotoByEvent.map(({ event, photo }) => `${event.id}:${photo.url}`));
 	const remainingPhotos = seededShuffle(
-		orderedEvents.flatMap(({ event, photos }) => photos
-			.filter((photo) => !selectedKeys.has(`${event.id}:${photo.url}`))
-			.map((photo) => ({ event, photo }))),
+		orderedEvents.flatMap(({ event, photos }) => photos.flatMap((photo) =>
+			selectedKeys.has(`${event.id}:${photo.url}`) ? [] : [{ event, photo }])),
 		`${dayKey}:photos`,
 	);
 

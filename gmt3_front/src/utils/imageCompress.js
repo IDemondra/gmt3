@@ -3,9 +3,16 @@ const MAX_DIMENSION = 2000;
 function loadImage(file) {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
-		img.onload = () => resolve(img);
-		img.onerror = () => reject(new Error('IMAGE_ILLISIBLE'));
-		img.src = URL.createObjectURL(file);
+		const objectUrl = URL.createObjectURL(file);
+		img.onload = () => {
+			URL.revokeObjectURL(objectUrl);
+			resolve(img);
+		};
+		img.onerror = () => {
+			URL.revokeObjectURL(objectUrl);
+			reject(new Error('IMAGE_ILLISIBLE'));
+		};
+		img.src = objectUrl;
 	});
 }
 

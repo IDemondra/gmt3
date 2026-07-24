@@ -141,14 +141,14 @@ export function AdminPhotos() {
 									<div class="p-6 text-center text-gray-400 text-sm">Aucun événement passé.</div>
 								)}
 								{events.map((evt) => (
-									<button
+									<button type="button"
 										key={evt.id}
 										onClick={() => selectEvent(evt)}
 										class={`w-full text-left px-5 py-4 transition-colors flex items-center gap-3 ${selected?.id === evt.id ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
 									>
 										<div class="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 flex items-center justify-center">
 											{evt.imagePrincipale
-												? <img src={resolveImg(evt.imagePrincipale)} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
+								? <img src={resolveImg(evt.imagePrincipale)} alt={evt.titre || 'Image de l’événement'} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
 												: <span class="material-symbols-outlined text-gray-400 text-[20px]">image</span>}
 										</div>
 										<div class="min-w-0">
@@ -194,9 +194,9 @@ export function AdminPhotos() {
 										<div class="mb-6">
 											<p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Actuellement en ligne ({existing.length}) — sera remplacé</p>
 											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-												{existing.map((p, idx) => (
-													<div key={p.id || idx} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
-														<img src={resolveImg(p.url)} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
+								{existing.map((p) => (
+									<div key={p.id || p.url} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
+									<img src={resolveImg(p.url)} alt={`Événement ${idx + 1}`} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
 													</div>
 												))}
 											</div>
@@ -210,8 +210,8 @@ export function AdminPhotos() {
 											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
 												{gallery.previews.map((src, idx) => (
 													<div key={src} class="relative group aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
-														<img src={src} class="h-full w-full object-cover" />
-														<button onClick={() => gallery.removeFile(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+									<img src={src} alt={`Aperçu ${idx + 1}`} class="h-full w-full object-cover" />
+														<button type="button" onClick={() => gallery.removeFile(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
 															<span class="material-symbols-outlined text-[14px]">close</span>
 														</button>
 													</div>
@@ -231,7 +231,7 @@ export function AdminPhotos() {
 									{uploading && <ProgressBar percent={uploadProgress} label={uploadStatus} class="mt-6" />}
 
 									<div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-50">
-										<button
+										<button type="button"
 											onClick={requestSave}
 											disabled={uploading || gallery.compressingCount > 0 || gallery.count === 0}
 											class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"

@@ -45,10 +45,7 @@ export function ConfirmDialog({
 
 	return (
 		<div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-			<div
-				class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm"
-				onClick={onCancel}
-			/>
+			<button type="button" aria-label="Fermer la boîte de dialogue" class="absolute inset-0 border-0 bg-gray-900/20 p-0 backdrop-blur-sm" onClick={onCancel} />
 
 			<div class="relative w-full max-w-sm rounded-xl bg-white shadow-xl p-6 border border-gray-100">
 				<div class={`mx-auto mb-4 h-12 w-12 rounded-full flex items-center justify-center ${

@@ -76,7 +76,7 @@ export function Header() {
 							<span class="material-symbols-outlined text-sm">sensors</span>
 						</a>
 
-						<button
+						<button type="button"
 							class={`lg:hidden h-10 w-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${scrolled ? 'text-white bg-white/5' : 'text-white bg-black/20'}`}
 							onClick={toggleMenu}
 							aria-label={mobileMenuOpen.value ? 'Fermer le menu' : 'Ouvrir le menu'}
@@ -98,12 +98,12 @@ export function Header() {
 				<div class="flex flex-col h-full p-8">
 					<div class="flex justify-between items-center mb-16">
 						<span class="font-mono text-[10px] text-primary tracking-[0.4em] uppercase font-bold">Menu</span>
-						<button onClick={toggleMenu} class="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center text-white cursor-pointer">
+						<button type="button" onClick={toggleMenu} class="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center text-white cursor-pointer">
 							<span class="material-symbols-outlined">close</span>
 						</button>
 					</div>
 
-					<nav class="flex-1">
+					<nav aria-label="Navigation mobile" class="flex-1">
 						<ul class="flex flex-col gap-6">
 							{navLinks.map((link, i) => (
 								<li key={link.href} style={`transition-delay: ${i * 100}ms`} class={`transition-all duration-500 transform ${mobileMenuOpen.value ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'}`}>

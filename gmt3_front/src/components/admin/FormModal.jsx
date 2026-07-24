@@ -19,7 +19,7 @@ export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, o
 
 	return (
 		<div class="fixed inset-0 z-50 flex items-center justify-center">
-			<div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onClick={() => { if (!submitting) onClose(); }} />
+			<button type="button" aria-label="Fermer la fenêtre" class="absolute inset-0 border-0 bg-gray-900/20 p-0 backdrop-blur-sm" onClick={() => { if (!submitting) onClose(); }} />
 			<div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto">
 				<h3 class="text-xl font-extrabold text-gray-900 mb-6 tracking-tight">{title}</h3>
 				<form

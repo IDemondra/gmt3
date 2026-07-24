@@ -18,7 +18,10 @@ export function HeroSection() {
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error('Événements indisponibles');
+				return r.json();
+			})
 			.then((response) => {
 				const past = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && e.imagePrincipale);

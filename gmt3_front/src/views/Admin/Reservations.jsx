@@ -153,7 +153,7 @@ export function AdminReservations() {
 							<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">Réservations</h1>
 							<p class="text-gray-500 mt-2 text-base">Gérez les réservations clients.</p>
 						</div>
-						<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
+						<button type="button" onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
 							<span class="material-symbols-outlined text-[20px]">add</span> Ajouter
 						</button>
 					</div>
@@ -166,7 +166,7 @@ export function AdminReservations() {
 							</div>
 							<div class="relative w-full sm:w-auto">
 								<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
-								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" placeholder="Rechercher..." type="text" value={search} onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }} />
+								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" aria-label="Rechercher" placeholder="Rechercher..." type="text" value={search} onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }} />
 							</div>
 						</div>
 
@@ -207,8 +207,8 @@ export function AdminReservations() {
 											<td class="px-6 py-4 text-sm text-gray-600">{r.dateReservation || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
-													<button onClick={() => handleEdit(r)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-													<button onClick={() => setConfirm({ type: 'delete-reservation', id: r.id })} class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+													<button type="button" onClick={() => handleEdit(r)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+													<button type="button" onClick={() => setConfirm({ type: 'delete-reservation', id: r.id })} class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
 												</div>
 											</td>
 										</tr>
@@ -224,8 +224,8 @@ export function AdminReservations() {
 							<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
 								<span class="text-xs text-gray-400 font-medium">{page * ROWS_PER_PAGE + 1}-{Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur {filtered.length}</span>
 								<div class="flex gap-2">
-									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
-									<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+									<button type="button" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+									<button type="button" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
 								</div>
 							</div>
 						)}
@@ -240,11 +240,12 @@ export function AdminReservations() {
 			<ToastContainer toasts={toasts} onRemove={removeToast} />
 
 			{showForm && (
-				<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditing(null); }}>
-					<div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+				<div class="fixed inset-0 z-50 flex items-center justify-center">
+					<button type="button" aria-label="Fermer le formulaire de réservation" class="absolute inset-0 border-0 bg-black/40 p-0 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditing(null); }} />
+					<div class="relative z-10 bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-8 border border-gray-100 max-h-[90vh] overflow-y-auto">
 						<div class="flex items-center justify-between mb-6">
 							<h3 class="text-xl font-extrabold text-gray-900 tracking-tight">{editing ? "Modifier la réservation" : "Nouvelle réservation"}</h3>
-							<button onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all"><span class="material-symbols-outlined">close</span></button>
+							<button type="button" onClick={() => { setShowForm(false); setEditing(null); }} class="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all"><span class="material-symbols-outlined">close</span></button>
 						</div>
 						<form onSubmit={handleSubmit} class="space-y-6">
 							{editing ? (

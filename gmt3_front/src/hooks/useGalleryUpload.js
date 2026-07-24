@@ -37,12 +37,16 @@ export function useGalleryUpload({ maxPhotos = MAX_PHOTOS, maxTotalBytes = MAX_T
 		// Compression immédiate (poids réel envoyé) pour un total fiable en temps réel.
 		setCompressingCount(candidates.length);
 		let runningTotal = totalBytes;
-		for (const file of candidates) {
+		const compressedCandidates = await Promise.all(candidates.map(async (file) => ({
+			file,
+			compressed: await compressImageIfNeeded(file, MAX_UPLOAD_BYTES),
+		})));
+		for (const { file, compressed } of compressedCandidates) {
 			if (runningTotal >= maxTotalBytes) {
 				addToast?.(`Limite de ${formatMo(maxTotalBytes)} Mo au total atteinte — photo(s) restante(s) ignorée(s)`, 'warning');
+				setCompressingCount((c) => c - 1);
 				break;
 			}
-			const compressed = await compressImageIfNeeded(file, MAX_UPLOAD_BYTES);
 			if (runningTotal + compressed.size > maxTotalBytes) {
 				addToast?.(`"${file.name}" dépasserait la limite de ${formatMo(maxTotalBytes)} Mo — ignorée`, 'warning');
 				setCompressingCount((c) => c - 1);

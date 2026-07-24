@@ -24,7 +24,10 @@ export function Events() {
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error('Événements indisponibles');
+				return r.json();
+			})
 			.then((response) => {
 				const published = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie);

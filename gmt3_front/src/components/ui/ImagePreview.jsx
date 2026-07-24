@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
@@ -28,10 +28,6 @@ function resolveUrl(url) {
 export function ImagePreview({ image, onClose, onNext, onPrev, hasNext = false, hasPrev = false }) {
 	const [hasError, setHasError] = useState(false);
 	const imageUrl = image ? resolveUrl(image.url) : '';
-
-	useEffect(() => {
-		setHasError(false);
-	}, [imageUrl]);
 
 	if (!image) return null;
 
@@ -80,6 +76,7 @@ export function ImagePreview({ image, onClose, onNext, onPrev, hasNext = false, 
 						alt={image.title || ''}
 						class="max-w-full max-h-full rounded-2xl shadow-2xl object-contain"
 						referrerPolicy="no-referrer"
+						onLoad={() => setHasError(false)}
 						onError={() => setHasError(true)}
 					/>
 				)}

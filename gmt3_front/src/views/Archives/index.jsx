@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Reveal } from '../../components/ui/Reveal.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
@@ -20,11 +20,14 @@ export function Archives() {
 	const [loading, setLoading] = useState(true);
 	const [preview, setPreview] = useState(null);
 	const [flatPhotos, setFlatPhotos] = useState([]);
-	const [previewIndex, setPreviewIndex] = useState(0);
+	const previewIndex = useRef(0);
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error('Archives indisponibles');
+				return r.json();
+			})
 			.then((response) => {
 				const past = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && (e.photosEvenement || []).length > 0);
@@ -44,7 +47,7 @@ export function Archives() {
 
 	const openPhoto = (url, title) => {
 		const idx = flatPhotos.findIndex((p) => p.url === url);
-		setPreviewIndex(idx < 0 ? 0 : idx);
+		previewIndex.current = idx < 0 ? 0 : idx;
 		setPreview({ url, title });
 	};
 
@@ -171,13 +174,13 @@ export function Archives() {
 				image={preview}
 				onClose={() => setPreview(null)}
 				onNext={() => {
-					const next = (previewIndex + 1) % flatPhotos.length;
-					setPreviewIndex(next);
+					const next = (previewIndex.current + 1) % flatPhotos.length;
+					previewIndex.current = next;
 					setPreview(flatPhotos[next]);
 				}}
 				onPrev={() => {
-					const prev = (previewIndex - 1 + flatPhotos.length) % flatPhotos.length;
-					setPreviewIndex(prev);
+					const prev = (previewIndex.current - 1 + flatPhotos.length) % flatPhotos.length;
+					previewIndex.current = prev;
 					setPreview(flatPhotos[prev]);
 				}}
 				hasNext={flatPhotos.length > 1}

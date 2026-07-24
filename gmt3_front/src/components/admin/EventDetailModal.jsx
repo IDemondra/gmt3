@@ -28,7 +28,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 
 	return (
 		<div class="fixed inset-0 z-[120] flex items-center justify-center p-4">
-			<div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onClick={onClose} />
+			<button type="button" aria-label="Fermer la fenêtre" class="absolute inset-0 border-0 bg-gray-900/20 p-0 backdrop-blur-sm" onClick={onClose} />
 			<div class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-xl bg-white shadow-xl border border-gray-100">
 				<div class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-gray-50 bg-white/95 px-8 py-6 backdrop-blur">
 					<div>
@@ -111,8 +111,8 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 										{ label: 'Prix', value: event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—' },
 										{ label: 'Départ', value: `${formatIsoDateFr(event.dateDepart || event.dateEvenement || event.date)} ${event.heureDepart || ''}` },
 										{ label: 'Retour', value: `${formatIsoDateFr(event.dateRetour)} ${event.heureRetour || ''}` }
-									].map((item, idx) => (
-										<div key={idx} class="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+					].map((item) => (
+						<div key={item.label} class="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
 											<p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{item.label}</p>
 											<p class="mt-2 text-sm font-semibold text-gray-900">{item.value}</p>
 										</div>
@@ -143,7 +143,7 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 								<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2">
 									{photos.length > 0 ? photos.map((photo, index) => (
 										<button
-											key={photo.id || `${photo.url}-${index}`}
+							key={photo.id || photo.url}
 											type="button"
 											class="group relative aspect-[4/3] overflow-hidden rounded-lg border border-gray-100 bg-gray-100 shadow-sm transition-all hover:shadow-md"
 											onClick={() => onPreviewImage?.({ url: resolveUrl(photo.url), title: `${event.titre || event.title || 'Événement'} - photo ${index + 1}` })}

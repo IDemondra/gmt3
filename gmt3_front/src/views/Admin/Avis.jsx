@@ -88,7 +88,7 @@ export function AdminAvis() {
 						</div>
 						<div class="flex gap-2">
 							{FILTERS.map((f) => (
-								<button key={f.key} onClick={() => setFilter(f.key)}
+								<button type="button" key={f.key} onClick={() => setFilter(f.key)}
 									class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === f.key ? 'bg-primary text-white' : 'bg-white border border-gray-100 text-gray-500 hover:bg-gray-50'}`}>
 									{f.label}
 								</button>
@@ -126,11 +126,11 @@ export function AdminAvis() {
 								{a.photoUrl && <img src={`${BACKEND}${a.photoUrl}`} alt="" class="mt-3 h-40 w-full rounded-lg object-cover" loading="lazy" referrerPolicy="no-referrer" />}
 								<div class="mt-4 flex justify-end gap-2 pt-4 border-t border-gray-50">
 									{!a.estApprouve && (
-										<button onClick={() => handleApprove(a.id)} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all">
+										<button type="button" onClick={() => handleApprove(a.id)} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all">
 											<span class="material-symbols-outlined text-[18px]">check</span> Approuver
 										</button>
 									)}
-									<button onClick={() => setConfirm({ type: 'delete', id: a.id })} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-gray-500 text-sm font-semibold hover:text-red-500 hover:border-red-200 transition-all">
+									<button type="button" onClick={() => setConfirm({ type: 'delete', id: a.id })} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-gray-500 text-sm font-semibold hover:text-red-500 hover:border-red-200 transition-all">
 										<span class="material-symbols-outlined text-[18px]">delete</span> Supprimer
 									</button>
 								</div>

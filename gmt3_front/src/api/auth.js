@@ -8,9 +8,11 @@ export async function loginApi(nomUtilisateur, motDePasse) {
 		body: JSON.stringify({ nomUtilisateur, motDePasse }),
 		credentials: 'include',
 	});
-	const data = await res.json();
-	if (!res.ok) throw new Error(data.error === 'IDENTIFIANTS_INVALIDES' ? 'Identifiants incorrects.' : 'Erreur de connexion.');
-	return data;
+	if (!res.ok) {
+		const data = await res.json();
+		throw new Error(data.error === 'IDENTIFIANTS_INVALIDES' ? 'Identifiants incorrects.' : 'Erreur de connexion.');
+	}
+	return res.json();
 }
 
 export async function refreshApi() {

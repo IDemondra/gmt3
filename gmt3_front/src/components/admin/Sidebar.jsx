@@ -69,10 +69,10 @@ const content = (
 			{/* Mobile overlay */}
 			{open && (
 				<div class="fixed inset-0 z-50 lg:hidden">
-					<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+					<button type="button" aria-label="Fermer le menu" class="absolute inset-0 border-0 bg-black/50 p-0 backdrop-blur-sm" onClick={onClose} />
 					<aside class="relative w-72 max-w-[80vw] h-full bg-surface flex flex-col overflow-y-auto shadow-2xl animate-slide-in-left">
 						<div class="flex justify-end p-4">
-							<button onClick={onClose} class="p-2 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all">
+							<button type="button" onClick={onClose} class="p-2 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all">
 								<span class="material-symbols-outlined text-[24px]">close</span>
 							</button>
 						</div>

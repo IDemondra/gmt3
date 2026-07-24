@@ -48,6 +48,10 @@ export function AdminDashboard() {
 	const [showForm, setShowForm] = useState(false);
 	const [editingEvent, setEditingEvent] = useState(null);
 	const [previewSrc, setPreviewSrc] = useState('');
+
+	useEffect(() => () => {
+		if (previewSrc?.startsWith('blob:')) URL.revokeObjectURL(previewSrc);
+	}, [previewSrc]);
 	const [existingGalleryUrls, setExistingGalleryUrls] = useState(/** @type {string[]} */([])); // photos déjà en base (édition, lecture seule)
 	const gallery = useGalleryUpload({ addToast });
 	const [uploading, setUploading] = useState(false);
@@ -207,7 +211,7 @@ export function AdminDashboard() {
 								Gérez vos expéditions et destinations.
 							</p>
 						</div>
-						<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
+						<button type="button" onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
 							<span class="material-symbols-outlined text-[20px]">add</span>
 							Nouveau
 						</button>
@@ -229,13 +233,13 @@ export function AdminDashboard() {
 									<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
 									<input
 										class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg"
-										placeholder="Rechercher..."
+										aria-label="Rechercher" placeholder="Rechercher..."
 										type="text"
 										value={search}
 										onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }}
 									/>
 								</div>
-								<button class="p-2 rounded-lg border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all">
+								<button type="button" class="p-2 rounded-lg border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all">
 									<span class="material-symbols-outlined text-[20px]">filter_list</span>
 								</button>
 							</div>
@@ -264,10 +268,10 @@ export function AdminDashboard() {
 						<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
 							<span class="text-xs text-gray-400 font-medium">{filtered.length === 0 ? 'Aucun résultat' : `${page * ROWS_PER_PAGE + 1}-${Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur ${filtered.length}`}</span>
 							<div class="flex gap-2">
-								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((current) => current - 1)}>
+								<button type="button" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((current) => current - 1)}>
 									<span class="material-symbols-outlined text-[18px]">chevron_left</span>
 								</button>
-								<button class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((current) => current + 1)}>
+								<button type="button" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((current) => current + 1)}>
 									<span class="material-symbols-outlined text-[18px]">chevron_right</span>
 								</button>
 							</div>
@@ -338,7 +342,7 @@ export function AdminDashboard() {
 								<span class="material-symbols-outlined text-[18px]">title</span>
 							</button>
 						</div>
-						<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-white border-0 outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset" rows="3" placeholder="Description courte... (Markdown supporté)" maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} defaultValue={editingEvent?.description || ''} value={descText || editingEvent?.description || ''} />
+						<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-white border-0 outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset" rows="3" placeholder="Description courte... (Markdown supporté)" maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} value={descText} />
 					</div>
 					<p class="text-[10px] text-gray-400 mt-1">Supporte le markdown: **gras**, *italique*, ~~barré~~</p>
 				</div>
@@ -413,8 +417,8 @@ export function AdminDashboard() {
 					)}
 					{existingGalleryUrls.length > 0 && (
 						<div class="mt-4 grid grid-cols-3 gap-3">
-							{existingGalleryUrls.map((src, i) => (
-								<div key={i} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
+			{existingGalleryUrls.map((src, i) => (
+				<div key={src} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
 									<img src={src} alt={`Galerie existante ${i}`} class="w-full h-full object-cover" />
 								</div>
 							))}
@@ -424,7 +428,7 @@ export function AdminDashboard() {
 						<div class="mt-4 grid grid-cols-3 gap-3">
 							{gallery.previews.map((src, i) => (
 								<div key={src} class="relative aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
-									<img src={src} alt={`Nouvelle photo ${i}`} class="w-full h-full object-cover" />
+									<img src={src} alt={`Nouvelle vue ${i}`} class="w-full h-full object-cover" />
 									<button type="button" onClick={() => gallery.removeFile(i)} class="absolute top-1 right-1 p-1 rounded bg-black/50 text-white hover:bg-black/70 transition-all">
 										<span class="material-symbols-outlined text-[16px]">close</span>
 									</button>

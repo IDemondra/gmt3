@@ -102,8 +102,8 @@ export function AboutSection() {
 								{ label: "Expertise", val: "2", sub: "Années d'aventure", icon: "military_tech" },
 								{ label: "Équipe", val: "06", sub: "Membres racines", icon: "group" },
 								{ label: "Origine", val: "100%", sub: "Madagascar native", icon: "location_on" }
-							].map((s, idx) => (
-								<div key={idx} class="group flex items-center gap-4 rounded-2xl border border-white/40 bg-white/85 p-4 shadow-sm transition-all hover:translate-x-2 hover:bg-white">
+			].map((s) => (
+				<div key={s.label} class="group flex items-center gap-4 rounded-2xl border border-white/40 bg-white/85 p-4 shadow-sm transition-all hover:translate-x-2 hover:bg-white">
 									<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
 										<span class="material-symbols-outlined">{s.icon}</span>
 									</div>
@@ -217,8 +217,8 @@ export function AboutSection() {
 									Rejoindre l'aventure
 								</a>
 								<div class="flex -space-x-3 items-center">
-									{team.slice(0, 4).map((m, idx) => (
-										<img key={idx} src={img(m.src)} alt={m.name || 'Membre de l\'équipe GMT3'} loading="lazy" decoding="async" class="h-10 w-10 rounded-full border-2 border-on-background object-cover" />
+					{team.slice(0, 4).map((m) => (
+						<img key={m.name || m.src} src={img(m.src)} alt={m.name || 'Membre de l\'équipe GMT3'} loading="lazy" decoding="async" class="h-10 w-10 rounded-full border-2 border-on-background object-cover" />
 									))}
 									<div class="h-10 w-10 rounded-full border-2 border-on-background bg-stone-800 flex items-center justify-center text-[10px] font-bold">
 										+2

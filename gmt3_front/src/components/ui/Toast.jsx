@@ -1,6 +1,6 @@
 import { useEffect } from 'preact/hooks';
 
-export function Toast({ message, type = 'info', onClose, autoClose = true }) {
+function Toast({ message, type = 'info', onClose, autoClose = true }) {
 	useEffect(() => {
 		if (autoClose) {
 			const timer = setTimeout(onClose, 4000);

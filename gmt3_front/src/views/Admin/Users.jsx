@@ -108,7 +108,7 @@ export function AdminUsers() {
 							<h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">Utilisateurs</h1>
 							<p class="text-gray-500 mt-2 text-base">Gérez les comptes collaborateurs.</p>
 						</div>
-						<button onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
+						<button type="button" onClick={handleCreate} class="bg-primary text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer">
 							<span class="material-symbols-outlined text-[20px]">add</span> Ajouter
 						</button>
 					</div>
@@ -121,7 +121,7 @@ export function AdminUsers() {
 							</div>
 							<div class="relative w-full sm:w-auto">
 								<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
-								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" placeholder="Rechercher..." type="text" value={search} onInput={(e) => setSearch(e.currentTarget.value)} />
+								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" aria-label="Rechercher" placeholder="Rechercher..." type="text" value={search} onInput={(e) => setSearch(e.currentTarget.value)} />
 							</div>
 						</div>
 
@@ -147,8 +147,8 @@ export function AdminUsers() {
 											<td class="px-6 py-4 text-sm text-gray-600">{formatIsoDateTimeFr(u.derniereConnexion) || '—'}</td>
 											<td class="px-6 py-4 text-right">
 												<div class="flex items-center justify-end gap-1">
-													<button onClick={() => openEdit(u)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-													<button onClick={() => confirmDelete(u)} class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+													<button type="button" onClick={() => openEdit(u)} class="p-2 text-gray-400 hover:text-primary transition-colors" title="Modifier"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+													<button type="button" onClick={() => confirmDelete(u)} class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
 												</div>
 											</td>
 										</tr>

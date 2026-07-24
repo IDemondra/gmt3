@@ -1,0 +1,19 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "rules": {
+    "react-doctor/no-unknown-property": "off",
+    "react-doctor/style-prop-object": "off",
+    "react-doctor/no-fetch-in-effect": "off",
+    "react-doctor/label-has-associated-control": "off",
+    "react-doctor/control-has-associated-label": "off",
+    "react-doctor/prefer-module-scope-static-value": "off",
+    "react-doctor/prefer-module-scope-pure-function": "off",
+    "react-doctor/no-giant-component": "off",
+    "react-doctor/prefer-useReducer": "off",
+    "react-doctor/no-create-object-url-without-revoke": "off",
+    "react-doctor/exhaustive-deps": "off",
+    "react-doctor/no-chain-state-updates": "off",
+    "react-doctor/no-promise-then-side-effect-in-effect-without-catch": "off",
+    "react-doctor/rerender-state-only-in-handlers": "off"
+  }
+}

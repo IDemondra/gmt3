@@ -86,7 +86,7 @@ export function ActivitiesSection() {
 							: "md:col-span-2 lg:col-span-3 md:row-span-1";
 
 						return (
-							<Reveal key={index} animation="fadeUp" delay={index * 100} className={spanClass}>
+							<Reveal key={activity.title} animation="fadeUp" delay={index * 100} className={spanClass}>
 								<a href="#contact" aria-label={`${activity.title}, nous contacter`} class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
 
 									{/* Corner Accents */}

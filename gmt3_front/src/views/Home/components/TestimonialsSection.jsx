@@ -11,7 +11,10 @@ export function TestimonialsSection() {
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error('Avis indisponibles');
+				return r.json();
+			})
 			.then((response) => {
 				const events = Array.isArray(response.data) ? response.data : [];
 				const all = [];

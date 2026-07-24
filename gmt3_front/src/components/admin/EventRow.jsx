@@ -96,13 +96,13 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 			</td>
 			<td class="px-6 py-4 text-right">
 					<div class="flex items-center justify-end gap-1">
-										<button onClick={(e) => { e.stopPropagation(); onViewDetails?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
+										<button type="button" onClick={(e) => { e.stopPropagation(); onViewDetails?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
 							<span class="material-symbols-outlined text-[20px]">visibility</span>
 						</button>
-										<button onClick={(e) => { e.stopPropagation(); onEdit?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
+										<button type="button" onClick={(e) => { e.stopPropagation(); onEdit?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
 							<span class="material-symbols-outlined text-[20px]">edit</span>
 						</button>
-					<button
+					<button type="button"
 						onClick={(e) => { e.stopPropagation(); onDelete?.(event.id); }}
 						class="p-2.5 rounded-xl text-secondary hover:text-red-600 hover:bg-red-50 transition-all duration-150"
 						title="Supprimer"

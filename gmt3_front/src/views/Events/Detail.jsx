@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { Reveal } from '../../components/ui/Reveal.jsx';
@@ -33,7 +33,7 @@ export function EventDetail({ params }) {
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [preview, setPreview] = useState(null);
-	const [previewIndex, setPreviewIndex] = useState(0);
+	const previewIndex = useRef(0);
 	const [bookingModal, setBookingModal] = useState(false);
 	const [bookingData, setBookingData] = useState({ nom: '', contact: '', nombrePlaces: 1 });
 	const [bookingLoading, setBookingLoading] = useState(false);
@@ -100,11 +100,12 @@ export function EventDetail({ params }) {
 				}),
 				credentials: 'include',
 			});
-			const data = await res.json();
 			if (!res.ok) {
-				addToast(data.message || 'Erreur lors de la réservation', 'error');
+				const errorData = await res.json();
+				addToast(errorData.message || 'Erreur lors de la réservation', 'error');
 				return;
 			}
+			const data = await res.json();
 			addToast(data.message || 'Réservation confirmée !', 'success');
 			setBookingModal(false);
 			setBookingData({ nom: '', contact: '', nombrePlaces: 1 });
@@ -122,7 +123,10 @@ export function EventDetail({ params }) {
 		}
 
 		const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
-		fetch(`${API_BASE}/evenements/${eventId}`, { credentials: 'include' })
+		const controller = new AbortController();
+		let scrollFrame;
+
+		fetch(`${API_BASE}/evenements/${eventId}`, { credentials: 'include', signal: controller.signal })
 			.then((res) => {
 				if (!res.ok) throw new Error('Not found');
 				return res.json();
@@ -133,12 +137,15 @@ export function EventDetail({ params }) {
 
 				// Scroll vers la section avis si l'URL pointe dessus (#avis), une fois rendue.
 				if (typeof window !== 'undefined' && window.location.hash === '#avis') {
-					setTimeout(() => document.getElementById('avis')?.scrollIntoView({ behavior: 'smooth' }), 100);
+					scrollFrame = requestAnimationFrame(() => document.getElementById('avis')?.scrollIntoView({ behavior: 'smooth' }));
 				}
 
 				// Load related events
-				fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-					.then((r) => r.json())
+				fetch(`${API_BASE}/evenements`, { credentials: 'include', signal: controller.signal })
+					.then((r) => {
+						if (!r.ok) throw new Error('Related events not found');
+						return r.json();
+					})
 					.then((response) => {
 						const related = (Array.isArray(response.data) ? response.data : [])
 							.filter((e) => e.estPublie && e.id !== eventId && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
@@ -149,9 +156,15 @@ export function EventDetail({ params }) {
 					.catch((err) => console.error('Error loading related events:', err));
 			})
 			.catch((err) => {
+				if (err.name === 'AbortError') return;
 				console.error('Error loading event:', err);
 				setLoading(false);
 			});
+
+		return () => {
+			cancelAnimationFrame(scrollFrame);
+			controller.abort();
+		};
 	}, [eventId]);
 
 	if (loading) {
@@ -314,7 +327,7 @@ export function EventDetail({ params }) {
 
 									<div class="mt-5 space-y-3">
 										{facts.map((fact) => (
-											<div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+							<div key={fact.label} class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
 												<span class="material-symbols-outlined text-[20px] text-primary flex-shrink-0 mt-0.5">{fact.icon}</span>
 												<div class="min-w-0">
 													<p class="font-label-caps text-label-caps text-on-primary/60">{fact.label}</p>
@@ -376,7 +389,7 @@ export function EventDetail({ params }) {
 								</div>
 								<div class="mt-6 space-y-3">
 									{facts.map((fact) => (
-										<div class="flex items-start gap-3 rounded-2xl border border-outline-variant/60 bg-white/40 p-4">
+						<div key={fact.label} class="flex items-start gap-3 rounded-2xl border border-outline-variant/60 bg-white/40 p-4">
 											<span class="material-symbols-outlined text-[22px] text-primary flex-shrink-0 mt-0.5">{fact.icon}</span>
 											<div class="min-w-0">
 												<p class="font-label-caps text-label-caps text-secondary">{fact.label}</p>
@@ -402,7 +415,7 @@ export function EventDetail({ params }) {
 											<button
 												key={`${normalizedEvent.slug}-${idx}`}
 												type="button"
-												onClick={() => { setPreviewIndex(idx); setPreview({ url: img(src), title: `${normalizedEvent.title} photo ${idx + 1}` }); }}
+																onClick={() => { previewIndex.current = idx; setPreview({ url: img(src), title: `${normalizedEvent.title} photo ${idx + 1}` }); }}
 												class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-container shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-black/10 cursor-pointer"
 											>
 												<BlurImg
@@ -666,13 +679,13 @@ export function EventDetail({ params }) {
 				image={preview}
 				onClose={() => setPreview(null)}
 				onNext={() => {
-					const nextIdx = (previewIndex + 1) % gallery.length;
-					setPreviewIndex(nextIdx);
+					const nextIdx = (previewIndex.current + 1) % gallery.length;
+					previewIndex.current = nextIdx;
 					setPreview({ url: img(gallery[nextIdx]), title: `${normalizedEvent.title} photo ${nextIdx + 1}` });
 				}}
 				onPrev={() => {
-					const prevIdx = (previewIndex - 1 + gallery.length) % gallery.length;
-					setPreviewIndex(prevIdx);
+					const prevIdx = (previewIndex.current - 1 + gallery.length) % gallery.length;
+					previewIndex.current = prevIdx;
 					setPreview({ url: img(gallery[prevIdx]), title: `${normalizedEvent.title} photo ${prevIdx + 1}` });
 				}}
 				hasNext={gallery.length > 1}

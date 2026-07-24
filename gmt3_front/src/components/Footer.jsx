@@ -142,11 +142,12 @@ export function Footer() {
 									<div class="relative">
 										<input
 											type="email"
+										aria-label="Votre adresse email"
 										placeholder="VOTRE ADRESSE EMAIL"
 											class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono tracking-widest text-white placeholder:text-white/10 focus:outline-none focus:border-primary transition-colors uppercase"
 										/>
 									</div>
-									<button class="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all hover:shadow-2xl hover:shadow-primary/20 active:scale-95">
+									<button type="button" class="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all hover:shadow-2xl hover:shadow-primary/20 active:scale-95">
 										JOIN NETWORK
 									</button>
 								</form>

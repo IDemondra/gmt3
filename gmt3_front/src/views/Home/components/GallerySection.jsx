@@ -24,7 +24,10 @@ export function GallerySection() {
 
 	useEffect(() => {
 		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error('Galerie indisponible');
+				return r.json();
+			})
 			.then((response) => {
 				const events = (Array.isArray(response.data) ? response.data : [])
 					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
