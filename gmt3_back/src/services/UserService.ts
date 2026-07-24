@@ -15,6 +15,7 @@ const _JWT_SECRET: string = JWT_SECRET;
 const _JWT_REFRESH_SECRET: string = JWT_REFRESH_SECRET;
 
 const REFRESH_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const REFRESH_GRACE_SECONDS = 30;
 
 function hashToken(token: string): string {
 	return createHash('sha256').update(token).digest('hex');
@@ -95,16 +96,25 @@ export class UserService {
 			const [stored] = await db.select().from(refreshTokens).where(eq(refreshTokens.tokenHash, hash)).limit(1);
 			if (!stored || stored.expiresAt < nowSeconds()) return null;
 
-			// Invalidate old token immediately
-			await db.delete(refreshTokens).where(eq(refreshTokens.tokenHash, hash));
-
 			const user = await this.userRepo.findById(decoded.id);
 			if (!user || !user.actif) return null;
+
+			// Une page rechargée plusieurs fois peut envoyer le même cookie avant
+			// réception du Set-Cookie de la première réponse. Garder une courte
+			// fenêtre évite une déconnexion alors que la session reste valide.
+			if (stored.rotatedAt && nowSeconds() - stored.rotatedAt <= REFRESH_GRACE_SECONDS) {
+				const payload = { id: user.id, nomUtilisateur: user.nomUtilisateur, role: user.role };
+				const accessToken = jwt.sign(payload, _JWT_SECRET, { expiresIn: '15m' });
+				const { motDePasse: _, ...safeUser } = user;
+				return { user: safeUser, accessToken, newRefreshToken: token };
+			}
+			if (stored.rotatedAt) return null;
 
 			// Issue new tokens
 			const payload = { id: user.id, nomUtilisateur: user.nomUtilisateur, role: user.role };
 			const accessToken = jwt.sign(payload, _JWT_SECRET, { expiresIn: '15m' });
 			const newRefreshToken = jwt.sign(payload, _JWT_REFRESH_SECRET, { expiresIn: '7d' });
+			await db.update(refreshTokens).set({ rotatedAt: nowSeconds() }).where(eq(refreshTokens.tokenHash, hash));
 
 			await db.insert(refreshTokens).values({
 				tokenHash: hashToken(newRefreshToken),

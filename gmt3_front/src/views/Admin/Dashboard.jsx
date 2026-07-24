@@ -4,7 +4,7 @@ import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { KpiCards } from '../../components/admin/KpiCards.jsx';
 import { EventRow } from '../../components/admin/EventRow.jsx';
-import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
+import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
@@ -99,10 +99,8 @@ export function AdminDashboard() {
 				addToast('Impossible de charger les données du tableau de bord', 'error');
 			}
 		};
-		tryAutoRefresh().then(() => {
-			if (!currentUser.value) { route('/admin', true); return; }
-			load();
-		});
+		if (!currentUser.value) { route('/admin', true); return; }
+		load();
 		return () => { cancelled = true; };
 	}, [route, addToast]);
 

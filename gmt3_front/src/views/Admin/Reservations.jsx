@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
-import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
+import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { SearchableSelect } from '../../components/ui/SearchableSelect.jsx';
 import { reservationsApi, createReservationApi, updateReservationApi, deleteReservationApi } from '../../api/reservations.js';
@@ -53,10 +53,8 @@ export function AdminReservations() {
 				addToast('Impossible de charger les réservations', 'error');
 			}
 		};
-		tryAutoRefresh().then(() => {
-			if (!currentUser.value) { route('/admin', true); return; }
-			load();
-		});
+		if (!currentUser.value) { route('/admin', true); return; }
+		load();
 		return () => { cancelled = true; };
 	}, [route, addToast]);
 

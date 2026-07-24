@@ -1,18 +1,8 @@
 import { useLocation } from 'preact-iso';
-import { useEffect } from 'preact/hooks';
 import { useLogin } from '../../hooks/useLogin.js';
-import { tryAutoRefresh, currentUser } from '../../stores/auth.js';
 
 export function AdminLogin() {
 	const { route } = useLocation();
-
-	useEffect(() => {
-		tryAutoRefresh().then(() => {
-			if (currentUser.value) {
-				route('/admin/dashboard', true);
-			}
-		});
-	}, [route]);
 
 	const { handleSubmit, formState, errorMsg } = useLogin(route);
 

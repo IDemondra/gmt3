@@ -67,6 +67,7 @@ export const refreshTokens = sqliteTable('refresh_tokens', {
 	tokenHash: text('token_hash', { length: 64 }).notNull().unique(),
 	utilisateurId: integer('utilisateur_id').notNull().references(() => utilisateurs.id, { onDelete: 'cascade' }),
 	expiresAt: integer('expires_at').notNull(), // Unix timestamp (seconds)
+	rotatedAt: integer('rotated_at'), // Unix timestamp; courte fenêtre anti-course de rotation
 }, (table) => [index('refresh_tokens_expiry_idx').on(table.expiresAt), index('refresh_tokens_user_idx').on(table.utilisateurId)]);
 
 // ── Réservations ──

@@ -1,4 +1,6 @@
 import { LocationProvider, Router, Route } from 'preact-iso';
+import { useEffect } from 'preact/hooks';
+import { authLoading, tryAutoRefresh } from '../../stores/auth.js';
 import { AdminLogin } from './Login.jsx';
 import { AdminDashboard } from './Dashboard.jsx';
 import { AdminUsers } from './Users.jsx';
@@ -12,6 +14,12 @@ import { AdminAvis } from './Avis.jsx';
  * preact-iso garde son routing interne sous le préfixe /admin.
  */
 export default function AdminApp() {
+	useEffect(() => { tryAutoRefresh(); }, []);
+
+	if (authLoading.value) {
+		return <main class="min-h-dvh flex items-center justify-center bg-[#f9fafb]"><div class="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-primary" /></main>;
+	}
+
 	return (
 		<LocationProvider>
 			<Router>

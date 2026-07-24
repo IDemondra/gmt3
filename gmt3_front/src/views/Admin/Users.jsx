@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
-import { currentUser, accessToken, tryAutoRefresh, useLogout } from '../../stores/auth.js';
+import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
 import { usersApi, createUserApi, updateUserApi, deleteUserApi } from '../../api/users.js';
@@ -34,11 +34,9 @@ export function AdminUsers() {
 				addToast('Impossible de charger les utilisateurs', 'error');
 			}
 		};
-		tryAutoRefresh().then(() => {
-			if (!currentUser.value) { route('/admin', true); return; }
-			if (currentUser.value.role !== 'admin') { route('/admin/dashboard', true); return; }
-			load();
-		});
+		if (!currentUser.value) { route('/admin', true); return; }
+		if (currentUser.value.role !== 'admin') { route('/admin/dashboard', true); return; }
+		load();
 		return () => { cancelled = true; };
 	}, [route, addToast]);
 
