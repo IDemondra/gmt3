@@ -40,26 +40,25 @@ export function AdminReservations() {
 	const [page, setPage] = useState(0);
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			try {
+				const [res, cli, evt] = await Promise.all([
+					reservationsApi(accessToken.value), clientsApi(accessToken.value), evenementsApi(accessToken.value),
+				]);
+				if (!cancelled && Array.isArray(res.data)) setReservations(res.data);
+				if (!cancelled && Array.isArray(cli.data)) setClients(cli.data);
+				if (!cancelled && Array.isArray(evt.data)) setEvenements(evt.data);
+			} catch {
+				addToast('Impossible de charger les réservations', 'error');
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
-			loadAll();
+			load();
 		});
-	}, []);
-
-	const loadAll = async () => {
-		try {
-			const [res, cli, evt] = await Promise.all([
-				reservationsApi(accessToken.value),
-				clientsApi(accessToken.value),
-				evenementsApi(accessToken.value),
-			]);
-			if (Array.isArray(res.data)) setReservations(res.data);
-			if (Array.isArray(cli.data)) setClients(cli.data);
-			if (Array.isArray(evt.data)) setEvenements(evt.data);
-		} catch {
-			addToast('Impossible de charger les réservations', 'error');
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const clientMap = /** @type {Record<number, string>} */({});
 	clients.forEach((c) => { clientMap[c.id] = c.nom; });

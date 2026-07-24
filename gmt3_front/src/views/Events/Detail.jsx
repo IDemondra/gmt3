@@ -15,20 +15,20 @@ import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
 
+const transformEventForCard = (evt, backend) => ({
+	id: evt.id,
+	title: evt.titre,
+	description: parseMarkdownInline(evt.description),
+	image: evt.imagePrincipale ? `${backend}${evt.imagePrincipale}` : '',
+	date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
+	badge: 'EXPEDITION',
+	slug: evt.id,
+	href: `/events/${evt.id}`
+});
+
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 	const eventId = parseInt(params.id, 10);
-
-	const transformEventForCard = (evt) => ({
-		id: evt.id,
-		title: evt.titre,
-		description: parseMarkdownInline(evt.description),
-		image: evt.imagePrincipale ? `${BACKEND}${evt.imagePrincipale}` : '',
-		date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
-		badge: 'EXPEDITION',
-		slug: evt.id,
-		href: `/events/${evt.id}`
-	});
 
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -150,7 +150,7 @@ export function EventDetail({ params }) {
 						const related = (Array.isArray(response.data) ? response.data : [])
 							.filter((e) => e.estPublie && e.id !== eventId && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 							.slice(0, 2)
-							.map(transformEventForCard);
+							.map((evt) => transformEventForCard(evt, BACKEND));
 						setRelatedEvents(related);
 					})
 					.catch((err) => console.error('Error loading related events:', err));
@@ -165,7 +165,7 @@ export function EventDetail({ params }) {
 			cancelAnimationFrame(scrollFrame);
 			controller.abort();
 		};
-	}, [eventId]);
+	}, [eventId, BACKEND]);
 
 	if (loading) {
 		return (

@@ -30,23 +30,24 @@ export function AdminAvis() {
 	const [filter, setFilter] = useState('pending');
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			setLoading(true);
+			try {
+				const res = await avisApi(accessToken.value);
+				if (!cancelled && Array.isArray(res.data)) setAvis(res.data);
+			} catch {
+				addToast('Impossible de charger les avis', 'error');
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
-			loadAvis();
+			load();
 		});
-	}, []);
-
-	const loadAvis = async () => {
-		setLoading(true);
-		try {
-			const res = await avisApi(accessToken.value);
-			if (Array.isArray(res.data)) setAvis(res.data);
-		} catch {
-			addToast('Impossible de charger les avis', 'error');
-		} finally {
-			setLoading(false);
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const handleApprove = async (id) => {
 		try {

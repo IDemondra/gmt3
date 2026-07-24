@@ -84,26 +84,27 @@ export function AdminDashboard() {
 	};
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			try {
+				const [evtData, kpiData] = await Promise.all([
+					evenementsApi(accessToken.value),
+					kpisApi(accessToken.value),
+				]);
+				if (!cancelled && Array.isArray(evtData.data)) {
+					setEvents(evtData.data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
+				}
+				if (!cancelled && kpiData?.data && typeof kpiData.data.totalEvents === 'number') setKpis(kpiData.data);
+			} catch {
+				addToast('Impossible de charger les données du tableau de bord', 'error');
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
-			loadDashboardData();
+			load();
 		});
-	}, []);
-
-	const loadDashboardData = async () => {
-		try {
-			const [evtData, kpiData] = await Promise.all([
-				evenementsApi(accessToken.value),
-				kpisApi(accessToken.value),
-			]);
-			if (Array.isArray(evtData.data)) {
-				setEvents(evtData.data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
-			}
-			if (kpiData?.data && typeof kpiData.data.totalEvents === 'number') setKpis(kpiData.data);
-		} catch {
-			addToast('Impossible de charger les données du tableau de bord', 'error');
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setExistingGalleryUrls([]); gallery.reset(); setShowForm(true); };
 

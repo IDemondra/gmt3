@@ -25,21 +25,22 @@ export function AdminUsers() {
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; user?: any } | null} */ (null));
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			try {
+				const response = await usersApi(accessToken.value);
+				if (!cancelled && Array.isArray(response.data)) setUsers(response.data);
+			} catch {
+				addToast('Impossible de charger les utilisateurs', 'error');
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
 			if (currentUser.value.role !== 'admin') { route('/admin/dashboard', true); return; }
-			loadUsers();
+			load();
 		});
-	}, []);
-
-	const loadUsers = async () => {
-		try {
-			const response = await usersApi(accessToken.value);
-			if (Array.isArray(response.data)) setUsers(response.data);
-		} catch {
-			addToast('Impossible de charger les utilisateurs', 'error');
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const handleSubmit = async (data) => {
 		try {

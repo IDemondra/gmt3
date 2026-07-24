@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals';
+import { login } from '../stores/auth.js';
 
 export const formState = signal('login');
 export const errorMsg = signal('');
@@ -20,7 +21,6 @@ export function useLogin(route) {
 		errorMsg.value = '';
 
 		try {
-			const { login } = await import('../stores/auth.js');
 			await login(nomUtilisateur, motDePasse);
 			formState.value = 'login';
 			route('/admin/dashboard', true);

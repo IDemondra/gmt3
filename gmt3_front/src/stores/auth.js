@@ -4,6 +4,7 @@ import { loginApi, refreshApi, logoutApi } from '../api/auth.js';
 export const accessToken = signal(null);
 export const currentUser = signal(null);
 export const authLoading = signal(true);
+let refreshPromise = null;
 
 /**
  * @param {string} nomUtilisateur
@@ -17,14 +18,31 @@ export async function login(nomUtilisateur, motDePasse) {
 
 export async function tryAutoRefresh() {
 	try {
-		const data = await refreshApi();
-		accessToken.value = data.accessToken;
-		currentUser.value = data.user;
+		await refreshAccessToken();
 	} catch {
 		// No valid refresh token
 	} finally {
 		authLoading.value = false;
 	}
+}
+
+/** Rafraîchit une seule fois même si plusieurs requêtes expirent ensemble. */
+export async function refreshAccessToken() {
+	if (!refreshPromise) {
+		refreshPromise = refreshApi()
+			.then((data) => {
+				accessToken.value = data.accessToken;
+				currentUser.value = data.user;
+				return data.accessToken;
+			})
+			.catch((error) => {
+				accessToken.value = null;
+				currentUser.value = null;
+				throw error;
+			})
+			.finally(() => { refreshPromise = null; });
+	}
+	return refreshPromise;
 }
 
 export async function logout() {

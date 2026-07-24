@@ -40,26 +40,25 @@ export function AdminPhotos() {
 	const [uploadProgress, setUploadProgress] = useState(0);
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			setLoading(true);
+			try {
+				const response = await evenementsApi(accessToken.value);
+				const all = Array.isArray(response.data) ? response.data : [];
+				if (!cancelled) setEvents(all.filter((e) => isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement)));
+			} catch {
+				addToast('Erreur de chargement des événements', 'error');
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
-			loadEvents();
+			load();
 		});
-	}, []);
-
-	const loadEvents = async () => {
-		setLoading(true);
-		try {
-			const response = await evenementsApi(accessToken.value);
-			const all = Array.isArray(response.data) ? response.data : [];
-			// Événements passés uniquement
-			const past = all.filter((e) => isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
-			setEvents(past);
-		} catch {
-			addToast('Erreur de chargement des événements', 'error');
-		} finally {
-			setLoading(false);
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const selectEvent = async (evt) => {
 		gallery.reset();

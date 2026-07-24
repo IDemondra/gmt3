@@ -29,20 +29,21 @@ export function AdminClients() {
 	const [page, setPage] = useState(0);
 
 	useEffect(() => {
+		let cancelled = false;
+		const load = async () => {
+			try {
+				const response = await clientsApi(accessToken.value);
+				if (!cancelled && Array.isArray(response.data)) setClients(response.data);
+			} catch {
+				addToast('Impossible de charger les clients', 'error');
+			}
+		};
 		tryAutoRefresh().then(() => {
 			if (!currentUser.value) { route('/admin', true); return; }
-			loadClients();
+			load();
 		});
-	}, []);
-
-	const loadClients = async () => {
-		try {
-			const response = await clientsApi(accessToken.value);
-			if (Array.isArray(response.data)) setClients(response.data);
-		} catch {
-			addToast('Impossible de charger les clients', 'error');
-		}
-	};
+		return () => { cancelled = true; };
+	}, [route, addToast]);
 
 	const handleCreate = () => {
 		setEditingClient(null);

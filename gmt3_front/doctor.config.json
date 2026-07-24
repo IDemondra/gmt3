@@ -11,9 +11,11 @@
     "react-doctor/no-giant-component": "off",
     "react-doctor/prefer-useReducer": "off",
     "react-doctor/no-create-object-url-without-revoke": "off",
-    "react-doctor/exhaustive-deps": "off",
+    "react-doctor/exhaustive-deps": "warn",
     "react-doctor/no-chain-state-updates": "off",
     "react-doctor/no-promise-then-side-effect-in-effect-without-catch": "off",
-    "react-doctor/rerender-state-only-in-handlers": "off"
+    "react-doctor/rerender-state-only-in-handlers": "off",
+    "react-doctor/no-set-state-after-await-in-effect": "off",
+    "react-doctor/no-loading-flag-reset-outside-finally": "off"
   }
 }

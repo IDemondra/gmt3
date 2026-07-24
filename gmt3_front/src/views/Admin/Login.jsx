@@ -12,7 +12,7 @@ export function AdminLogin() {
 				route('/admin/dashboard', true);
 			}
 		});
-	}, []);
+	}, [route]);
 
 	const { handleSubmit, formState, errorMsg } = useLogin(route);
 
