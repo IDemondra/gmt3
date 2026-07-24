@@ -3,7 +3,8 @@ import { UserService } from '../services/UserService.js';
 import { UserRepository } from '../repositories/UserRepository.js';
 import type { Utilisateur } from '../types/index.js';
 import { formatDateFields } from '../utils/date.js';
-import { parseId } from '../utils/validation.js';
+import { isString } from '../utils/validation.js';
+import { idOrError, jsonOrError, notFound } from './helpers.js';
 
 const userService = new UserService(new UserRepository());
 
@@ -32,19 +33,19 @@ export const UserController = {
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) {
-			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
-		}
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 		const user = await userService.getById(id);
 		if (!user) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+			return notFound('UTILISATEUR_INTROUVABLE', 'Utilisateur non trouvé');
 		}
 		return Response.json({ ...toSafeUser(formatUserDates(user)), message: 'Utilisateur chargé avec succès' });
 	},
 
 	async create(req: BunRequest): Promise<Response> {
-		const body = await req.json() as {
+		const input = await jsonOrError(req);
+		if (input instanceof Response) return input;
+		const body = input as {
 			nom?: string;
 			nomUtilisateur: string;
 			motDePasse: string;
@@ -52,7 +53,7 @@ export const UserController = {
 			role?: 'admin' | 'editeur';
 		};
 
-		if (!body.nomUtilisateur?.trim() || !body.motDePasse || body.motDePasse.length < 12 || (body.email && !/^\S+@\S+\.\S+$/.test(body.email)) || (body.role && !['admin', 'editeur'].includes(body.role))) {
+		if (!isString(body.nomUtilisateur, 1, 50) || !isString(body.motDePasse, 12, 255) || (body.nom !== undefined && !isString(body.nom, 0, 100)) || (body.email !== undefined && (!isString(body.email, 1, 100) || !/^\S+@\S+\.\S+$/.test(body.email))) || (body.role !== undefined && !['admin', 'editeur'].includes(body.role))) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS', message: 'Le nom d\'utilisateur et le mot de passe sont obligatoires' }, { status: 400 });
 		}
 
@@ -69,11 +70,11 @@ export const UserController = {
 	},
 
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) {
-			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
-		}
-		const body = await req.json() as Partial<{
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
+		const input = await jsonOrError(req);
+		if (input instanceof Response) return input;
+		const body = input as Partial<{
 			nom: string;
 			nomUtilisateur: string;
 			motDePasse: string;
@@ -82,14 +83,14 @@ export const UserController = {
 		}>;
 
 		const existing = await userService.getById(id);
-		if (!existing) return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+		if (!existing) return notFound('UTILISATEUR_INTROUVABLE', 'Utilisateur non trouvé');
 		const data = {
 			nomUtilisateur: body.nomUtilisateur?.trim(),
 			email: body.email?.trim(),
 			motDePasse: body.motDePasse,
 			role: body.role,
 		};
-		if ((data.nomUtilisateur !== undefined && !data.nomUtilisateur) || (data.email !== undefined && data.email && !/^\S+@\S+\.\S+$/.test(data.email)) || (data.motDePasse && data.motDePasse.length < 12) || (data.role && !['admin', 'editeur'].includes(data.role))) {
+		if ((data.nomUtilisateur !== undefined && !isString(data.nomUtilisateur, 1, 50)) || (data.email !== undefined && data.email && (!isString(data.email, 1, 100) || !/^\S+@\S+\.\S+$/.test(data.email))) || (data.motDePasse !== undefined && !isString(data.motDePasse, 12, 255)) || (data.role !== undefined && !['admin', 'editeur'].includes(data.role))) {
 			return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
 		}
 		if (existing.role === 'admin' && data.role === 'editeur' && await userService.countAdmins() <= 1) {
@@ -97,30 +98,30 @@ export const UserController = {
 		}
 		const updated = await userService.update(id, Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined)));
 		if (!updated) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+			return notFound('UTILISATEUR_INTROUVABLE', 'Utilisateur non trouvé');
 		}
 		return Response.json({ ...toSafeUser(formatUserDates(updated)), message: 'Utilisateur modifié avec succès' });
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) {
-			return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
-		}
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 		const existing = await userService.getById(id);
 		if (!existing) return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
 		if (req.user?.id === id) return Response.json({ error: 'AUTO_SUPPRESSION_INTERDITE' }, { status: 409 });
 		if (existing.role === 'admin' && await userService.countAdmins() <= 1) return Response.json({ error: 'DERNIER_ADMIN' }, { status: 409 });
 		const deleted = await userService.delete(id);
 		if (!deleted) {
-			return Response.json({ error: 'UTILISATEUR_INTROUVABLE', message: 'Utilisateur non trouvé' }, { status: 404 });
+			return notFound('UTILISATEUR_INTROUVABLE', 'Utilisateur non trouvé');
 		}
 		return Response.json({ success: true, message: 'Utilisateur supprimé avec succès' });
 	},
 
 	async login(req: BunRequest): Promise<Response> {
-		const body = await req.json() as { nomUtilisateur: string; motDePasse: string };
-		if (!body.nomUtilisateur || !body.motDePasse) {
+		const input = await jsonOrError(req);
+		if (input instanceof Response) return input;
+		const body = input as { nomUtilisateur?: unknown; motDePasse?: unknown };
+		if (!body || !isString(body.nomUtilisateur, 1, 50) || !isString(body.motDePasse, 1, 255)) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS', message: 'Le nom d\'utilisateur et le mot de passe sont obligatoires' }, { status: 400 });
 		}
 		try {

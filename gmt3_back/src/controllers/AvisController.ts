@@ -7,7 +7,8 @@ import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
 import { optimizeImage } from '../utils/imageOptimize.js';
-import { parseId, toPositiveInteger } from '../utils/validation.js';
+import { isString, readFormString, toPositiveInteger } from '../utils/validation.js';
+import { idOrError } from './helpers.js';
 import sharp from 'sharp';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -41,11 +42,12 @@ export const AvisController = {
 	async create(req: BunRequest): Promise<Response> {
 		const fd = await req.formData();
 		const evenementId = toPositiveInteger(fd.get('evenementId'));
-		const nom = (fd.get('nom') as string | null)?.trim();
+		const nom = readFormString(fd, 'nom')?.trim();
 		const note = Number(fd.get('note'));
-		const commentaire = (fd.get('commentaire') as string | null)?.trim() || null;
+		const commentaireValue = readFormString(fd, 'commentaire');
+		const commentaire = commentaireValue?.trim() || null;
 
-		if (!evenementId || !nom || !Number.isInteger(note) || note < 1 || note > 5) {
+		if (!evenementId || !isString(nom, 2, 100) || (commentaire !== null && !isString(commentaire, 0, 5000)) || !Number.isInteger(note) || note < 1 || note > 5) {
 			return Response.json({ error: 'CHAMPS_INVALIDES', message: 'Nom, événement et note (1 à 5) sont obligatoires' }, { status: 400 });
 		}
 
@@ -99,8 +101,8 @@ export const AvisController = {
 
 	// ── Admin : approuver ──
 	async approve(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 		const updated = await avisService.approve(id);
 		if (!updated) return Response.json({ error: 'AVIS_INTROUVABLE' }, { status: 404 });
 		return Response.json({ ...formatAvisDates(updated), message: 'Avis approuvé' });
@@ -108,8 +110,8 @@ export const AvisController = {
 
 	// ── Admin : supprimer ──
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 		const ok = await avisService.delete(id);
 		if (!ok) return Response.json({ error: 'AVIS_INTROUVABLE' }, { status: 404 });
 		return Response.json({ success: true, message: 'Avis supprimé' });

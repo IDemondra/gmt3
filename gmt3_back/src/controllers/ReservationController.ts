@@ -5,7 +5,8 @@ import { EvenementRepository } from '../repositories/EvenementRepository.js';
 import type { BunRequest } from '../types/http.js';
 import type { Reservation } from '../types/index.js';
 import { formatDateFields, parseCalendarDate } from '../utils/date.js';
-import { parseId, toPositiveInteger } from '../utils/validation.js';
+import { isString, toPositiveInteger } from '../utils/validation.js';
+import { idOrError, jsonOrError, notFound } from './helpers.js';
 
 type ReservationBody = {
 	clientId?: number;
@@ -52,8 +53,8 @@ export const ReservationController = {
 	},
 
 	async getById(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const reservation = await reservationService.getById(id);
 		if (!reservation) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });
@@ -62,7 +63,12 @@ export const ReservationController = {
 	},
 
 	async create(req: BunRequest): Promise<Response> {
-		const body = await req.json() as ReservationBody;
+		const input = await jsonOrError(req);
+		if (input instanceof Response) return input;
+		const body = input as ReservationBody;
+		if (Object.keys(body).some((field) => !['clientId', 'evenementId', 'nombrePlaces', 'dateReservation', 'statut', 'nom', 'contact'].includes(field))) return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
+		if (body.nom !== undefined && !isString(body.nom, 2, 100)) return Response.json({ error: 'NOM_INVALIDE' }, { status: 400 });
+		if (body.contact !== undefined && !isString(body.contact, 10, 20)) return Response.json({ error: 'CONTACT_INVALIDE' }, { status: 400 });
 		const evenementId = toPositiveInteger(body.evenementId);
 		const nombrePlaces = body.nombrePlaces === undefined ? 1 : toPositiveInteger(body.nombrePlaces);
 
@@ -113,10 +119,12 @@ export const ReservationController = {
 	},
 
 	async update(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
-		const body = await req.json() as ReservationBody;
+		const input = await jsonOrError(req);
+		if (input instanceof Response) return input;
+		const body = input as ReservationBody;
 		const allowedFields = new Set(['nombrePlaces', 'statut']);
 		if (Object.keys(body).some((field) => !allowedFields.has(field))) {
 			return Response.json({ error: 'CLIENT_ET_EVENEMENT_NON_MODIFIABLES', message: 'Client et événement ne sont pas modifiables' }, { status: 400 });
@@ -146,8 +154,8 @@ export const ReservationController = {
 	},
 
 	async delete(req: BunRequest, params: { id: string }): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const ok = await reservationService.delete(id);
 		if (!ok) return Response.json({ error: 'RESERVATION_INTROUVABLE' }, { status: 404 });

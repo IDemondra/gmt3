@@ -11,7 +11,8 @@ import { resolve } from 'path';
 import { fileTypeFromBuffer } from 'file-type';
 import heicConvert from 'heic-convert';
 import { optimizeImage } from '../utils/imageOptimize.js';
-import { parseId } from '../utils/validation.js';
+import { readFormString } from '../utils/validation.js';
+import { idOrError } from './helpers.js';
 import { db } from '../config/database.js';
 import { reservations } from '../models/schema.js';
 import { and, eq, ne, sql } from 'drizzle-orm';
@@ -212,8 +213,8 @@ export const EvenementController = {
 	},
 
 	async getById(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const item = await serializeEvenement(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
@@ -222,8 +223,8 @@ export const EvenementController = {
 	},
 
 	async getPhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
@@ -233,8 +234,8 @@ export const EvenementController = {
 	},
 
 	async replacePhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
@@ -249,19 +250,19 @@ export const EvenementController = {
 
 	async create(req: BunRequest): Promise<Response> {
 		const fd = await req.formData();
-		const titre = fd.get('titre') as string;
-		const dateEvenement = fd.get('dateEvenement') as string;
-		const description = fd.get('description') as string || undefined;
-		const lieu = fd.get('lieu') as string || undefined;
-		const difficulte = fd.get('difficulte') as string || undefined;
-		const prixStr = fd.get('prix') as string;
+		const titre = readFormString(fd, 'titre');
+		const dateEvenement = readFormString(fd, 'dateEvenement');
+		const description = readFormString(fd, 'description');
+		const lieu = readFormString(fd, 'lieu');
+		const difficulte = readFormString(fd, 'difficulte');
+		const prixStr = readFormString(fd, 'prix');
 		const prix = prixStr ? parseFloat(prixStr) : null;
-		const capaciteMaxStr = fd.get('capaciteMax') as string;
+		const capaciteMaxStr = readFormString(fd, 'capaciteMax');
 		const capaciteMax = capaciteMaxStr ? Number(capaciteMaxStr) : null;
-		const heureDepart = fd.get('heureDepart') as string || undefined;
-		const dateDepart = fd.get('dateDepart') as string || undefined;
-		const heureRetour = fd.get('heureRetour') as string || undefined;
-		const dateRetour = fd.get('dateRetour') as string || undefined;
+		const heureDepart = readFormString(fd, 'heureDepart');
+		const dateDepart = readFormString(fd, 'dateDepart');
+		const heureRetour = readFormString(fd, 'heureRetour');
+		const dateRetour = readFormString(fd, 'dateRetour');
 		const estPublie = fd.get('estPublie') === 'on';
 
 		if (!titre || !dateEvenement || !validEventData({ titre, dateEvenement, dateDepart, dateRetour, prix, capaciteMax })) {
@@ -307,27 +308,27 @@ export const EvenementController = {
 	},
 
 	async update(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 
 		const fd = await req.formData();
 		const data: Partial<Evenement> = {};
 
-		const titre = fd.get('titre') as string;
-		const dateEvenement = fd.get('dateEvenement') as string;
+		const titre = readFormString(fd, 'titre');
+		const dateEvenement = readFormString(fd, 'dateEvenement');
 		if (titre) data.titre = titre;
 		if (dateEvenement) data.dateEvenement = dateEvenement;
-		if (fd.get('description')) data.description = fd.get('description') as string;
-		if (fd.get('lieu')) data.lieu = fd.get('lieu') as string;
-		if (fd.has('difficulte')) data.difficulte = (fd.get('difficulte') as string) || null;
-		if (fd.get('heureDepart')) data.heureDepart = fd.get('heureDepart') as string;
-		if (fd.get('dateDepart')) data.dateDepart = fd.get('dateDepart') as string;
-		if (fd.get('heureRetour')) data.heureRetour = fd.get('heureRetour') as string;
-		if (fd.get('dateRetour')) data.dateRetour = fd.get('dateRetour') as string;
-		const prixStr = fd.get('prix') as string;
+		if (readFormString(fd, 'description')) data.description = readFormString(fd, 'description');
+		if (readFormString(fd, 'lieu')) data.lieu = readFormString(fd, 'lieu');
+		if (fd.has('difficulte')) data.difficulte = readFormString(fd, 'difficulte') || null;
+		if (readFormString(fd, 'heureDepart')) data.heureDepart = readFormString(fd, 'heureDepart');
+		if (readFormString(fd, 'dateDepart')) data.dateDepart = readFormString(fd, 'dateDepart');
+		if (readFormString(fd, 'heureRetour')) data.heureRetour = readFormString(fd, 'heureRetour');
+		if (readFormString(fd, 'dateRetour')) data.dateRetour = readFormString(fd, 'dateRetour');
+		const prixStr = readFormString(fd, 'prix');
 		if (prixStr) data.prix = parseFloat(prixStr);
 		if (fd.has('capaciteMax')) {
-			const value = fd.get('capaciteMax') as string;
+			const value = readFormString(fd, 'capaciteMax');
 			data.capaciteMax = value ? Number(value) : null;
 		}
 		data.estPublie = fd.get('estPublie') === 'on';
@@ -358,8 +359,8 @@ export const EvenementController = {
 	},
 
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {
-		const id = parseId(params.id);
-		if (!id) return Response.json({ error: 'ID_INVALIDE', message: 'ID invalide' }, { status: 400 });
+		const id = idOrError(params);
+		if (id instanceof Response) return id;
 		const ok = await evenementService.delete(id);
 		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		return Response.json({ success: true, message: 'Événement supprimé avec succès' });
