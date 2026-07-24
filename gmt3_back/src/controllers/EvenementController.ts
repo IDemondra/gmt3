@@ -15,6 +15,7 @@ import { parseId } from '../utils/validation.js';
 import { db } from '../config/database.js';
 import { reservations } from '../models/schema.js';
 import { and, eq, ne, sql } from 'drizzle-orm';
+import sharp from 'sharp';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
@@ -42,6 +43,8 @@ async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: stri
 	}
 
 	if (!ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
+	const metadata = await sharp(rawBuf, { limitInputPixels: 40_000_000 }).metadata();
+	if (!metadata.width || !metadata.height || metadata.width * metadata.height > 40_000_000) return null;
 	return optimizeImage(rawBuf, type.ext);
 }
 
@@ -150,7 +153,7 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 	for (let i = 0; i < plan.length; i++) {
 		const item = plan[i]!;
 		const validated = validatedFiles[i]!;
-		const correctedFilename = item.filename.replace(/\.[^.]+$/, `.${validated.ext}`);
+		const correctedFilename = `${String(item.ordre).padStart(2, '0')}-${crypto.randomUUID()}.${validated.ext}`;
 		const filePath = resolve(galleryDir, correctedFilename);
 		writeFileSync(filePath, validated.buf);
 		item.filename = correctedFilename;
@@ -289,7 +292,7 @@ export const EvenementController = {
 				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
 			const dir = ensureDir(item.id);
-			const filename = `main.${validated.ext}`;
+			const filename = `main-${crypto.randomUUID()}.${validated.ext}`;
 			writeFileSync(resolve(dir, filename), validated.buf);
 			await evenementService.update(item.id, { imagePrincipale: `/uploads/evenements/${item.id}/${filename}` });
 		}
@@ -337,7 +340,7 @@ export const EvenementController = {
 				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
 			const dir = ensureDir(id);
-			const filename = `main.${validated.ext}`;
+			const filename = `main-${crypto.randomUUID()}.${validated.ext}`;
 			writeFileSync(resolve(dir, filename), validated.buf);
 			data.imagePrincipale = `/uploads/evenements/${id}/${filename}`;
 		}

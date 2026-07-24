@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { index, sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 // ── Utilisateurs ──
 export const utilisateurs = sqliteTable('utilisateurs', {
@@ -11,7 +11,7 @@ export const utilisateurs = sqliteTable('utilisateurs', {
 	actif: integer('actif', { mode: 'boolean' }).default(true).notNull(),
 	derniereConnexion: text('derniere_connexion'),
 	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
-});
+}, (table) => [index('utilisateurs_role_idx').on(table.role)]);
 
 // ── Clients ──
 export const clients = sqliteTable('clients', {
@@ -19,7 +19,7 @@ export const clients = sqliteTable('clients', {
 	nom: text('nom', { length: 100 }).notNull(),
 	contact: text('contact', { length: 100 }).notNull(),
 	dateAjout: text('date_ajout').$defaultFn(() => new Date().toISOString()),
-});
+}, (table) => [index('clients_contact_idx').on(table.contact)]);
 
 // ── Événements ──
 export const evenements = sqliteTable('evenements', {
@@ -38,7 +38,7 @@ export const evenements = sqliteTable('evenements', {
 	imagePrincipale: text('image_principale', { length: 255 }),
 	estPublie: integer('est_publie', { mode: 'boolean' }).default(true).notNull(),
 	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
-});
+}, (table) => [index('evenements_publication_date_idx').on(table.estPublie, table.dateDepart)]);
 
 // ── Photos Événement ──
 export const photosEvenement = sqliteTable('photos_evenement', {
@@ -47,7 +47,7 @@ export const photosEvenement = sqliteTable('photos_evenement', {
 	url: text('url', { length: 255 }).notNull(),
 	ordre: integer('ordre').default(0),
 	legende: text('legende', { length: 255 }),
-});
+}, (table) => [index('photos_evenement_event_order_idx').on(table.evenementId, table.ordre)]);
 
 // ── Avis / Témoignages ──
 export const avis = sqliteTable('avis', {
@@ -59,7 +59,7 @@ export const avis = sqliteTable('avis', {
 	photoUrl: text('photo_url', { length: 255 }),
 	estApprouve: integer('est_approuve', { mode: 'boolean' }).default(false).notNull(),
 	dateCreation: text('date_creation').$defaultFn(() => new Date().toISOString()),
-});
+}, (table) => [index('avis_event_approved_date_idx').on(table.evenementId, table.estApprouve, table.dateCreation)]);
 
 // ── Refresh Tokens (rotation) ──
 export const refreshTokens = sqliteTable('refresh_tokens', {
@@ -67,7 +67,7 @@ export const refreshTokens = sqliteTable('refresh_tokens', {
 	tokenHash: text('token_hash', { length: 64 }).notNull().unique(),
 	utilisateurId: integer('utilisateur_id').notNull().references(() => utilisateurs.id, { onDelete: 'cascade' }),
 	expiresAt: integer('expires_at').notNull(), // Unix timestamp (seconds)
-});
+}, (table) => [index('refresh_tokens_expiry_idx').on(table.expiresAt), index('refresh_tokens_user_idx').on(table.utilisateurId)]);
 
 // ── Réservations ──
 export const reservations = sqliteTable('reservations', {
@@ -78,7 +78,7 @@ export const reservations = sqliteTable('reservations', {
 	statut: text('statut', { enum: ['en_attente', 'confirmee', 'annulee'] }).default('confirmee').notNull(),
 	montant: real('montant'),
 	dateReservation: text('date_reservation').$defaultFn(() => new Date().toISOString()),
-});
+}, (table) => [index('reservations_event_status_idx').on(table.evenementId, table.statut), index('reservations_client_idx').on(table.clientId)]);
 
 export const journalAudit = sqliteTable('journal_audit', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
@@ -87,4 +87,4 @@ export const journalAudit = sqliteTable('journal_audit', {
 	ressource: text('ressource', { length: 255 }).notNull(),
 	adresseIp: text('adresse_ip', { length: 64 }),
 	dateCreation: text('date_creation').notNull(),
-});
+}, (table) => [index('journal_audit_user_date_idx').on(table.utilisateurId, table.dateCreation)]);

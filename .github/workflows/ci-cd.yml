@@ -3,14 +3,71 @@ name: GMT+3 CI/CD
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  validation-backend:
+    name: Validation backend Bun
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperation du code source
+        uses: actions/checkout@v4
+
+      - name: Configuration de Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Installation des dépendances backend
+        working-directory: gmt3_back
+        run: bun install --frozen-lockfile
+
+      - name: Vérification TypeScript
+        working-directory: gmt3_back
+        run: bun run check
+
+      - name: Tests backend
+        working-directory: gmt3_back
+        run: bun test
+
+  validation-frontend:
+    name: Validation frontend Preact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperation du code source
+        uses: actions/checkout@v4
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: gmt3_front/package-lock.json
+
+      - name: Installation des dépendances frontend
+        working-directory: gmt3_front
+        run: npm ci
+
+      - name: React Doctor
+        working-directory: gmt3_front
+        run: npx react-doctor@latest --verbose --no-color
+
+      - name: Build frontend
+        working-directory: gmt3_front
+        run: npm run build
+
   construction-images:
     name: Construction et envoi des images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validation-backend, validation-frontend]
     runs-on: ubuntu-latest
     environment: production
     outputs:
@@ -56,6 +113,7 @@ jobs:
   deploiement:
     name: Deploiement sur le serveur
     needs: construction-images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
 

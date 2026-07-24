@@ -12,6 +12,13 @@ import { existsSync } from 'fs';
 import { resolve } from 'path';
 
 const STATIC_UPLOADS_ROOT = resolve(import.meta.dir, '..', 'uploads');
+const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+const UPLOAD_REQUEST_LIMITS: Array<{ matches: (method: string, path: string) => boolean; bytes: number }> = [
+	{ matches: (method, path) => method === 'POST' && path === '/api/avis', bytes: 6 * 1024 * 1024 },
+	{ matches: (method, path) => method === 'POST' && path === '/api/evenements', bytes: 46 * 1024 * 1024 },
+	{ matches: (method, path) => method === 'PUT' && /^\/api\/evenements\/\d+$/.test(path), bytes: 46 * 1024 * 1024 },
+	{ matches: (method, path) => method === 'POST' && /^\/api\/evenements\/\d+\/photos$/.test(path), bytes: 41 * 1024 * 1024 },
+];
 
 // In-memory rate limiter: max 10 login attempts per IP per 15 minutes
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -153,14 +160,22 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	};
 
 	if (pathname.startsWith('/uploads/')) {
-		const relativePath = pathname.slice('/uploads/'.length);
+		let relativePath: string;
+		try {
+			relativePath = decodeURIComponent(pathname.slice('/uploads/'.length));
+		} catch {
+			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+		}
 		const filePath = resolve(STATIC_UPLOADS_ROOT, relativePath);
-		if (!filePath.startsWith(STATIC_UPLOADS_ROOT) || !existsSync(filePath)) {
+		const extension = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
+		if ((!filePath.startsWith(`${STATIC_UPLOADS_ROOT}${process.platform === 'win32' ? '\\' : '/'}`) && filePath !== STATIC_UPLOADS_ROOT)
+			|| !ALLOWED_UPLOAD_EXTENSIONS.has(extension) || !existsSync(filePath)) {
 			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
 		}
 
+		const file = Bun.file(filePath);
 		return new Response(Bun.file(filePath), {
-			headers: corsHeaders,
+			headers: { ...corsHeaders, 'Content-Type': file.type || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline' },
 		});
 	}
 
@@ -174,6 +189,12 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 
 	if (!matched) {
 		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+	}
+
+	const uploadLimit = UPLOAD_REQUEST_LIMITS.find(({ matches }) => matches(req.method, pathname))?.bytes;
+	const contentLength = Number(req.headers.get('Content-Length'));
+	if (uploadLimit && Number.isFinite(contentLength) && contentLength > uploadLimit) {
+		return Response.json({ error: 'FICHIER_TROP_LOURD', message: 'Requête multipart trop volumineuse' }, { status: 413, headers: corsHeaders });
 	}
 
 	// ── Login rate limiting ──
