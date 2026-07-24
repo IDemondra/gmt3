@@ -127,7 +127,8 @@ export const ReservationController = {
 		const body = input as ReservationBody;
 		const allowedFields = new Set(['nombrePlaces', 'statut']);
 		if (Object.keys(body).some((field) => !allowedFields.has(field))) {
-			return Response.json({ error: 'CLIENT_ET_EVENEMENT_NON_MODIFIABLES', message: 'Client et événement ne sont pas modifiables' }, { status: 400 });
+			return Response.json({ error: 'CLIENT_ET_EVENEMENT_NON_MODIFIABLES', 
+				message: 'Client et événement ne sont pas modifiables' }, { status: 400 });
 		}
 		const data: Partial<Reservation> = {};
 
@@ -136,7 +137,10 @@ export const ReservationController = {
 			if (!nombrePlaces) return Response.json({ error: 'NOMBRE_PLACES_INVALIDE' }, { status: 400 });
 			data.nombrePlaces = nombrePlaces;
 		}
-		if (body.statut !== undefined && !['en_attente', 'confirmee', 'annulee'].includes(body.statut)) return Response.json({ error: 'STATUT_INVALIDE' }, { status: 400 });
+
+		if (body.statut !== undefined && !['en_attente', 'confirmee', 'annulee'].includes(body.statut)) 
+			return Response.json({ error: 'STATUT_INVALIDE' }, { status: 400 });
+
 		if (body.statut !== undefined) data.statut = body.statut;
 
 		const current = await reservationService.getById(id);
