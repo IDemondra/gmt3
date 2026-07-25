@@ -1,8 +1,7 @@
 /**
  * @param {KeyboardEvent} e
- * @param {number} [maxLength]
  */
-export function handleDigitKeyDown(e, maxLength) {
+export function handleDigitKeyDown(e) {
 	if (e.ctrlKey || e.altKey || e.metaKey) return;
 	const allowed = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
 	if (allowed.includes(e.key)) return;

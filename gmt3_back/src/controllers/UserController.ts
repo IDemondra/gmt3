@@ -9,9 +9,26 @@ import { idOrError, jsonOrError, notFound } from './helpers.js';
 const userService = new UserService(new UserRepository());
 
 const IS_PRODUCTION = Bun.env.NODE_ENV === 'production';
+const REFRESH_COOKIE_NAME = IS_PRODUCTION ? '__Host-refreshToken' : 'refreshToken';
+const REFRESH_COOKIE_PATH = IS_PRODUCTION ? '/' : '/api';
 const secureFlag = IS_PRODUCTION ? '; Secure' : '';
-const SET_COOKIE_OPTS = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-Age=604800`;
-const SET_COOKIE_OPTS_LOGOUT = `HttpOnly${secureFlag}; SameSite=Strict; Path=/api; Max-Age=0`;
+const SET_COOKIE_OPTS = `HttpOnly${secureFlag}; SameSite=Strict; Path=${REFRESH_COOKIE_PATH}; Max-Age=604800`;
+const SET_COOKIE_OPTS_LOGOUT = `HttpOnly${secureFlag}; SameSite=Strict; Path=${REFRESH_COOKIE_PATH}; Max-Age=0`;
+
+function readRefreshToken(req: Request): string | null {
+	const prefix = `${REFRESH_COOKIE_NAME}=`;
+	const value = (req.headers.get('Cookie') || '')
+		.split(';')
+		.map((part) => part.trim())
+		.find((part) => part.startsWith(prefix))
+		?.slice(prefix.length);
+	if (!value) return null;
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return null;
+	}
+}
 
 function formatUserDates<T extends { dateCreation?: string | null }>(user: T): T {
 	return formatDateFields(user, ['dateCreation']);
@@ -130,7 +147,7 @@ export const UserController = {
 				status: 200,
 				headers: {
 					'Content-Type': 'application/json',
-					'Set-Cookie': `refreshToken=${refreshToken}; ${SET_COOKIE_OPTS}`,
+					'Set-Cookie': `${REFRESH_COOKIE_NAME}=${encodeURIComponent(refreshToken)}; ${SET_COOKIE_OPTS}`,
 				},
 			});
 		} catch (e) {
@@ -139,9 +156,7 @@ export const UserController = {
 	},
 
 	async refresh(req: BunRequest): Promise<Response> {
-		const cookie = req.headers.get('Cookie') || '';
-		const match = cookie.match(/refreshToken=([^;]+)/);
-		const token = match ? decodeURIComponent(match[1]!) : null;
+		const token = readRefreshToken(req);
 		if (!token) {
 			return Response.json({ error: 'NON_AUTORISE', message: 'Non autorisé' }, { status: 401 });
 		}
@@ -153,21 +168,19 @@ export const UserController = {
 			status: 200,
 			headers: {
 				'Content-Type': 'application/json',
-				'Set-Cookie': `refreshToken=${result.newRefreshToken}; ${SET_COOKIE_OPTS}`,
+					'Set-Cookie': `${REFRESH_COOKIE_NAME}=${encodeURIComponent(result.newRefreshToken)}; ${SET_COOKIE_OPTS}`,
 			},
 		});
 	},
 
 	async logout(req: BunRequest): Promise<Response> {
-		const cookie = req.headers.get('Cookie') || '';
-		const match = cookie.match(/refreshToken=([^;]+)/);
-		const token = match ? decodeURIComponent(match[1]!) : null;
+		const token = readRefreshToken(req);
 		if (token) await userService.revokeRefreshToken(token);
 		return new Response(JSON.stringify({ success: true, message: 'Déconnexion réussie' }), {
 			status: 200,
 			headers: {
 				'Content-Type': 'application/json',
-				'Set-Cookie': `refreshToken=; ${SET_COOKIE_OPTS_LOGOUT}`,
+				'Set-Cookie': `${REFRESH_COOKIE_NAME}=; ${SET_COOKIE_OPTS_LOGOUT}`,
 			},
 		});
 	},

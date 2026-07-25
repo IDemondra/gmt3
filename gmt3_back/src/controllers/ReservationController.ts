@@ -81,7 +81,7 @@ export const ReservationController = {
 		const availabilityError = await validateAvailability(evenementId, nombrePlaces);
 		if (availabilityError) return Response.json({ error: availabilityError, message: availabilityMessage(availabilityError) }, { status: availabilityError === 'EVENEMENT_INTROUVABLE' ? 404 : 409 });
 
-		let clientId = toPositiveInteger(body.clientId);
+		let clientId = req.user ? toPositiveInteger(body.clientId) : null;
 		if (clientId && !(await clientRepository.findById(clientId))) {
 			return Response.json({ error: 'CLIENT_INTROUVABLE', message: 'Client introuvable' }, { status: 404 });
 		}
@@ -109,7 +109,7 @@ export const ReservationController = {
 			evenementId,
 			nombrePlaces,
 			statut: req.user ? body.statut ?? 'confirmee' : 'en_attente',
-			dateReservation: body.dateReservation || new Date().toISOString(),
+			dateReservation: req.user ? body.dateReservation || new Date().toISOString() : new Date().toISOString(),
 		});
 
 		return Response.json({

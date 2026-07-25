@@ -1,7 +1,7 @@
 # GMT+3 Madagascar - Tour Operator
 
 ## Project Overview
-Modern front-end for **GMT+3 Madagascar**, a travel/tourism operator specializing in expeditions across Madagascar. Built with **Preact** + **Vite** + **Tailwind CSS v4**.
+Modern front-end for **GMT+3 Madagascar**, a travel/tourism operator specializing in expeditions across Madagascar. Built with **Astro** + **Preact** + **Bun** + **Tailwind CSS v4**.
 
 Design modernized using **UI-UX Pro Max** guidelines: Motion-Driven animations, Glassmorphism effects, Bento-inspired layouts, scroll reveals, micro-interactions. Red theme preserved (#ba0013, #e31e24).
 
@@ -19,7 +19,7 @@ Design modernized using **UI-UX Pro Max** guidelines: Motion-Driven animations, 
 - `src/pages/Home/components/Header.jsx` — fixed `img()` wrapper on logo src
 
 ## Summary of What Works
-- Build passes with zero errors (vite build: 38 modules, 798ms, 6 prerendered pages)
+- Astro SSR build passes with zero errors via Bun
 - Full-page scroll-reveal animations on all sections
 - Lightbox gallery with keyboard navigation (ArrowLeft/ArrowRight/Escape)
 - Google CDN image proxy bypasses CORS/tracking restrictions
@@ -118,6 +118,9 @@ Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
 - **Bug réel corrigé** : lightbox de `GallerySection.jsx` (Home) — `setLightbox()` mettait à jour un état jamais consommé, aucun aperçu ne s'ouvrait au clic malgré l'icône "zoom". Branché sur `ImagePreview`. Même correction sur la galerie "Preuves de Terrain" de `Events/index.jsx` (ouvrait un nouvel onglet au lieu d'un aperçu in-page).
 
 ## Getting Started
-- `npm run dev` — Starts dev server at http://localhost:5173/
-- `npm run build` — Builds for production, emits to `dist/`
-- `npm run preview` — Previews production build locally
+- `bun run dev` — Starts dev server at http://localhost:4321/
+- `bun run check` — Checks Astro files and SSR frontmatter
+- `bun run lint` — Lints frontend source
+- `bun test` — Runs frontend tests
+- `bun run build` — Builds for production, emits to `dist/`
+- `bun run preview` — Previews production build locally

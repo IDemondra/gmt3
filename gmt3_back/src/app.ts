@@ -26,6 +26,27 @@ const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const publicAttempts = new Map<string, { count: number; resetAt: number }>();
 const PUBLIC_RATE_LIMIT_MAX = 20;
+const COOKIE_AUTH_PATHS = new Set([
+	'/api/utilisateurs/login',
+	'/api/utilisateurs/refresh',
+	'/api/utilisateurs/logout',
+]);
+
+function isOptionalAuthRoute(method: string, pathname: string): boolean {
+	if (method === 'POST' && pathname === '/api/reservations') return true;
+	if (method !== 'GET') return false;
+	return pathname === '/api/evenements'
+		|| /^\/api\/evenements\/\d+$/.test(pathname)
+		|| /^\/api\/evenements\/\d+\/photos$/.test(pathname);
+}
+
+function isCrossSiteRequest(req: Request, allowedOrigins: Set<string>, requireOrigin: boolean): boolean {
+	const origin = req.headers.get('Origin');
+	const fetchSite = req.headers.get('Sec-Fetch-Site');
+	return fetchSite === 'cross-site'
+		|| (requireOrigin && !origin)
+		|| (origin !== null && !allowedOrigins.has(origin));
+}
 
 function checkLoginRateLimit(ip: string): boolean {
 	const now = Date.now();
@@ -146,7 +167,10 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	const url = new URL(req.url);
 	const pathname = url.pathname;
 	const ALLOWED_ORIGINS = new Set(
-		(Bun.env.CORS_ORIGINS || 'https://gmt3-fianarantsoa.mg,http://localhost:4321,http://localhost:5173').split(','),
+		(Bun.env.CORS_ORIGINS || 'https://gmt3-fianarantsoa.mg,http://localhost:4321,http://localhost:5173')
+			.split(',')
+			.map((origin) => origin.trim())
+			.filter(Boolean),
 	);
 	const requestOrigin = req.headers.get('Origin') || '';
 	const allowedOrigin = ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : '';
@@ -189,6 +213,18 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 
 	if (!matched) {
 		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+	}
+
+	if (req.method === 'POST' && COOKIE_AUTH_PATHS.has(pathname)) {
+		const requireOrigin = pathname === '/api/utilisateurs/refresh' || pathname === '/api/utilisateurs/logout';
+		if (isCrossSiteRequest(req, ALLOWED_ORIGINS, requireOrigin)) {
+			return Response.json({ error: 'ORIGINE_REFUSEE' }, { status: 403, headers: corsHeaders });
+		}
+	}
+
+	if (isOptionalAuthRoute(req.method, pathname) && req.headers.has('Authorization')) {
+		const authResult = await authMiddleware(req);
+		if (authResult) req.user = undefined;
 	}
 
 	const uploadLimit = UPLOAD_REQUEST_LIMITS.find(({ matches }) => matches(req.method, pathname))?.bytes;

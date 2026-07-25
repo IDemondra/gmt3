@@ -76,7 +76,7 @@ export function formatDateTimeWithHour(dateString, timeString) {
 export function formatIsoDateFr(isoString) {
 	if (!isoString) return '—';
 	try {
-		const [datePart, timePart] = isoString.split('T');
+		const [datePart] = isoString.split('T');
 		const [y, m, d] = datePart.split('-');
 		return formatDateFr(`${d}/${m}/${y}`);
 	} catch {

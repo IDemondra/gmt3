@@ -53,6 +53,7 @@ export function AdminDashboard() {
 		if (previewSrc?.startsWith('blob:')) URL.revokeObjectURL(previewSrc);
 	}, [previewSrc]);
 	const [existingGalleryUrls, setExistingGalleryUrls] = useState(/** @type {string[]} */([])); // photos déjà en base (édition, lecture seule)
+	const [pendingSubmit, setPendingSubmit] = useState(/** @type {FormData | null} */(null));
 	const gallery = useGalleryUpload({ addToast });
 	const [uploading, setUploading] = useState(false);
 	const [uploadStatus, setUploadStatus] = useState('');
@@ -104,7 +105,7 @@ export function AdminDashboard() {
 		return () => { cancelled = true; };
 	}, [route, addToast]);
 
-	const handleCreate = () => { setEditingEvent(null); setPreviewSrc(''); setDescText(''); setExistingGalleryUrls([]); gallery.reset(); setShowForm(true); };
+	const handleCreate = () => { setPendingSubmit(null); setEditingEvent(null); setPreviewSrc(''); setDescText(''); setExistingGalleryUrls([]); gallery.reset(); setShowForm(true); };
 
 	const handleEdit = (event) => {
 		setEditingEvent(event);
@@ -115,7 +116,12 @@ export function AdminDashboard() {
 		setShowForm(true);
 	};
 
-	const handleSubmit = async (data) => {
+	const handleSubmit = async (data, galleryReplacementConfirmed = false) => {
+		if (!galleryReplacementConfirmed && editingEvent && existingGalleryUrls.length > 0 && gallery.count > 0) {
+			setPendingSubmit(data);
+			setConfirm({ type: 'replace-gallery' });
+			return;
+		}
 		try {
 			setUploading(true);
 			setUploadProgress(0);
@@ -161,6 +167,7 @@ export function AdminDashboard() {
 			}
 			setShowForm(false);
 			setEditingEvent(null);
+			setPendingSubmit(null);
 			setExistingGalleryUrls([]);
 			gallery.reset();
 		} catch (e) {
@@ -307,12 +314,28 @@ export function AdminDashboard() {
 				onCancel={() => setConfirm(null)}
 			/>
 
+			<ConfirmDialog
+				open={confirm?.type === 'replace-gallery'}
+				title="Remplacer la galerie"
+				message={`Les ${existingGalleryUrls.length} photo(s) existante(s) seront remplacées par les ${gallery.count} nouvelle(s). Continuer ?`}
+				confirmLabel="Remplacer"
+				icon="sync"
+				variant="danger"
+				onConfirm={async () => {
+					const data = pendingSubmit;
+					setPendingSubmit(null);
+					setConfirm(null);
+					if (data) await handleSubmit(data, true);
+				}}
+				onCancel={() => { setPendingSubmit(null); setConfirm(null); }}
+			/>
+
 			<FormModal
 				key={editingEvent?.id ?? 'new-event'}
 				open={showForm}
 				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-				onClose={() => { setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setExistingGalleryUrls([]); gallery.reset(); }}
+				onClose={() => { setPendingSubmit(null); setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setExistingGalleryUrls([]); gallery.reset(); }}
 				onSubmit={handleSubmit}
 				encType="multipart/form-data"
 				submitting={uploading}
@@ -405,6 +428,12 @@ export function AdminDashboard() {
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
 						Galerie photos (optionnel)
 					</label>
+					{editingEvent && existingGalleryUrls.length > 0 && (
+						<div class="mb-3 flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-[11px] text-amber-700">
+							<span class="material-symbols-outlined text-[16px] mt-0.5">warning</span>
+							<span>L’ajout de nouvelles photos remplacera les {existingGalleryUrls.length} photo(s) existante(s).</span>
+						</div>
+					)}
 					<input id="photosEvenement" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container" disabled={gallery.compressingCount > 0} onInput={(e) => {
 						const files = Array.from(e.currentTarget.files || []);
 						e.currentTarget.value = '';
@@ -446,7 +475,7 @@ export function AdminDashboard() {
 				error={detailError}
 				event={detailEvent}
 				onClose={() => { setDetailEvent(null); setDetailError(null); setDetailLoading(false); }}
-				onEdit={() => { if (detailEvent) { setShowForm(true); setEditingEvent(detailEvent); setDetailEvent(null); } }}
+				onEdit={() => { if (detailEvent) { handleEdit(detailEvent); setDetailEvent(null); } }}
 				onPreviewImage={(image) => setPreviewImage(image)}
 			/>
 

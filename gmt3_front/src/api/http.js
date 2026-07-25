@@ -50,7 +50,7 @@ export function apiUpload(path, { token, method = 'POST', body, defaultError = '
 		const xhr = new XMLHttpRequest();
 		xhr.open(method, `${API_BASE}${path}`);
 		xhr.withCredentials = true;
-		if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+		if (currentToken) xhr.setRequestHeader('Authorization', `Bearer ${currentToken}`);
 
 		xhr.upload.onprogress = (e) => {
 			if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));

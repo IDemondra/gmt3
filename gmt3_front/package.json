@@ -5,15 +5,18 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
-		"dev:legacy": "vite"
+		"dev:legacy": "vite",
+		"check": "astro check --tsconfig jsconfig.astro.json",
+		"test": "bun test",
+		"lint": "eslint src --max-warnings 0"
 	},
 	"dependencies": {
-		"@astrojs/node": "11.0.0",
-		"@astrojs/preact": "6.0.0",
+		"@astrojs/node": "11.0.2",
+		"@astrojs/preact": "6.0.1",
 		"@astrojs/sitemap": "3.7.3",
 		"@preact/signals": "^2.9.1",
-		"astro": "7.0.4",
-		"dompurify": "^3.4.10",
+		"astro": "7.1.3",
+		"dompurify": "^3.4.12",
 		"marked": "^18.0.5",
 		"preact": "^10.26.9",
 		"preact-iso": "^2.12.0",
@@ -21,15 +24,15 @@
 		"tailwindcss": "^4.3.0"
 	},
 	"devDependencies": {
+		"@astrojs/check": "0.9.9",
 		"@preact/preset-vite": "^2.10.2",
 		"@tailwindcss/vite": "^4.3.0",
+		"@types/bun": "1.3.13",
 		"autoprefixer": "^10.5.0",
 		"eslint": "^9.39.4",
 		"eslint-config-preact": "^2.0.0",
 		"postcss": "^8.5.15",
+		"typescript": "6.0.3",
 		"vite": "^7.0.4"
-	},
-	"eslintConfig": {
-		"extends": "preact"
 	}
 }

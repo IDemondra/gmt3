@@ -1,0 +1,8 @@
+.git
+.env*
+node_modules
+data
+uploads
+dist
+coverage
+*.log

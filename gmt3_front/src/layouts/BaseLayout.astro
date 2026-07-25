@@ -110,7 +110,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 		<meta name="geo.placename" content="Fianarantsoa" />
 
 		<!-- Données structurées -->
-		<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
 		<!-- Open Graph -->
 		<meta property="og:type" content={ogType} />
@@ -140,8 +140,8 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 
 		{GA_ID && (
 			<>
-				<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
-				<script define:vars={{ GA_ID }}>
+				<script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+				<script is:inline define:vars={{ GA_ID }}>
 					window.dataLayer = window.dataLayer || [];
 					function gtag() {
 						dataLayer.push(arguments);

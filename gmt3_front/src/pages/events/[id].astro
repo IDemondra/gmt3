@@ -25,7 +25,7 @@ const PUBLIC_BACKEND = import.meta.env.PUBLIC_BACKEND_URL || 'https://gmt3-fiana
 const ogImage = event?.imagePrincipale ? `${PUBLIC_BACKEND}${event.imagePrincipale}` : undefined;
 
 // L'API renvoie les dates en DD/MM/YYYY -> schema.org exige du ISO 8601.
-const toISO = (d) => {
+const toISO = (d: string | null | undefined) => {
 	if (!d) return undefined;
 	const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(d);
 	return m ? `${m[3]}-${m[2]}-${m[1]}` : d;

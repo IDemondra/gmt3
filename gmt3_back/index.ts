@@ -91,29 +91,11 @@ Bun.serve({
 		const method = req.method;
 
 		console.log(`\n[REQ] ${method} ${path}`);
-		// Ne jamais logger le corps des routes d'authentification (mots de passe en clair).
-		const SENSITIVE_PATHS = ['/api/utilisateurs/login', '/api/utilisateurs/refresh', '/api/utilisateurs/logout'];
-		const isSensitive = SENSITIVE_PATHS.includes(path) || (method !== 'GET' && path.startsWith('/api/utilisateurs'));
-		const isMultipart = (req.headers.get('content-type') || '').startsWith('multipart/form-data');
-		if (req.body && !isSensitive && !isMultipart) {
-			try {
-				const cloned = req.clone();
-				cloned.text().then((body) => {
-					if (body) console.log(`[BODY] ${body.slice(0, 500)}`);
-				}).catch(() => {});
-			} catch {}
-		}
 
 		return handleRequest(req as Request & { params?: Record<string, string> })
 			.then((res) => {
 				const ms = (performance.now() - start).toFixed(1);
 				console.log(`[RES] ${method} ${path} -> ${res.status} (${ms}ms)`);
-				if (!isSensitive) {
-					res.clone().json().then((data) => {
-						const snippet = JSON.stringify(data).slice(0, 300);
-						console.log(`[DATA] ${snippet}`);
-					}).catch(() => {});
-				}
 				return res;
 			})
 			.catch((err) => {

@@ -17,6 +17,7 @@ import { db } from '../config/database.js';
 import { reservations } from '../models/schema.js';
 import { and, eq, ne, sql } from 'drizzle-orm';
 import sharp from 'sharp';
+import { eventUploadDir, galleryUploadDir, listGalleryFilePaths, removeEventUploadDir, removeFiles, removeUploadFile } from '../utils/uploadCleanup.js';
 
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
@@ -78,16 +79,15 @@ function validEventData(input: { titre?: string | null; dateEvenement?: string |
 	return input.capaciteMax === undefined || input.capaciteMax === null || (Number.isInteger(input.capaciteMax) && input.capaciteMax > 0);
 }
 
-const UPLOADS_ROOT = resolve(import.meta.dir, '..', '..', 'uploads', 'evenements');
-
 function ensureDir(id: number) {
-	const dir = resolve(UPLOADS_ROOT, String(id));
+	const dir = eventUploadDir(id);
 	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 	return dir;
 }
 
 function ensureGalleryDir(id: number) {
-	const dir = resolve(ensureDir(id), 'gallery');
+	const dir = galleryUploadDir(id);
+	ensureDir(id);
 	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 	return dir;
 }
@@ -150,6 +150,8 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 
 	const plan = buildGalleryUploadPlan(evenementId, validatedFiles.map((v) => v.file));
 	const galleryDir = ensureGalleryDir(evenementId);
+	const previousGalleryFiles = listGalleryFilePaths(evenementId);
+	const createdGalleryFiles: string[] = [];
 
 	for (let i = 0; i < plan.length; i++) {
 		const item = plan[i]!;
@@ -157,24 +159,35 @@ async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
 		const correctedFilename = `${String(item.ordre).padStart(2, '0')}-${crypto.randomUUID()}.${validated.ext}`;
 		const filePath = resolve(galleryDir, correctedFilename);
 		writeFileSync(filePath, validated.buf);
+		createdGalleryFiles.push(filePath);
 		item.filename = correctedFilename;
 		item.url = `/uploads/evenements/${evenementId}/gallery/${correctedFilename}`;
 	}
 
-	await photoRepository.deleteByEvenementId(evenementId);
-	return photoRepository.createMany(
-		plan.map((item) => ({
-			evenementId,
-			url: item.url,
-			ordre: item.ordre,
-			legende: null,
-		})),
-	);
+	let photos;
+	try {
+		await photoRepository.deleteByEvenementId(evenementId);
+		photos = await photoRepository.createMany(
+			plan.map((item) => ({
+				evenementId,
+				url: item.url,
+				ordre: item.ordre,
+				legende: null,
+			})),
+		);
+	} catch (error) {
+		removeFiles(createdGalleryFiles);
+		throw error;
+	}
+
+	removeFiles(previousGalleryFiles);
+	return photos;
 }
 
 export const EvenementController = {
 	async getAll(req: BunRequest): Promise<Response> {
-		const items = await evenementService.getAll();
+		const allItems = await evenementService.getAll();
+		const items = req.user ? allItems : allItems.filter((item) => item.estPublie);
 		const reservationTotals = await db.select({ evenementId: reservations.evenementId, places: sql<number>`coalesce(sum(${reservations.nombrePlaces}), 0)` }).from(reservations).where(ne(reservations.statut, 'annulee')).groupBy(reservations.evenementId);
 		const placesByEvent = new Map(reservationTotals.map((row) => [row.evenementId, Number(row.places)]));
 		const allPhotos = await photoRepository.findAll();
@@ -218,6 +231,7 @@ export const EvenementController = {
 
 		const item = await serializeEvenement(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		if (!item.estPublie && !req.user) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 
 		return Response.json({ ...item, id, message: 'Événement chargé avec succès' });
 	},
@@ -228,6 +242,7 @@ export const EvenementController = {
 
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		if (!item.estPublie && !req.user) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
 
 		const photosEvenement = await photoRepository.findByEvenementIdOrdered(id);
 		return Response.json({ photosEvenement });
@@ -299,7 +314,11 @@ export const EvenementController = {
 		}
 
 		const createSizeError = galleryTotalSizeError(fd);
-		if (createSizeError) { await evenementService.delete(item.id); return createSizeError; }
+		if (createSizeError) {
+			await evenementService.delete(item.id);
+			removeEventUploadDir(item.id);
+			return createSizeError;
+		}
 
 		await storeGalleryPhotos(item.id, fd);
 		const created = await serializeEvenement(item.id);
@@ -333,8 +352,13 @@ export const EvenementController = {
 		}
 		data.estPublie = fd.get('estPublie') === 'on';
 		if (!validEventData(data)) return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
+		const existingItem = await evenementService.getById(id);
+		if (!existingItem) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		const updateSizeError = galleryTotalSizeError(fd);
+		if (updateSizeError) return updateSizeError;
 
 		const imageFile = fd.get('imagePrincipale') as File | null;
+		let newImagePath: string | null = null;
 		if (imageFile && imageFile.size > 0) {
 			const validated = await validateImageBuffer(imageFile);
 			if (!validated) {
@@ -342,15 +366,17 @@ export const EvenementController = {
 			}
 			const dir = ensureDir(id);
 			const filename = `main-${crypto.randomUUID()}.${validated.ext}`;
-			writeFileSync(resolve(dir, filename), validated.buf);
+			newImagePath = resolve(dir, filename);
+			writeFileSync(newImagePath, validated.buf);
 			data.imagePrincipale = `/uploads/evenements/${id}/${filename}`;
 		}
 
 		const item = await evenementService.update(id, data);
-		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
-
-		const updateSizeError = galleryTotalSizeError(fd);
-		if (updateSizeError) return updateSizeError;
+		if (!item) {
+			if (newImagePath) removeFiles([newImagePath]);
+			return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+		}
+		if (newImagePath && existingItem.imagePrincipale) removeUploadFile(existingItem.imagePrincipale);
 
 		await storeGalleryPhotos(id, fd);
 		const updated = await serializeEvenement(id);
@@ -361,8 +387,10 @@ export const EvenementController = {
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {
 		const id = idOrError(params);
 		if (id instanceof Response) return id;
+		if (!await evenementService.getById(id)) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		const ok = await evenementService.delete(id);
 		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		removeEventUploadDir(id);
 		return Response.json({ success: true, message: 'Événement supprimé avec succès' });
 	},
 };

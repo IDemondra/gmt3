@@ -1,5 +1,5 @@
 # ── Build ──
-FROM oven/bun:latest AS builder
+FROM oven/bun:1.3.13 AS builder
 
 WORKDIR /app
 
@@ -18,12 +18,12 @@ ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 RUN bun run build
 
 # ── Runtime (serveur SSR Astro) ──
-FROM oven/bun:latest AS runtime
+FROM oven/bun:1.3.13 AS runtime
 
 WORKDIR /app
 
 ENV NODE_ENV=production
-# L'adapter node écoute sur HOST:PORT ; HOST=0.0.0.0 obligatoire en conteneur.
+# Le serveur SSR Astro écoute sur HOST:PORT ; HOST=0.0.0.0 obligatoire en conteneur.
 ENV HOST=0.0.0.0
 ENV PORT=4321
 # Base API côté SERVEUR (fetch SSR dans les .astro) -> backend interne.

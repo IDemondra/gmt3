@@ -1,0 +1,10 @@
+{
+	"extends": "./jsconfig.json",
+	"compilerOptions": {
+		"allowJs": false,
+		"checkJs": false,
+		"types": ["astro/client", "vite/client"]
+	},
+	"include": ["src/**/*.astro"],
+	"exclude": ["dist", ".astro", "node_modules"]
+}
