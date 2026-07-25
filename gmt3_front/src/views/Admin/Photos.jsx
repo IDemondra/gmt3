@@ -61,12 +61,13 @@ export function AdminPhotos() {
 	const selectEvent = async (evt) => {
 		gallery.reset();
 		setSelected(evt);
-		setExisting([]);
+		const listedPhotos = Array.isArray(evt.photosEvenement) ? evt.photosEvenement : [];
+		setExisting(listedPhotos);
 		try {
 			const full = await evenementApi(accessToken.value, evt.id);
-			setExisting(full.photosEvenement || []);
+			if (Array.isArray(full.photosEvenement)) setExisting(full.photosEvenement);
 		} catch {
-			addToast('Erreur de chargement de la galerie', 'error');
+			if (listedPhotos.length === 0) addToast('Erreur de chargement de la galerie', 'error');
 		}
 	};
 
@@ -191,7 +192,7 @@ export function AdminPhotos() {
 										<div class="mb-6">
 											<p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Actuellement en ligne ({existing.length}) — sera remplacé</p>
 											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-								{existing.map((p) => (
+								{existing.map((p, idx) => (
 									<div key={p.id || p.url} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
 									<img src={resolveImg(p.url)} alt={`Événement ${idx + 1}`} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
 													</div>
