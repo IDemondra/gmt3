@@ -24,7 +24,7 @@ jobs:
       - name: Configuration de Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: '1.3.13'
 
       - name: Installation des dépendances backend
         working-directory: gmt3_back
@@ -48,13 +48,25 @@ jobs:
       - name: Configuration de Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: '1.3.13'
 
       - name: Installation des dépendances frontend
         working-directory: gmt3_front
         run: bun install --frozen-lockfile
 
-      - name: React Doctor
+      - name: Vérification Astro
+        working-directory: gmt3_front
+        run: bun run check
+
+      - name: Lint frontend
+        working-directory: gmt3_front
+        run: bun run lint
+
+      - name: Tests frontend
+        working-directory: gmt3_front
+        run: bun test
+
+      - name: Analyse frontend
         working-directory: gmt3_front
         run: bun x react-doctor@latest --verbose --no-color
 
