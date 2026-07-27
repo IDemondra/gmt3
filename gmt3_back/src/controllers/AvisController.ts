@@ -22,6 +22,12 @@ function formatAvisDates<T extends { dateCreation?: string | null }>(a: T): T {
 	return formatDateFields(a, ['dateCreation']);
 }
 
+function createAnonymousName(): string {
+	const values = new Uint32Array(1);
+	crypto.getRandomValues(values);
+	return `Anonyme ${String(values[0]! % 1_000_000).padStart(6, '0')}`;
+}
+
 async function storeAvisPhoto(evenementId: number, file: File): Promise<string | null> {
 	if (file.size === 0 || file.size > MAX_FILE_SIZE) return null;
 	const rawBuf = Buffer.from(await file.arrayBuffer());
@@ -42,13 +48,13 @@ export const AvisController = {
 	async create(req: BunRequest): Promise<Response> {
 		const fd = await req.formData();
 		const evenementId = toPositiveInteger(fd.get('evenementId'));
-		const nom = readFormString(fd, 'nom')?.trim();
+		const nom = readFormString(fd, 'nom')?.trim() || createAnonymousName();
 		const note = Number(fd.get('note'));
 		const commentaireValue = readFormString(fd, 'commentaire');
 		const commentaire = commentaireValue?.trim() || null;
 
 		if (!evenementId || !isString(nom, 2, 100) || (commentaire !== null && !isString(commentaire, 0, 5000)) || !Number.isInteger(note) || note < 1 || note > 5) {
-			return Response.json({ error: 'CHAMPS_INVALIDES', message: 'Nom, événement et note (1 à 5) sont obligatoires' }, { status: 400 });
+			return Response.json({ error: 'CHAMPS_INVALIDES', message: 'Événement et note (1 à 5) sont obligatoires' }, { status: 400 });
 		}
 
 		const evenement = await evenementRepository.findById(evenementId);

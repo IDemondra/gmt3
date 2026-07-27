@@ -51,15 +51,15 @@ export function EventDetail({ params }) {
 
 	const handleReviewSubmit = async (e) => {
 		e.preventDefault();
-		if (!reviewForm.nom.trim() || reviewForm.note < 1) {
-			addToast('Indiquez votre nom et une note', 'warning');
+		if (reviewForm.note < 1) {
+			addToast('Indiquez une note', 'warning');
 			return;
 		}
 		setReviewLoading(true);
 		try {
 			const fd = new FormData();
 			fd.append('evenementId', String(eventId));
-			fd.append('nom', reviewForm.nom.trim());
+			if (reviewForm.nom.trim()) fd.append('nom', reviewForm.nom.trim());
 			fd.append('note', String(reviewForm.note));
 			if (reviewForm.commentaire.trim()) fd.append('commentaire', reviewForm.commentaire.trim());
 			if (reviewPhoto) {
@@ -615,9 +615,9 @@ export function EventDetail({ params }) {
 											<StarRating value={reviewForm.note} onChange={(n) => setReviewForm({ ...reviewForm, note: n })} size="text-[28px]" />
 										</div>
 										<div>
-											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-nom">Nom</label>
-											<input id="rev-nom" type="text" value={reviewForm.nom} onInput={(e) => setReviewForm({ ...reviewForm, nom: e.currentTarget.value })}
-												class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-on-primary placeholder-on-primary/30 outline-none focus:border-primary" placeholder="Votre nom" required />
+			<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-nom">Nom (optionnel)</label>
+			<input id="rev-nom" type="text" value={reviewForm.nom} onInput={(e) => setReviewForm({ ...reviewForm, nom: e.currentTarget.value })}
+				class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-on-primary placeholder-on-primary/30 outline-none focus:border-primary" placeholder="Votre nom (sinon Anonyme)" />
 										</div>
 										<div>
 											<label class="font-label-caps text-label-caps text-on-primary/60 block mb-2" for="rev-com">Commentaire</label>
