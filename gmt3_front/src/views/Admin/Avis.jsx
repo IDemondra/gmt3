@@ -131,7 +131,7 @@ export function AdminAvis() {
 										aria-label={`Agrandir la photo de ${a.nom}`}
 										class="group relative mt-3 block w-full overflow-hidden rounded-lg cursor-zoom-in"
 									>
-										<img src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" referrerPolicy="no-referrer" />
+										<img src={`${BACKEND}${a.photoUrl}`} alt={`Témoignage de ${a.nom}`} class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" referrerPolicy="no-referrer" />
 										<span class="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-300 group-hover:bg-black/25 group-hover:opacity-100">
 											<span class="material-symbols-outlined text-3xl drop-shadow">zoom_in</span>
 										</span>

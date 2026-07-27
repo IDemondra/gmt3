@@ -232,6 +232,7 @@ export function EventDetail({ params }) {
 	const placesRestantes = normalizedEvent.capaciteMax === null ? null : Math.max(0, normalizedEvent.capaciteMax - normalizedEvent.placesReservees);
 	const isFull = placesRestantes === 0;
 	const showAvis = isPast || (event.avis || []).length > 0;
+	const previewAvis = (event.avis || []).slice(0, 3);
 	const gallery = buildPreviewGallery(normalizedEvent.image, normalizedEvent.gallery || []);
 	const facts = [
 		{ label: 'Localisation', value: normalizedEvent.location || 'Non précisé', icon: 'location_on' },
@@ -553,6 +554,16 @@ export function EventDetail({ params }) {
 									<span class="font-mono text-[10px] text-secondary tracking-widest uppercase">{event.nombreAvis} avis</span>
 								</div>
 							)}
+							{event.nombreAvis > 3 && (
+								<a
+									href={`/events/${event.id}/avis`}
+									aria-label={`Voir les ${event.nombreAvis} avis de ${event.titre}`}
+									class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-4 py-2 font-button text-[10px] font-black uppercase tracking-widest text-primary transition-colors hover:border-primary hover:bg-primary/5"
+								>
+									Voir plus
+									<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+								</a>
+							)}
 						</div>
 					</Reveal>
 
@@ -565,7 +576,7 @@ export function EventDetail({ params }) {
 									<p class="mt-2 font-body-md text-secondary">Aucun avis pour le moment. Soyez le premier !</p>
 								</div>
 							)}
-							{(event.avis || []).map((a) => (
+								{previewAvis.map((a) => (
 								<article key={a.id} class="rounded-2xl border border-outline-variant/60 bg-gradient-to-br from-white/90 to-white/40 backdrop-blur-sm p-5 shadow-sm">
 									<div class="flex items-start justify-between gap-4">
 										<div class="flex items-center gap-3">
