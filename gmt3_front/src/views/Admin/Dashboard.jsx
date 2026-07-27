@@ -22,6 +22,7 @@ import { frDateToTs } from '../../utils/dateFormatter.js';
 const DESC_MAX = 1000;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ROWS_PER_PAGE = 10;
+const typeCollator = new Intl.Collator('fr', { sensitivity: 'base' });
 
 const toDateInputValue = (date = new Date()) => {
 	if (typeof date === 'string') {
@@ -62,6 +63,7 @@ export function AdminDashboard() {
 	const [events, setEvents] = useState([]);
 	const [eventTypes, setEventTypes] = useState([]);
 	const [typeSelection, setTypeSelection] = useState('');
+	const sortedEventTypes = eventTypes.toSorted((a, b) => typeCollator.compare(a.nom || '', b.nom || ''));
 	const selectedEventType = eventTypes.find((type) => String(type.id) === typeSelection);
 	const showDifficulty = selectedEventType?.code === 'randonnee' || selectedEventType?.code === 'randonnee_touristique';
 	const [kpis, setKpis] = useState({ totalEvents: 0, totalReservations: 0, limitedEvents: 0 });
@@ -373,7 +375,7 @@ export function AdminDashboard() {
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="typeEvenementId">Type d’événement</label>
 					<select id="typeEvenementId" name="typeEvenementId" required value={typeSelection} onChange={(e) => setTypeSelection(e.currentTarget.value)} class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer">
 						<option value="" disabled>— Choisir un type —</option>
-						{eventTypes.map((type) => <option key={type.id} value={type.id}>{type.nom}</option>)}
+						{sortedEventTypes.map((type) => <option key={type.id} value={type.id}>{type.nom}</option>)}
 						<option value="__new__">＋ Ajouter un nouveau type</option>
 					</select>
 					{typeSelection === '__new__' && (

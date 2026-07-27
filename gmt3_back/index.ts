@@ -2,10 +2,12 @@ import { handleRequest } from './src/app.js';
 import { db, sqlite } from './src/config/database.js';
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 import { resolve } from 'path';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { createHash } from 'crypto';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 
 const DATA_DIR = resolve(import.meta.dir, 'data');
 const DB_PATH = resolve(DATA_DIR, 'gmt3.db');
+const MIGRATIONS_DIR = resolve(import.meta.dir, 'drizzle');
 const PORT = Number(Bun.env.PORT) || 3000;
 
 // Ensure data directory and database file exist
@@ -18,7 +20,48 @@ if (!existsSync(DB_PATH)) {
 	console.log('[DB] Created database file');
 }
 
-migrate(db, { migrationsFolder: resolve(import.meta.dir, 'drizzle') });
+function bootstrapLegacyMigrationHistory() {
+	const journalPath = resolve(MIGRATIONS_DIR, 'meta', '_journal.json');
+	if (!existsSync(journalPath)) return;
+
+	let baseline: { when: number; hash: string; tableNames: string[] };
+	try {
+		const journal = JSON.parse(readFileSync(journalPath, 'utf8')) as { entries?: { tag?: string; when?: number }[] };
+		const firstEntry = [...(journal.entries || [])].sort((a, b) => Number(a.when || 0) - Number(b.when || 0))[0];
+		if (!firstEntry?.tag || typeof firstEntry.when !== 'number') return;
+		const baselineSql = readFileSync(resolve(MIGRATIONS_DIR, `${firstEntry.tag}.sql`), 'utf8');
+		const tableNames = [...baselineSql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?([A-Za-z0-9_]+)["`]?/gi)]
+			.map((match) => match[1])
+			.filter((name): name is string => Boolean(name));
+		if (tableNames.length === 0) return;
+		baseline = {
+			when: firstEntry.when,
+			hash: createHash('sha256').update(baselineSql).digest('hex'),
+			tableNames,
+		};
+	} catch {
+		return;
+	}
+
+	const existingTables = new Set((sqlite.query("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[]).map(({ name }) => name));
+	if (!baseline.tableNames.every((tableName) => existingTables.has(tableName))) return;
+
+	sqlite.exec(`
+		CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
+			id SERIAL PRIMARY KEY,
+			hash text NOT NULL,
+			created_at numeric
+		)
+	`);
+	const latestMigration = sqlite.query('SELECT created_at FROM "__drizzle_migrations" ORDER BY created_at DESC LIMIT 1').get() as { created_at: number } | null;
+	if (Number(latestMigration?.created_at ?? 0) >= baseline.when) return;
+
+	sqlite.query('INSERT INTO "__drizzle_migrations" (hash, created_at) VALUES (?, ?)').run(baseline.hash, baseline.when);
+	console.log('[DB] Legacy schema detected — migration baseline registered');
+}
+
+bootstrapLegacyMigrationHistory();
+migrate(db, { migrationsFolder: MIGRATIONS_DIR });
 console.log('[DB] Migrations applied');
 
 Bun.serve({
