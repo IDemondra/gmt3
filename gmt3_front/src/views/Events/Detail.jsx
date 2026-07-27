@@ -201,7 +201,10 @@ export function EventDetail({ params }) {
 							.map((evt) => transformEventForCard(evt, BACKEND));
 						setRelatedEvents(related);
 					})
-					.catch((err) => console.error('Error loading related events:', err));
+					.catch((err) => {
+						if (err?.name === 'AbortError') return;
+						console.error('Error loading related events:', err);
+					});
 			})
 			.catch((err) => {
 				if (err.name === 'AbortError') return;
