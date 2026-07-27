@@ -36,7 +36,7 @@ export function ImagePreview({ image, onClose, onNext, onPrev, hasNext = false, 
 			class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm cursor-zoom-out"
 			onClick={onClose}
 		>
-			<div class="relative max-w-3xl max-h-[90vh] w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+			<div class="relative max-w-[96vw] max-h-[94vh] w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
 				{hasPrev && (
 					<button
 						type="button"
