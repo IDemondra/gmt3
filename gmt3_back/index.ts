@@ -60,6 +60,7 @@ function bootstrapLegacyMigrationHistory() {
 	console.log('[DB] Legacy schema detected — migration baseline registered');
 }
 
+console.log('[DB] Applying Drizzle migrations...');
 bootstrapLegacyMigrationHistory();
 migrate(db, { migrationsFolder: MIGRATIONS_DIR });
 console.log('[DB] Migrations applied');
