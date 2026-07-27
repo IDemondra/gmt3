@@ -23,7 +23,7 @@ console.log('[DB] Migrations applied');
 
 Bun.serve({
 	port: PORT,
-	idleTimeout: 300, // uploads multi-photos: réseau lent + conversion HEIC/sharp côté serveur
+	idleTimeout: 255, // limite Bun: uploads multi-photos + conversion HEIC/sharp
 	async fetch(req) {
 		const url = new URL(req.url);
 		const path = url.pathname;

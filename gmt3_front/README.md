@@ -97,7 +97,7 @@ Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
 ## Corrections & Refactors (session courante)
 
 ### Upload photo — bug production (timeout + duplication)
-- **Cause racine** : `Bun.serve` utilisait l'`idleTimeout` par défaut (10s), insuffisant pour un upload multi-photos depuis mobile (réseau lent + conversion HEIC/sharp côté serveur) → connexion coupée avant la réponse JSON, d'où le toast "erreur serveur" générique. Fix : `idleTimeout: 300` (`gmt3_back/index.ts`).
+- **Cause racine** : `Bun.serve` utilisait l'`idleTimeout` par défaut (10s), insuffisant pour un upload multi-photos depuis mobile (réseau lent + conversion HEIC/sharp côté serveur) → connexion coupée avant la réponse JSON, d'où le toast "erreur serveur" générique. Fix : `idleTimeout: 255` (`gmt3_back/index.ts`).
 - Le middleware de debug clonait et loggait le **corps entier** de chaque requête, y compris les uploads binaires multipart — surcharge mémoire inutile sur mobile. Fix : exclusion des requêtes `multipart/form-data` du logging (`gmt3_back/index.ts`).
 - Backend : conversion image systématique en **WebP** (`gmt3_back/src/utils/imageOptimize.ts`), garde-fou taille totale de galerie (40 Mo, rejet 413 avant tout traitement HEIC/sharp coûteux) dans `EvenementController.ts`.
 - Frontend : logique d'upload de galerie (limite, compression à l'ajout, previews, révocation blob) mutualisée dans `src/hooks/useGalleryUpload.js`, utilisée par `Photos.jsx` et `Dashboard.jsx` — corrige au passage un bug latent où supprimer une photo existante pouvait retirer la mauvaise nouvelle photo.
