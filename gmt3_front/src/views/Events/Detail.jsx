@@ -47,6 +47,7 @@ export function EventDetail({ params }) {
 	const [reviewPhoto, setReviewPhoto] = useState(/** @type {File|null} */(null));
 	const [reviewLoading, setReviewLoading] = useState(false);
 	const [reviewSent, setReviewSent] = useState(false);
+	const [reviewPreview, setReviewPreview] = useState(null);
 
 	const handleReviewSubmit = async (e) => {
 		e.preventDefault();
@@ -579,9 +580,19 @@ export function EventDetail({ params }) {
 										<span class="font-mono text-[10px] text-secondary/70">{a.dateCreation}</span>
 									</div>
 									{a.commentaire && <p class="mt-3 font-body-md text-secondary leading-relaxed">{a.commentaire}</p>}
-									{a.photoUrl && (
-										<BlurImg src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="mt-3 h-40 w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" />
-									)}
+					{a.photoUrl && (
+						<button
+							type="button"
+							onClick={() => setReviewPreview({ url: a.photoUrl, title: `Photo de ${a.nom}` })}
+							aria-label={`Agrandir la photo de ${a.nom}`}
+							class="group relative mt-3 block w-full overflow-hidden rounded-xl cursor-zoom-in"
+						>
+							<BlurImg src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" referrerPolicy="no-referrer" />
+							<span class="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-300 group-hover:bg-black/25 group-hover:opacity-100">
+								<span class="material-symbols-outlined text-3xl drop-shadow">zoom_in</span>
+							</span>
+						</button>
+					)}
 								</article>
 							))}
 						</div>
@@ -699,8 +710,9 @@ export function EventDetail({ params }) {
 					setPreview({ url: img(gallery[prevIdx]), title: `${normalizedEvent.title} photo ${prevIdx + 1}` });
 				}}
 				hasNext={gallery.length > 1}
-				hasPrev={gallery.length > 1}
+				 hasPrev={gallery.length > 1}
 			/>
+			<ImagePreview image={reviewPreview} onClose={() => setReviewPreview(null)} />
 
 			{bookingModal && (
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">

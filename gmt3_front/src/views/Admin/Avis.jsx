@@ -5,6 +5,7 @@ import { Sidebar } from '../../components/admin/Sidebar.jsx';
 import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { avisApi, approveAvisApi, deleteAvisApi } from '../../api/avis.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -28,6 +29,7 @@ export function AdminAvis() {
 	const [avis, setAvis] = useState(/** @type {any[]} */([]));
 	const [loading, setLoading] = useState(true);
 	const [filter, setFilter] = useState('pending');
+	const [preview, setPreview] = useState(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -122,7 +124,19 @@ export function AdminAvis() {
 									</div>
 								</div>
 								{a.commentaire && <p class="mt-3 text-gray-600 leading-relaxed">{a.commentaire}</p>}
-								{a.photoUrl && <img src={`${BACKEND}${a.photoUrl}`} alt="" class="mt-3 h-40 w-full rounded-lg object-cover" loading="lazy" referrerPolicy="no-referrer" />}
+								{a.photoUrl && (
+									<button
+										type="button"
+										onClick={() => setPreview({ url: a.photoUrl, title: `Photo de ${a.nom}` })}
+										aria-label={`Agrandir la photo de ${a.nom}`}
+										class="group relative mt-3 block w-full overflow-hidden rounded-lg cursor-zoom-in"
+									>
+										<img src={`${BACKEND}${a.photoUrl}`} alt={`Photo de ${a.nom}`} class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" referrerPolicy="no-referrer" />
+										<span class="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-300 group-hover:bg-black/25 group-hover:opacity-100">
+											<span class="material-symbols-outlined text-3xl drop-shadow">zoom_in</span>
+										</span>
+									</button>
+								)}
 								<div class="mt-4 flex justify-end gap-2 pt-4 border-t border-gray-50">
 									{!a.estApprouve && (
 										<button type="button" onClick={() => handleApprove(a.id)} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all">
@@ -143,6 +157,7 @@ export function AdminAvis() {
 
 			<ConfirmDialog open={confirm?.type === 'logout'} title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" icon="logout" variant="danger" onConfirm={confirmLogout} onCancel={() => setConfirm(null)} />
 			<ConfirmDialog open={confirm?.type === 'delete'} title="Supprimer l'avis" message="Cette action est irréversible." confirmLabel="Supprimer" icon="delete" variant="danger" onConfirm={confirmDelete} onCancel={() => setConfirm(null)} />
+			<ImagePreview image={preview} onClose={() => setPreview(null)} />
 			<ToastContainer toasts={toasts} onRemove={removeToast} />
 		</div>
 	);
