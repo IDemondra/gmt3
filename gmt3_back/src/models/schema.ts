@@ -21,10 +21,22 @@ export const clients = sqliteTable('clients', {
 	dateAjout: text('date_ajout').$defaultFn(() => new Date().toISOString()),
 }, (table) => [index('clients_contact_idx').on(table.contact)]);
 
+// ── Types d'événement ──
+export const typesEvenement = sqliteTable('types_evenement', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	code: text('code', { length: 50 }).notNull().unique(),
+	nom: text('nom', { length: 100 }).notNull(),
+	icone: text('icone', { length: 50 }).notNull(),
+	libelleRythme: text('libelle_rythme', { length: 100 }).notNull(),
+	actif: integer('actif', { mode: 'boolean' }).default(true).notNull(),
+	ordre: integer('ordre').default(0).notNull(),
+}, (table) => [index('types_evenement_active_order_idx').on(table.actif, table.ordre)]);
+
 // ── Événements ──
 export const evenements = sqliteTable('evenements', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	publicCode: text('public_code', { length: 10 }).notNull().unique(),
+	typeEvenementId: integer('type_evenement_id').default(1).notNull().references(() => typesEvenement.id, { onDelete: 'restrict' }),
 	titre: text('titre', { length: 150 }).notNull(),
 	description: text('description'),
 	dateEvenement: text('date_evenement').notNull(),

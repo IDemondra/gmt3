@@ -4,6 +4,10 @@ export async function evenementsApi(token) {
 	return apiRequest('/evenements', { token, defaultError: 'ERREUR_CHARGEMENT' });
 }
 
+export async function typesEvenementsApi(token) {
+	return apiRequest('/types-evenements', { token, defaultError: 'ERREUR_CHARGEMENT_TYPES' });
+}
+
 /**
  * @param {string|null} token
  * @param {number} id

@@ -41,7 +41,7 @@ const jsonLd = event
 			description,
 			...(ogImage && { image: ogImage }),
 			...(event.lieu && {
-				touristType: 'Tourisme à Fianarantsoa',
+				touristType: event.typeEvenement?.nom || 'Tourisme à Fianarantsoa',
 				itinerary: { '@type': 'Place', name: event.lieu },
 			}),
 			...(toISO(event.dateDepart) && { startDate: toISO(event.dateDepart) }),

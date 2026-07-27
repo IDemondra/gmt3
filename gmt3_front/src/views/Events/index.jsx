@@ -8,6 +8,7 @@ import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { eventPath } from '../../utils/eventUrl.js';
+import { getEventTypeIcon } from '../../utils/eventType.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -55,6 +56,9 @@ export function Events() {
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		badge: getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) === 'ongoing' ? 'EN COURS' : 'EXPEDITION',
+		location: event.lieu || 'Lieu à préciser',
+		eventType: event.typeEvenement?.nom || 'Expédition',
+		eventTypeIcon: getEventTypeIcon(event.typeEvenement),
 		slug: event.publicCode || event.id,
 		href: eventPath(event)
 	});

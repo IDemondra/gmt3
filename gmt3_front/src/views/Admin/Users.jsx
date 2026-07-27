@@ -11,6 +11,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const roles = ['admin', 'editeur'];
+const ROWS_PER_PAGE = 10;
 
 export function AdminUsers() {
 	const { route } = useLocation();
@@ -19,6 +20,7 @@ export function AdminUsers() {
 	const promptLogout = () => setConfirm({ type: 'logout' });
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState('');
+	const [page, setPage] = useState(0);
 	const [users, setUsers] = useState([]);
 	const [showForm, setShowForm] = useState(false);
 	const [editingUser, setEditingUser] = useState(null);
@@ -95,6 +97,8 @@ export function AdminUsers() {
 			u.email.toLowerCase().includes(search.toLowerCase())
 		)
 		: users;
+	const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+	const paged = filtered.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
 	return (
 		<div class="h-screen flex flex-col bg-[#f9fafb] text-gray-900 font-body-md antialiased overflow-hidden text-sm">
@@ -120,7 +124,7 @@ export function AdminUsers() {
 							</div>
 							<div class="relative w-full sm:w-auto">
 								<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
-								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" aria-label="Rechercher" placeholder="Rechercher..." type="text" value={search} onInput={(e) => setSearch(e.currentTarget.value)} />
+								<input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm text-gray-900 placeholder-gray-400 w-full sm:w-72 rounded-lg" aria-label="Rechercher" placeholder="Rechercher..." type="text" value={search} onInput={(e) => { setSearch(e.currentTarget.value); setPage(0); }} />
 							</div>
 						</div>
 
@@ -137,7 +141,7 @@ export function AdminUsers() {
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-gray-50">
-									{filtered.map((u, i) => (
+									{paged.map((u) => (
 										<tr key={u.id} onClick={() => openEdit(u)} class="cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 hover:bg-primary/5">
 											<td class="px-6 py-4 text-sm font-semibold text-gray-900">{u.nomUtilisateur}</td>
 											<td class="px-6 py-4 text-sm text-gray-600">{u.email}</td>
@@ -152,8 +156,19 @@ export function AdminUsers() {
 											</td>
 										</tr>
 									))}
+									{paged.length === 0 && (
+										<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">Aucun utilisateur trouvé.</td></tr>
+									)}
 								</tbody>
 							</table>
+						</div>
+
+						<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
+							<span class="text-xs text-gray-400 font-medium">{filtered.length === 0 ? 'Aucun résultat' : `${page * ROWS_PER_PAGE + 1}-${Math.min((page + 1) * ROWS_PER_PAGE, filtered.length)} sur ${filtered.length}`}</span>
+							<div class="flex gap-2">
+								<button type="button" aria-label="Page précédente" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span></button>
+								<button type="button" aria-label="Page suivante" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span></button>
+							</div>
 						</div>
 					</div>
 

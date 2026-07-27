@@ -2,6 +2,7 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 import {
 	utilisateurs,
 	clients,
+	typesEvenement,
 	evenements,
 	photosEvenement,
 	reservations,
@@ -15,6 +16,9 @@ export type NewUtilisateur = InferInsertModel<typeof utilisateurs>;
 
 export type Client = InferSelectModel<typeof clients>;
 export type NewClient = InferInsertModel<typeof clients>;
+
+export type TypeEvenement = InferSelectModel<typeof typesEvenement>;
+export type NewTypeEvenement = InferInsertModel<typeof typesEvenement>;
 
 export type Evenement = InferSelectModel<typeof evenements>;
 export type NewEvenement = InferInsertModel<typeof evenements>;

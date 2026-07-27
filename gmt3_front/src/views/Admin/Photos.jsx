@@ -13,6 +13,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
+const ROWS_PER_PAGE = 10;
 
 function resolveImg(url) {
 	if (!url) return '';
@@ -29,6 +30,7 @@ export function AdminPhotos() {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [confirm, setConfirm] = useState(/** @type {{ type: string } | null} */(null));
 	const [events, setEvents] = useState(/** @type {any[]} */([]));
+	const [page, setPage] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [selected, setSelected] = useState(/** @type {any|null} */(null));
 
@@ -38,6 +40,8 @@ export function AdminPhotos() {
 	const [uploading, setUploading] = useState(false);
 	const [uploadStatus, setUploadStatus] = useState('');
 	const [uploadProgress, setUploadProgress] = useState(0);
+	const totalPages = Math.ceil(events.length / ROWS_PER_PAGE);
+	const pagedEvents = events.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -138,7 +142,7 @@ export function AdminPhotos() {
 								{!loading && events.length === 0 && (
 									<div class="p-6 text-center text-gray-400 text-sm">Aucun événement passé.</div>
 								)}
-								{events.map((evt) => (
+								{pagedEvents.map((evt) => (
 									<button type="button"
 										key={evt.id}
 										onClick={() => selectEvent(evt)}
@@ -155,6 +159,13 @@ export function AdminPhotos() {
 										</div>
 									</button>
 								))}
+							</div>
+							<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
+								<span class="text-xs text-gray-400 font-medium">{events.length === 0 ? 'Aucun résultat' : `${page * ROWS_PER_PAGE + 1}-${Math.min((page + 1) * ROWS_PER_PAGE, events.length)} sur ${events.length}`}</span>
+								<div class="flex gap-2">
+									<button type="button" aria-label="Page précédente" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span></button>
+									<button type="button" aria-label="Page suivante" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span></button>
+								</div>
 							</div>
 						</div>
 

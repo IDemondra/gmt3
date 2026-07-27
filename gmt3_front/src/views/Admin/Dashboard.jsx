@@ -8,7 +8,7 @@ import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { FormModal } from '../../components/admin/FormModal.jsx';
-import { evenementsApi, evenementApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
+import { evenementsApi, typesEvenementsApi, evenementApi, createEvenementApi, updateEvenementApi, deleteEvenementApi } from '../../api/evenements.js';
 import { kpisApi } from '../../api/kpis.js';
 import { handleDigitKeyDown, getDigitsValue } from '../../utils/digits.js';
 import { applyFormatting } from '../../utils/textFormatter.js';
@@ -60,6 +60,10 @@ export function AdminDashboard() {
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [confirm, setConfirm] = useState(/** @type {{ type: string; eventId?: number } | null} */ (null));
 	const [events, setEvents] = useState([]);
+	const [eventTypes, setEventTypes] = useState([]);
+	const [typeSelection, setTypeSelection] = useState('');
+	const selectedEventType = eventTypes.find((type) => String(type.id) === typeSelection);
+	const showDifficulty = selectedEventType?.code === 'randonnee' || selectedEventType?.code === 'randonnee_touristique';
 	const [kpis, setKpis] = useState({ totalEvents: 0, totalReservations: 0, limitedEvents: 0 });
 	const [descText, setDescText] = useState('');
 	const descRef = useRef(null);
@@ -88,14 +92,17 @@ export function AdminDashboard() {
 		let cancelled = false;
 		const load = async () => {
 			try {
-				const [evtData, kpiData] = await Promise.all([
+				const [evtData, kpiData, typeData] = await Promise.all([
 					evenementsApi(accessToken.value),
 					kpisApi(accessToken.value),
+					typesEvenementsApi(accessToken.value),
 				]);
 				if (!cancelled && Array.isArray(evtData.data)) {
 					setEvents(evtData.data.map((e) => ({ ...e, title: e.titre, date: e.dateEvenement, published: e.estPublie })));
 				}
-				if (!cancelled && kpiData?.data && typeof kpiData.data.totalEvents === 'number') setKpis(kpiData.data);
+				const kpiPayload = kpiData?.data ?? kpiData;
+				if (!cancelled && typeof kpiPayload?.totalEvents === 'number') setKpis(kpiPayload);
+				if (!cancelled && Array.isArray(typeData?.data)) setEventTypes(typeData.data);
 			} catch {
 				addToast('Impossible de charger les données du tableau de bord', 'error');
 			}
@@ -105,10 +112,20 @@ export function AdminDashboard() {
 		return () => { cancelled = true; };
 	}, [route, addToast]);
 
-	const handleCreate = () => { setPendingSubmit(null); setEditingEvent(null); setPreviewSrc(''); setDescText(''); setExistingGalleryUrls([]); gallery.reset(); setShowForm(true); };
+	const handleCreate = () => {
+		setPendingSubmit(null);
+		setEditingEvent(null);
+		setTypeSelection(String(eventTypes[0]?.id ?? ''));
+		setPreviewSrc('');
+		setDescText('');
+		setExistingGalleryUrls([]);
+		gallery.reset();
+		setShowForm(true);
+	};
 
 	const handleEdit = (event) => {
 		setEditingEvent(event);
+		setTypeSelection(String(event.typeEvenementId ?? event.typeEvenement?.id ?? ''));
 		setDescText(event.description || '');
 		setPreviewSrc(event.imagePrincipale ? `${import.meta.env.VITE_BACKEND_URL || ''}${event.imagePrincipale}` : '');
 		setExistingGalleryUrls((event.photosEvenement || []).map((p) => `${import.meta.env.VITE_BACKEND_URL || ''}${p.url}`));
@@ -127,6 +144,9 @@ export function AdminDashboard() {
 			setUploadProgress(0);
 			const fd = new FormData();
 			fd.set('titre', data.get('titre'));
+			const selectedType = data.get('typeEvenementId');
+			fd.set('typeEvenementId', selectedType === '__new__' ? '' : selectedType || '');
+			if (selectedType === '__new__') fd.set('typeEvenementNom', data.get('typeEvenementNom') || '');
 			fd.set('description', data.get('description') || '');
 			fd.set('dateEvenement', data.get('dateEvenement') || data.get('dateDepart') || todayStr);
 			fd.set('lieu', data.get('lieu') || '');
@@ -158,15 +178,22 @@ export function AdminDashboard() {
 			}
 
 			setUploadStatus('Envoi en cours...');
+			let savedEvent;
 			if (editingEvent) {
 				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd, setUploadProgress, () => setUploadStatus('Traitement des images...'));
 				setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
+				savedEvent = updated;
 			} else {
 				const created = await createEvenementApi(accessToken.value, fd, setUploadProgress, () => setUploadStatus('Traitement des images...'));
 				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
+				savedEvent = created;
+			}
+			if (savedEvent?.typeEvenement && !eventTypes.some((type) => type.id === savedEvent.typeEvenement.id)) {
+				setEventTypes((prev) => [...prev, savedEvent.typeEvenement]);
 			}
 			setShowForm(false);
 			setEditingEvent(null);
+			setTypeSelection('');
 			setPendingSubmit(null);
 			setExistingGalleryUrls([]);
 			gallery.reset();
@@ -335,13 +362,27 @@ export function AdminDashboard() {
 				open={showForm}
 				title={editingEvent ? "Modifier l'événement" : 'Ajouter un événement'}
 				submitLabel={editingEvent ? 'Enregistrer' : 'Créer'}
-				onClose={() => { setPendingSubmit(null); setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setExistingGalleryUrls([]); gallery.reset(); }}
+				 onClose={() => { setPendingSubmit(null); setShowForm(false); setEditingEvent(null); setPreviewSrc(''); setExistingGalleryUrls([]); gallery.reset(); }}
 				onSubmit={handleSubmit}
 				encType="multipart/form-data"
 				submitting={uploading}
 				submittingLabel={uploadStatus || 'Traitement...'}
 				progressPercent={uploadStatus === 'Envoi en cours...' ? uploadProgress : undefined}
 			>
+				<div>
+					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="typeEvenementId">Type d’événement</label>
+					<select id="typeEvenementId" name="typeEvenementId" required value={typeSelection} onChange={(e) => setTypeSelection(e.currentTarget.value)} class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer">
+						<option value="" disabled>— Choisir un type —</option>
+						{eventTypes.map((type) => <option key={type.id} value={type.id}>{type.nom}</option>)}
+						<option value="__new__">＋ Ajouter un nouveau type</option>
+					</select>
+					{typeSelection === '__new__' && (
+						<div class="mt-3">
+							<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="typeEvenementNom">Nom du nouveau type</label>
+							<input id="typeEvenementNom" name="typeEvenementNom" type="text" required maxLength="100" class="w-full px-4 py-2.5 bg-white border border-primary/30 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Ex. Sortie en bateau" />
+						</div>
+					)}
+				</div>
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="titre">Titre</label>
 					<input id="titre" name="titre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Nom de l'événement" required defaultValue={editingEvent?.titre || editingEvent?.title || ''} />
@@ -366,7 +407,10 @@ export function AdminDashboard() {
 						</div>
 						<textarea id="description" name="description" ref={descRef} class="w-full px-4 py-2.5 bg-white border-0 outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset" rows="3" placeholder="Description courte... (Markdown supporté)" maxLength={DESC_MAX} onInput={(e) => { setDescText(e.currentTarget.value); }} value={descText} />
 					</div>
-					<p class="text-[10px] text-gray-400 mt-1">Supporte le markdown: **gras**, *italique*, ~~barré~~</p>
+					<div class="mt-1 flex items-center justify-between gap-3 text-[10px] text-gray-400">
+						<span>Supporte le markdown: **gras**, *italique*, ~~barré~~</span>
+						<span class={descText.length >= DESC_MAX ? 'font-bold text-primary' : ''}>{descText.length}/{DESC_MAX}</span>
+					</div>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div>
@@ -390,17 +434,19 @@ export function AdminDashboard() {
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="lieu">Lieu</label>
 					<input id="lieu" name="lieu" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: Parc National de Ranomafana" defaultValue={editingEvent?.lieu || editingEvent?.location || ''} />
 				</div>
-				<div>
-					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="difficulte">Difficulté (randonnée)</label>
-					<select id="difficulte" name="difficulte" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer" defaultValue={editingEvent?.difficulte || ''}>
-						<option value="">— Non applicable —</option>
-						<option value="Accessible">Accessible</option>
-						<option value="Modéré">Modéré</option>
-						<option value="Soutenu">Soutenu</option>
-						<option value="Difficile">Difficile</option>
-						<option value="Extrême">Extrême</option>
-					</select>
-				</div>
+				{showDifficulty && (
+					<div>
+						<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="difficulte">Difficulté (randonnée)</label>
+						<select id="difficulte" name="difficulte" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer" defaultValue={editingEvent?.difficulte || ''}>
+							<option value="">— Non applicable —</option>
+							<option value="Accessible">Accessible</option>
+							<option value="Modéré">Modéré</option>
+							<option value="Soutenu">Soutenu</option>
+							<option value="Difficile">Difficile</option>
+							<option value="Extrême">Extrême</option>
+						</select>
+					</div>
+				)}
 				<div>
 					<label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2" for="prix">Prix par place (Ar)</label>
 					<input id="prix" name="prix" type="text" inputMode="numeric" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="ex: 150000" defaultValue={editingEvent?.prix ?? editingEvent?.price ?? ''} onKeyDown={handleDigitKeyDown} onInput={(e) => { e.currentTarget.value = getDigitsValue(e); }} />

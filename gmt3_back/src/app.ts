@@ -1,6 +1,7 @@
 import { userRoutes } from './routes/userRoutes.js';
 import { clientRoutes } from './routes/clientRoutes.js';
 import { evenementRoutes } from './routes/evenementRoutes.js';
+import { typeEvenementRoutes } from './routes/typeEvenementRoutes.js';
 import { reservationRoutes } from './routes/reservationRoutes.js';
 import { kpiRoutes } from './routes/kpiRoutes.js';
 import { avisRoutes } from './routes/avisRoutes.js';
@@ -76,6 +77,7 @@ const allRoutes: Record<string, Record<string, RouteHandler>> = {
 	...userRoutes,
 	...clientRoutes,
 	...evenementRoutes,
+	...typeEvenementRoutes,
 	...reservationRoutes,
 	...kpiRoutes,
 	...avisRoutes,

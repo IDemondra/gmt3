@@ -28,6 +28,7 @@ const jsonLd = event
 			name: event.titre,
 			description,
 			...(ogImage && { image: ogImage }),
+			...(event.typeEvenement?.nom && { touristType: event.typeEvenement.nom }),
 			provider: { '@id': `${SITE}/#organization` },
 			...(event.prix != null && {
 				offers: {

@@ -1,5 +1,7 @@
 import { useLocation } from 'preact-iso';
-import { currentUser } from '../../stores/auth.js';
+import { useEffect, useState } from 'preact/hooks';
+import { currentUser, accessToken } from '../../stores/auth.js';
+import { kpisApi } from '../../api/kpis.js';
 
 const navItems = [
 	{ icon: 'event', label: 'Événements', key: 'evenements', path: '/admin/dashboard', table: 'evenements' },
@@ -14,6 +16,27 @@ const navItems = [
 export function Sidebar({ open, onClose }) {
 	const { url } = useLocation();
 	const user = currentUser.value;
+	const [pendingCounts, setPendingCounts] = useState({ reservations: 0, avis: 0 });
+
+	useEffect(() => {
+		let cancelled = false;
+		const loadCounts = async () => {
+			if (!accessToken.value) return;
+			try {
+				const response = await kpisApi(accessToken.value);
+				const data = response?.data ?? response;
+				if (!cancelled) setPendingCounts({
+					reservations: Number(data?.pendingReservations ?? 0),
+					avis: Number(data?.pendingAvis ?? 0),
+				});
+			} catch {
+				if (!cancelled) setPendingCounts({ reservations: 0, avis: 0 });
+			}
+		};
+		loadCounts();
+		const interval = setInterval(loadCounts, 30000);
+		return () => { cancelled = true; clearInterval(interval); };
+	}, []);
 
 const content = (
 		<div class="flex flex-col h-full bg-white">
@@ -36,11 +59,14 @@ const content = (
 				<nav class="space-y-1">
 					{navItems.filter((item) => item.key !== 'utilisateurs' || user?.role === 'admin').map((item) => {
 						const active = url.startsWith(item.path);
+						const pendingCount = item.key === 'reservations' ? pendingCounts.reservations : item.key === 'avis' ? pendingCounts.avis : 0;
+						const pendingLabel = item.key === 'reservations' ? 'réservations en attente' : 'avis en attente';
 						return (
 							<a
 								key={item.key}
 								href={item.path}
 								onClick={onClose}
+								aria-label={pendingCount > 0 ? `${item.label}, ${pendingCount} ${pendingLabel}` : item.label}
 								class={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
 									active
 										? 'bg-primary/5 text-primary'
@@ -51,6 +77,12 @@ const content = (
 								<span class={`text-[13px] font-semibold ${active ? 'font-bold' : ''}`}>
 									{item.label}
 								</span>
+								{pendingCount > 0 && (
+									<span class="ml-auto inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-extrabold leading-none text-white shadow-sm" title={`${pendingCount} ${pendingLabel}`}>
+										{pendingCount > 99 ? '99+' : pendingCount}
+										<span class="sr-only">{pendingLabel}</span>
+									</span>
+								)}
 							</a>
 						);
 					})}

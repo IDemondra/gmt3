@@ -29,6 +29,20 @@
       "when": 1785117304874,
       "tag": "0003_great_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1785118721209,
+      "tag": "0004_zippy_mikhail_rasputin",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1785120000000,
+      "tag": "0005_hide_other_event_type",
+      "breakpoints": true
     }
   ]
 }

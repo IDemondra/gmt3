@@ -15,6 +15,7 @@ import { readFormString } from '../utils/validation.js';
 import { idOrError } from './helpers.js';
 import { db } from '../config/database.js';
 import { reservations } from '../models/schema.js';
+import { TypeEvenementService } from '../services/TypeEvenementService.js';
 import { and, eq, ne, sql } from 'drizzle-orm';
 import sharp from 'sharp';
 import { eventUploadDir, galleryUploadDir, listGalleryFilePaths, removeEventUploadDir, removeFiles, removeUploadFile } from '../utils/uploadCleanup.js';
@@ -22,6 +23,7 @@ import { eventUploadDir, galleryUploadDir, listGalleryFilePaths, removeEventUplo
 const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const HEIC_MIMES = new Set(['image/heic', 'image/heif']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_DESCRIPTION_LENGTH = 1000;
 const MAX_GALLERY_PHOTOS = 10;
 const MAX_GALLERY_TOTAL_SIZE = 40 * 1024 * 1024; // 40 MB — garde-fou avant tout traitement (compression HEIC/sharp coûteuse)
 
@@ -71,8 +73,9 @@ function calculateDuration(e: { dateDepart?: string | null; heureDepart?: string
 	}
 }
 
-function validEventData(input: { titre?: string | null; dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; prix?: number | null; capaciteMax?: number | null }): boolean {
+function validEventData(input: { titre?: string | null; description?: string | null; dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; prix?: number | null; capaciteMax?: number | null }): boolean {
 	if (input.titre !== undefined && (input.titre === null || input.titre.trim().length < 3 || input.titre.length > 150)) return false;
+	if (input.description !== undefined && input.description !== null && input.description.length > MAX_DESCRIPTION_LENGTH) return false;
 	if (input.dateEvenement !== undefined && (input.dateEvenement === null || Number.isNaN(new Date(input.dateEvenement).getTime()))) return false;
 	if (input.dateDepart && input.dateRetour && new Date(input.dateRetour) < new Date(input.dateDepart)) return false;
 	if (input.prix !== undefined && input.prix !== null && (!Number.isFinite(input.prix) || input.prix < 0)) return false;
@@ -121,6 +124,7 @@ function galleryTotalSizeError(fd: GalleryFormData): Response | null {
 const evenementService = new EvenementService(new EvenementRepository());
 const photoRepository = new PhotoEvenementRepository();
 const avisRepository = new AvisRepository();
+const typeEvenementService = new TypeEvenementService();
 const PUBLIC_CODE_ALPHABET = '23456789abcdefghijkmnopqrstuvwxyz';
 
 function generatePublicCode(length = 10): string {
@@ -141,6 +145,10 @@ function avgNote(items: { note: number }[]): number {
 	return Math.round((items.reduce((s, a) => s + a.note, 0) / items.length) * 10) / 10;
 }
 
+function supportsDifficulty(type: { code: string }): boolean {
+	return type.code === 'randonnee' || type.code === 'randonnee_touristique';
+}
+
 async function serializeEvenement(id: number) {
 	const item = await evenementService.getById(id);
 	if (!item) return null;
@@ -148,7 +156,8 @@ async function serializeEvenement(id: number) {
 	const avis = await avisRepository.findApprovedByEvenementId(id);
 	const formatted = formatEvenementDates(item);
 	const reservationRows = await db.select({ places: sql<number>`coalesce(sum(${reservations.nombrePlaces}), 0)` }).from(reservations).where(and(ne(reservations.statut, 'annulee'), eq(reservations.evenementId, id)));
-	return { ...formatted, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, placesReservees: Number(reservationRows[0]?.places ?? 0), duration: calculateDuration(item) };
+	const typeEvenement = await typeEvenementService.getById(item.typeEvenementId);
+	return { ...formatted, typeEvenement: typeEvenement ?? null, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, placesReservees: Number(reservationRows[0]?.places ?? 0), duration: calculateDuration(item) };
 }
 
 async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
@@ -215,6 +224,8 @@ export const EvenementController = {
 			list.sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0));
 		}
 		const approvedAvis = await avisRepository.findAllApproved();
+		const activeTypes = await typeEvenementService.getActive();
+		const typesById = new Map(activeTypes.map((type) => [type.id, type]));
 		const avisByEvent = new Map<number, typeof approvedAvis>();
 		for (const a of approvedAvis) {
 			const list = avisByEvent.get(a.evenementId) ?? [];
@@ -227,6 +238,7 @@ export const EvenementController = {
 				return {
 					...formatEvenementDates(item),
 					id: item.id,
+					typeEvenement: typesById.get(item.typeEvenementId) ?? null,
 					duration: calculateDuration(item),
 					photosEvenement: photosByEvent.get(item.id) ?? [],
 					avis,
@@ -308,14 +320,20 @@ export const EvenementController = {
 		const dateDepart = readFormString(fd, 'dateDepart');
 		const heureRetour = readFormString(fd, 'heureRetour');
 		const dateRetour = readFormString(fd, 'dateRetour');
+		const typeEvenementIdStr = readFormString(fd, 'typeEvenementId');
+		const typeEvenementNom = readFormString(fd, 'typeEvenementNom');
+		const requestedTypeId = typeEvenementIdStr && typeEvenementIdStr !== '__new__' ? Number(typeEvenementIdStr) : null;
+		const resolvedType = await typeEvenementService.resolve(requestedTypeId, typeEvenementNom);
+		const normalizedDifficulty = resolvedType && supportsDifficulty(resolvedType) ? difficulte : null;
 		const estPublie = fd.get('estPublie') === 'on';
 
-		if (!titre || !dateEvenement || !validEventData({ titre, dateEvenement, dateDepart, dateRetour, prix, capaciteMax })) {
+		if (!titre || !dateEvenement || !resolvedType || !validEventData({ titre, description, dateEvenement, dateDepart, dateRetour, prix, capaciteMax })) {
 			return Response.json({ error: 'CHAMPS_OBLIGATOIRES_MANQUANTS' }, { status: 400 });
 		}
 
 		const item = await evenementService.create({
 			publicCode: await createUniquePublicCode(),
+			typeEvenementId: resolvedType.id,
 			titre,
 			description: description ?? null,
 			dateEvenement,
@@ -324,7 +342,7 @@ export const EvenementController = {
 			heureRetour: heureRetour ?? null,
 			dateRetour: dateRetour ?? null,
 			lieu: lieu ?? null,
-			difficulte: difficulte ?? null,
+			difficulte: normalizedDifficulty ?? null,
 			prix,
 			capaciteMax,
 			imagePrincipale: null,
@@ -368,7 +386,7 @@ export const EvenementController = {
 		const dateEvenement = readFormString(fd, 'dateEvenement');
 		if (titre) data.titre = titre;
 		if (dateEvenement) data.dateEvenement = dateEvenement;
-		if (readFormString(fd, 'description')) data.description = readFormString(fd, 'description');
+		if (fd.has('description')) data.description = readFormString(fd, 'description') || null;
 		if (readFormString(fd, 'lieu')) data.lieu = readFormString(fd, 'lieu');
 		if (fd.has('difficulte')) data.difficulte = readFormString(fd, 'difficulte') || null;
 		if (readFormString(fd, 'heureDepart')) data.heureDepart = readFormString(fd, 'heureDepart');
@@ -380,6 +398,15 @@ export const EvenementController = {
 		if (fd.has('capaciteMax')) {
 			const value = readFormString(fd, 'capaciteMax');
 			data.capaciteMax = value ? Number(value) : null;
+		}
+		if (fd.has('typeEvenementId') || fd.has('typeEvenementNom')) {
+			const value = readFormString(fd, 'typeEvenementId');
+			const typeEvenementNom = readFormString(fd, 'typeEvenementNom');
+			const requestedTypeId = value && value !== '__new__' ? Number(value) : null;
+			const resolvedType = await typeEvenementService.resolve(requestedTypeId, typeEvenementNom);
+			if (!resolvedType) return Response.json({ error: 'TYPE_EVENEMENT_INVALIDE' }, { status: 400 });
+			data.typeEvenementId = resolvedType.id;
+			if (!supportsDifficulty(resolvedType)) data.difficulte = null;
 		}
 		data.estPublie = fd.get('estPublie') === 'on';
 		if (!validEventData(data)) return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });

@@ -1,5 +1,6 @@
 ﻿// @ts-ignore
 import { formatIsoDateFr, getEventStatus } from '../../utils/dateFormatter.js';
+import { getEventTypeIcon } from '../../utils/eventType.js';
 
 const STATUS_STYLES = {
 	upcoming: { label: 'À venir', cls: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500' },
@@ -19,6 +20,8 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 
 	const hasImage = event.imagePrincipale && typeof event.imagePrincipale === 'string' && event.imagePrincipale.length > 0;
 	const timeStatus = STATUS_STYLES[getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement)] || STATUS_STYLES.unknown;
+	const eventTypeIcon = getEventTypeIcon(event.typeEvenement);
+	const eventTypeLabel = event.typeEvenement?.nom || 'Type d’événement';
 
 	return (
 		<tr onClick={() => onViewDetails?.(event)} class={`cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 ${
@@ -61,12 +64,12 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 			{event.dateDepart ? (
 				<span class="flex flex-col gap-0.5">
 					<span class="flex items-center gap-1">
-						<span class="material-symbols-outlined text-[14px] text-primary-container">flight_takeoff</span>
+						<span class="material-symbols-outlined text-[14px] text-primary-container" aria-label={`Départ — ${eventTypeLabel}`}>{eventTypeIcon}</span>
 						{event.dateDepart}{event.heureDepart ? ` ${event.heureDepart}` : ''}
 					</span>
 					{event.dateRetour ? (
 						<span class="flex items-center gap-1">
-							<span class="material-symbols-outlined text-[14px] text-secondary">flight_land</span>
+							<span class="material-symbols-outlined text-[14px] text-secondary" aria-label={`Retour — ${eventTypeLabel}`}>{eventTypeIcon}</span>
 							{event.dateRetour}{event.heureRetour ? ` ${event.heureRetour}` : ''}
 						</span>
 					) : null}

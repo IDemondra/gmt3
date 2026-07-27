@@ -34,11 +34,12 @@ export function KpiCards({ totalEvents = 0, totalReservations = 0, limitedEvents
 					class="relative p-6 rounded-xl bg-white border border-gray-100 shadow-sm transition-all hover:border-primary/20 hover:shadow-md"
 				>
 					<div class="flex items-start justify-between mb-4">
-						<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-							{kpi.label}
-						</p>
+						<div>
+							<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{kpi.label}</p>
+							<span class="mt-1 inline-flex rounded-full bg-primary/8 px-2 py-0.5 text-[9px] font-extrabold tracking-[0.16em] text-primary">ANNUEL</span>
+						</div>
 						<div class="h-8 w-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-							<span class="material-symbols-outlined text-lg">{kpi.icon}</span>
+							<span class="material-symbols-outlined text-lg" aria-hidden="true">{kpi.icon}</span>
 						</div>
 					</div>
 					<div class="flex items-baseline gap-2">

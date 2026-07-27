@@ -16,8 +16,36 @@ import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
 import { eventPath } from '../../utils/eventUrl.js';
+import { getEventTypeIcon } from '../../utils/eventType.js';
 
 const MAX_REVIEW_PHOTO_BYTES = 5 * 1024 * 1024;
+const DESCRIPTION_PREVIEW_LENGTH = 280;
+
+function toPlainDescription(value) {
+	return String(value || '')
+		.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+		.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+		.replace(/[`*_~#>]/g, '')
+		.replace(/\s+/g, ' ')
+		.trim();
+}
+
+const INLINE_MARKDOWN_PATTERN = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
+
+function DescriptionContent({ value }) {
+	const occurrences = new Map();
+	return String(value || '').split(INLINE_MARKDOWN_PATTERN).map((part) => {
+		const occurrence = occurrences.get(part) || 0;
+		occurrences.set(part, occurrence + 1);
+		const key = `${part}-${occurrence}`;
+		if (part.startsWith('**') && part.endsWith('**')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('__') && part.endsWith('__')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('~~') && part.endsWith('~~')) return <del key={key}>{part.slice(2, -2)}</del>;
+		if (part.startsWith('*') && part.endsWith('*')) return <em key={key}>{part.slice(1, -1)}</em>;
+		if (part.startsWith('_') && part.endsWith('_')) return <em key={key}>{part.slice(1, -1)}</em>;
+		return part;
+	});
+}
 
 const transformEventForCard = (evt, backend) => ({
 	id: evt.id,
@@ -25,7 +53,10 @@ const transformEventForCard = (evt, backend) => ({
 	description: parseMarkdownInline(evt.description),
 	image: evt.imagePrincipale ? `${backend}${evt.imagePrincipale}` : '',
 	date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
-	badge: 'EXPEDITION',
+	badge: evt.typeEvenement?.nom || 'EXPEDITION',
+	location: evt.lieu || 'Lieu à préciser',
+	eventType: evt.typeEvenement?.nom || 'Expédition',
+	eventTypeIcon: getEventTypeIcon(evt.typeEvenement),
 	slug: evt.publicCode || evt.id,
 	href: eventPath(evt)
 });
@@ -37,6 +68,7 @@ export function EventDetail({ params }) {
 	const isPublicCode = Boolean(params.code);
 
 	const [event, setEvent] = useState(null);
+	const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [preview, setPreview] = useState(null);
 	const previewIndex = useRef(0);
@@ -224,12 +256,20 @@ export function EventDetail({ params }) {
 		duration: event.duration || 'Non précisé',
 		difficulty: event.difficulte || event.difficulty || 'Non précisé',
 		gallery: (event.photosEvenement || []).map(p => `${BACKEND}${p.url}`),
-		badge: 'EXPEDITION',
+		badge: event.typeEvenement?.nom || 'EXPEDITION',
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		placesReservees: event.placesReservees ?? 0,
 		capaciteMax: event.capaciteMax ?? null,
 		slug: event.publicCode || event.id,
 	};
+	const eventType = event.typeEvenement || { nom: 'Événement', icone: 'explore', libelleRythme: 'Rythme de l’événement' };
+	const eventTypeIcon = getEventTypeIcon(eventType);
+	const eventRhythm = `Rythme de ${(eventType.nom || 'l’événement').toLocaleLowerCase('fr-FR')}`;
+	const descriptionRaw = normalizedEvent.description || '';
+	const descriptionPlain = toPlainDescription(descriptionRaw);
+	const hasMoreDescription = descriptionPlain.length > DESCRIPTION_PREVIEW_LENGTH;
+	const collapsedDescription = `${descriptionPlain.slice(0, DESCRIPTION_PREVIEW_LENGTH).trimEnd()}…`;
+	const descriptionContent = descriptionExpanded || !hasMoreDescription ? descriptionRaw : collapsedDescription;
 
 	const status = getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement);
 	const isPast = status === 'past';
@@ -308,7 +348,26 @@ export function EventDetail({ params }) {
 									</h1>
 								</Reveal>
 								<Reveal animation="fadeUp" delay={120} duration={760}>
-									<p class="mt-6 max-w-2xl font-body-lg text-body-lg leading-relaxed text-on-primary/80" dangerouslySetInnerHTML={{ __html: parseMarkdownInline(normalizedEvent.description) }} />
+								{hasMoreDescription ? (
+									<button
+										type="button"
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							setDescriptionExpanded((expanded) => !expanded);
+						}}
+										aria-expanded={descriptionExpanded}
+										aria-label={descriptionExpanded ? 'Réduire la description' : 'Afficher la description complète'}
+										class="mt-6 block max-w-2xl text-left font-body-lg text-body-lg leading-relaxed text-on-primary/80 transition-colors hover:text-on-primary cursor-pointer"
+									>
+										<span class="whitespace-pre-line"><DescriptionContent value={descriptionContent} /></span>
+										<span class="mt-3 block font-button text-[10px] font-black uppercase tracking-widest text-primary-container">
+											{descriptionExpanded ? 'Voir moins' : 'Voir plus'}
+										</span>
+									</button>
+								) : (
+									<p class="mt-6 max-w-2xl whitespace-pre-line font-body-lg text-body-lg leading-relaxed text-on-primary/80"><DescriptionContent value={descriptionContent} /></p>
+								)}
 								</Reveal>
 								<Reveal animation="driftRight" delay={180} duration={820}>
 									<div class="mt-8 flex flex-col sm:flex-row items-start gap-4">
@@ -453,8 +512,11 @@ export function EventDetail({ params }) {
 						<Reveal animation="driftRight" delay={80} duration={820}>
 							<aside class="space-y-6 lg:sticky lg:top-24">
 								<div class="rounded-[1.75rem] border border-outline-variant/70 bg-on-secondary-fixed p-6 text-on-primary shadow-md shadow-black/10">
-									<p class="font-label-caps text-label-caps text-on-primary/60">Rythme du voyage</p>
-									<h2 class="mt-3 font-h2 text-h2 font-black uppercase tracking-tight">Départ &amp; retour</h2>
+								<p class="font-label-caps text-label-caps text-on-primary/60">{eventRhythm}</p>
+								<h2 class="mt-3 flex items-center gap-3 font-h2 text-h2 font-black uppercase tracking-tight">
+									<span class="material-symbols-outlined text-primary text-3xl" aria-hidden="true">{eventTypeIcon}</span>
+									Départ &amp; retour
+								</h2>
 										{ongoingProgress && (
 											<div class="mt-5 rounded-2xl border border-green-400/30 bg-green-500/10 p-4">
 												<div class="flex items-center justify-between">
@@ -476,7 +538,7 @@ export function EventDetail({ params }) {
 											<div class="mt-6 space-y-3">
 												{departInfo && (
 													<div class="flex items-start gap-3">
-														<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5">flight_takeoff</span>
+															<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5" aria-hidden="true">{eventTypeIcon}</span>
 														<div>
 															<p class="font-label-caps text-label-caps text-on-primary/60 text-xs">Départ</p>
 															<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary">{formatDateTimeWithHour(departInfo.date, departInfo.time)}</p>
@@ -485,7 +547,7 @@ export function EventDetail({ params }) {
 												)}
 												{retourInfo && (
 													<div class="flex items-start gap-3">
-														<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5">flight_land</span>
+															<span class="material-symbols-outlined text-xl text-primary flex-shrink-0 mt-0.5" aria-hidden="true">{eventTypeIcon}</span>
 														<div>
 															<p class="font-label-caps text-label-caps text-on-primary/60 text-xs">Retour</p>
 															<p class="mt-1 font-body-md text-body-md font-semibold text-on-primary">{formatDateTimeWithHour(retourInfo.date, retourInfo.time)}</p>
