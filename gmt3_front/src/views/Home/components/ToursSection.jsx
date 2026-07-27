@@ -3,6 +3,7 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
+import { eventPath } from '../../../utils/eventUrl.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -111,7 +112,7 @@ export function ToursSection() {
 
 											{/* Photo */}
 											<div class="w-full md:w-1/2">
-												<a href={`/events/${event.id}`} class="group block relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white hover:shadow-2xl transition-shadow">
+								<a href={eventPath(event)} class="group block relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white hover:shadow-2xl transition-shadow">
 													{imgUrl ? (
 														<BlurBackgroundImage src={imgUrl} class="absolute inset-0 group-hover:scale-110" />
 													) : (
@@ -165,7 +166,7 @@ export function ToursSection() {
 													)}
 
 													<a
-														href={`/events/${event.id}`}
+										href={eventPath(event)}
 														class="mt-4 flex items-center gap-2 font-button text-xs tracking-widest text-on-background hover:text-primary transition-colors group"
 													>
 															DÉCOUVRIR L'EXPÉDITION

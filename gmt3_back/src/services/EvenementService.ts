@@ -1,8 +1,8 @@
-import type { IRepository } from '../repositories/interfaces/IRepository.js';
 import type { Evenement, NewEvenement } from '../types/index.js';
+import type { EvenementRepository } from '../repositories/EvenementRepository.js';
 
 export class EvenementService {
-	constructor(private readonly evenementRepo: IRepository<Evenement, NewEvenement>) {}
+	constructor(private readonly evenementRepo: EvenementRepository) {}
 
 	async getAll(): Promise<Evenement[]> {
 		return this.evenementRepo.findAll();
@@ -10,6 +10,10 @@ export class EvenementService {
 
 	async getById(id: number): Promise<Evenement | undefined> {
 		return this.evenementRepo.findById(id);
+	}
+
+	async getByPublicCode(publicCode: string): Promise<Evenement | undefined> {
+		return this.evenementRepo.findByPublicCode(publicCode);
 	}
 
 	async create(data: NewEvenement): Promise<Evenement> {

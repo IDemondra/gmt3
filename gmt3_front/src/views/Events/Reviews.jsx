@@ -2,11 +2,13 @@ import { useEffect, useState } from 'preact/hooks';
 import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
+import { eventPath } from '../../utils/eventUrl.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
-export function EventReviews({ eventId }) {
+/** @param {{ eventId?: number | null; eventCode?: string | null }} props */
+export function EventReviews({ eventId = null, eventCode = null }) {
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -14,7 +16,8 @@ export function EventReviews({ eventId }) {
 
 	useEffect(() => {
 		const controller = new AbortController();
-		fetch(`${API_BASE}/evenements/${eventId}`, { credentials: 'include', signal: controller.signal })
+		const endpoint = eventCode ? `evenements/code/${encodeURIComponent(eventCode)}` : `evenements/${eventId}`;
+		fetch(`${API_BASE}/${endpoint}`, { credentials: 'include', signal: controller.signal })
 			.then((response) => {
 				if (!response.ok) throw new Error('EVENT_NOT_FOUND');
 				return response.json();
@@ -25,14 +28,14 @@ export function EventReviews({ eventId }) {
 			})
 			.finally(() => setLoading(false));
 		return () => controller.abort();
-	}, [eventId]);
+	}, [eventId, eventCode]);
 
 	const reviews = Array.isArray(event?.avis) ? event.avis : [];
 
 	return (
 		<main class="flex-1 bg-background text-on-background">
 			<section class="mx-auto w-full max-w-5xl px-margin-mobile pb-24 pt-32 md:px-margin-desktop">
-				<a href={`/events/${eventId}`} class="inline-flex items-center gap-2 font-label-caps text-label-caps text-secondary transition-colors hover:text-primary">
+				<a href={eventPath(event || { id: eventId })} class="inline-flex items-center gap-2 font-label-caps text-label-caps text-secondary transition-colors hover:text-primary">
 					<span class="material-symbols-outlined text-[16px]">arrow_back</span>
 					Retour à l’événement
 				</a>

@@ -15,6 +15,7 @@ import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
+import { eventPath } from '../../utils/eventUrl.js';
 
 const MAX_REVIEW_PHOTO_BYTES = 5 * 1024 * 1024;
 
@@ -25,13 +26,15 @@ const transformEventForCard = (evt, backend) => ({
 	image: evt.imagePrincipale ? `${backend}${evt.imagePrincipale}` : '',
 	date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
 	badge: 'EXPEDITION',
-	slug: evt.id,
-	href: `/events/${evt.id}`
+	slug: evt.publicCode || evt.id,
+	href: eventPath(evt)
 });
 
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
-	const eventId = parseInt(params.id, 10);
+	const routeKey = params.code || params.id;
+	const routeId = Number.parseInt(params.id, 10);
+	const isPublicCode = Boolean(params.code);
 
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -48,6 +51,7 @@ export function EventDetail({ params }) {
 	const [reviewLoading, setReviewLoading] = useState(false);
 	const [reviewSent, setReviewSent] = useState(false);
 	const [reviewPreview, setReviewPreview] = useState(null);
+	const eventId = event?.id ?? (Number.isNaN(routeId) ? null : routeId);
 
 	const handleReviewSubmit = async (e) => {
 		e.preventDefault();
@@ -128,7 +132,7 @@ export function EventDetail({ params }) {
 	};
 
 	useEffect(() => {
-		if (!eventId || isNaN(eventId)) {
+		if (!routeKey || (!isPublicCode && Number.isNaN(routeId))) {
 			setLoading(false);
 			return;
 		}
@@ -137,7 +141,8 @@ export function EventDetail({ params }) {
 		const controller = new AbortController();
 		let scrollFrame;
 
-		fetch(`${API_BASE}/evenements/${eventId}`, { credentials: 'include', signal: controller.signal })
+		const eventEndpoint = isPublicCode ? `evenements/code/${encodeURIComponent(routeKey)}` : `evenements/${routeId}`;
+		fetch(`${API_BASE}/${eventEndpoint}`, { credentials: 'include', signal: controller.signal })
 			.then((res) => {
 				if (!res.ok) throw new Error('Not found');
 				return res.json();
@@ -159,7 +164,7 @@ export function EventDetail({ params }) {
 					})
 					.then((response) => {
 						const related = (Array.isArray(response.data) ? response.data : [])
-							.filter((e) => e.estPublie && e.id !== eventId && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
+							.filter((e) => e.estPublie && e.id !== data.id && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 							.slice(0, 2)
 							.map((evt) => transformEventForCard(evt, BACKEND));
 						setRelatedEvents(related);
@@ -176,7 +181,7 @@ export function EventDetail({ params }) {
 			cancelAnimationFrame(scrollFrame);
 			controller.abort();
 		};
-	}, [eventId, BACKEND]);
+	}, [routeKey, routeId, isPublicCode, BACKEND]);
 
 	if (loading) {
 		return (
@@ -197,7 +202,7 @@ export function EventDetail({ params }) {
 					<p class="mt-4 font-body-lg text-body-lg text-secondary leading-relaxed">
 						Cette page d'expédition n'existe plus ou n'a pas encore été publiée.
 					</p>
-					<p class="mt-2 text-xs text-secondary">(ID: {eventId})</p>
+					<p class="mt-2 text-xs text-secondary">(Référence : {routeKey})</p>
 					<a
 						href="/events"
 						class="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 font-button text-button text-on-primary transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
@@ -223,7 +228,7 @@ export function EventDetail({ params }) {
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		placesReservees: event.placesReservees ?? 0,
 		capaciteMax: event.capaciteMax ?? null,
-		slug: event.id,
+		slug: event.publicCode || event.id,
 	};
 
 	const status = getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement);
@@ -556,7 +561,7 @@ export function EventDetail({ params }) {
 							)}
 							{event.nombreAvis > 3 && (
 								<a
-									href={`/events/${event.id}/avis`}
+									href={`${eventPath(event)}/avis`}
 									aria-label={`Voir les ${event.nombreAvis} avis de ${event.titre}`}
 									class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-4 py-2 font-button text-[10px] font-black uppercase tracking-widest text-primary transition-colors hover:border-primary hover:bg-primary/5"
 								>
@@ -669,7 +674,7 @@ export function EventDetail({ params }) {
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter xl:gap-8">
 						{relatedEvents.map((related, index) => (
 							<Reveal key={related.slug} animation={index % 2 === 0 ? 'fadeLeft' : 'fadeRight'} delay={index * 80} duration={820}>
-								<TourCard {...related} href={`/events/${related.slug}`} />
+							<TourCard {...related} href={related.href || eventPath(related)} />
 							</Reveal>
 						))}
 					</div>

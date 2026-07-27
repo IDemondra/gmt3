@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
+import { eventPath } from '../utils/eventUrl.js';
 
 const SITE = 'https://gmt3-fianarantsoa.mg';
 
-// Sitemap dynamique : liste tous les événements publiés (routes /events/<id>).
+// Sitemap dynamique : liste tous les événements publiés avec leur code public.
 export const GET: APIRoute = async () => {
 	const API = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
 
@@ -14,7 +15,7 @@ export const GET: APIRoute = async () => {
 	const urls = events
 		.map(
 			(e: any) =>
-				`<url><loc>${SITE}/events/${e.id}</loc><changefreq>weekly</changefreq></url>`,
+				`<url><loc>${SITE}${eventPath(e)}</loc><changefreq>weekly</changefreq></url><url><loc>${SITE}${eventPath(e)}/avis</loc><changefreq>weekly</changefreq></url>`,
 		)
 		.join('');
 

@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Header } from '../../components/Header.jsx';
+import { Footer } from '../../components/Footer.jsx';
+import { EventReviews } from '../../views/Events/Reviews.jsx';
+
+const code = Astro.params.code;
+const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
+const SITE = 'https://gmt3-fianarantsoa.mg';
+
+let event = null;
+if (code) {
+	event = await fetch(`${API_BASE}/evenements/code/${encodeURIComponent(code)}`, { credentials: 'include' })
+		.then((response) => (response.ok ? response.json() : null))
+		.catch(() => null);
+}
+
+const eventUrl = `${SITE}/${code}`;
+const reviewsUrl = `${eventUrl}/avis`;
+const title = event ? `Avis — ${event.titre} | GMT3 Fianarantsoa` : 'Avis événement — GMT3 Fianarantsoa';
+const description = event
+	? `Découvrez les avis des participants de ${event.titre}.`
+	: 'Découvrez les avis des participants aux expéditions GMT3.';
+const breadcrumbLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` },
+		{ '@type': 'ListItem', position: 2, name: 'Expéditions', item: `${SITE}/events` },
+		{ '@type': 'ListItem', position: 3, name: event?.titre || 'Avis événement', item: reviewsUrl },
+	],
+};
+---
+
+<BaseLayout title={title} description={description} noindex={!event} jsonLd={breadcrumbLd}>
+	<Header theme="light" client:load />
+	<EventReviews eventCode={code} client:load />
+	<Footer />
+</BaseLayout>

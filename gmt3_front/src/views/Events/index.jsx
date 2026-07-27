@@ -7,6 +7,7 @@ import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../utils/dateFormatter.js';
 import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
+import { eventPath } from '../../utils/eventUrl.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -54,8 +55,8 @@ export function Events() {
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		badge: getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) === 'ongoing' ? 'EN COURS' : 'EXPEDITION',
-		slug: event.id,
-		href: `/events/${event.id}`
+		slug: event.publicCode || event.id,
+		href: eventPath(event)
 	});
 
 	return (

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { Header } from '../components/Header.jsx';
 import { Footer } from '../components/Footer.jsx';
 import { isDateInFuture } from '../utils/dateFormatter.js';
+import { eventPath } from '../utils/eventUrl.js';
 
 const SITE = 'https://gmt3-fianarantsoa.mg';
 const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
@@ -105,7 +106,7 @@ const pageTitle = q
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 					{results.map((e: any) => (
 						<a
-							href={`/events/${e.id}`}
+							href={eventPath(e)}
 							class="group relative flex flex-col rounded-2xl border border-outline-variant bg-surface-container overflow-hidden transition-all duration-300 hover:border-primary hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1"
 						>
 							<div class="relative h-48 overflow-hidden">

@@ -24,6 +24,7 @@ export const clients = sqliteTable('clients', {
 // ── Événements ──
 export const evenements = sqliteTable('evenements', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
+	publicCode: text('public_code', { length: 10 }).notNull().unique(),
 	titre: text('titre', { length: 150 }).notNull(),
 	description: text('description'),
 	dateEvenement: text('date_evenement').notNull(),

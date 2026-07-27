@@ -27,7 +27,8 @@ function AppShell() {
 	// Liste blanche des préfixes de routes publiques
 	const publicPrefixes = ['/events', '/404'];
 	const isHome = url === '/';
-	const isPublic = isHome || publicPrefixes.some(p => url.startsWith(p));
+	const isShortEvent = /^\/[a-z0-9]{10}(?:\/|$)/i.test(url);
+	const isPublic = isHome || isShortEvent || publicPrefixes.some(p => url.startsWith(p));
 	
 	// Sécurité supplémentaire : si on voit "admin" dans l'URL, on n'est JAMAIS en public
 	const showPublicHeader = isPublic && !url.includes('/admin');
@@ -45,6 +46,7 @@ function AppShell() {
 					<Route path="/admin/utilisateurs" component={AdminUsers} />
 					<Route path="/admin/clients" component={AdminClients} />
 					<Route path="/admin/reservations" component={AdminReservations} />
+					<Route path="/:code" component={EventDetail} />
 					<Route default component={NotFound} />
 				</Router>
 			</main>

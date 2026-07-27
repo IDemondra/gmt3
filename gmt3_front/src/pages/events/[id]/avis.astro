@@ -19,13 +19,15 @@ const title = event ? `Avis — ${event.titre} | GMT3 Fianarantsoa` : 'Avis év�
 const description = event
 	? `Découvrez les avis des participants de ${event.titre}.`
 	: 'Découvrez les avis des participants aux expéditions GMT3.';
+const publicEventUrl = event?.publicCode ? `https://gmt3-fianarantsoa.mg/${event.publicCode}` : `https://gmt3-fianarantsoa.mg/events/${eventId}`;
+const publicReviewsUrl = `${publicEventUrl}/avis`;
 const breadcrumbLd = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',
 	itemListElement: [
 		{ '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://gmt3-fianarantsoa.mg/' },
 		{ '@type': 'ListItem', position: 2, name: 'Expéditions', item: 'https://gmt3-fianarantsoa.mg/events' },
-		{ '@type': 'ListItem', position: 3, name: event?.titre || 'Avis événement', item: `https://gmt3-fianarantsoa.mg/events/${eventId}/avis` },
+		{ '@type': 'ListItem', position: 3, name: event?.titre || 'Avis événement', item: publicReviewsUrl },
 	],
 };
 ---

@@ -12,6 +12,10 @@ export class EvenementRepository implements IRepository<Evenement, NewEvenement>
         const rows = await db.select().from(evenements).where(eq(evenements.id, id)).limit(1);
         return rows[0];
     }
+    async findByPublicCode(publicCode: string): Promise<Evenement | undefined> {
+        const rows = await db.select().from(evenements).where(eq(evenements.publicCode, publicCode)).limit(1);
+        return rows[0];
+    }
     async create(data: NewEvenement): Promise<Evenement> {
         const rows = await db.insert(evenements).values(data).returning();
         return rows[0]!;

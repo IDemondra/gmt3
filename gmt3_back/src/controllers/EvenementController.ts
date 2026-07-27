@@ -121,6 +121,20 @@ function galleryTotalSizeError(fd: GalleryFormData): Response | null {
 const evenementService = new EvenementService(new EvenementRepository());
 const photoRepository = new PhotoEvenementRepository();
 const avisRepository = new AvisRepository();
+const PUBLIC_CODE_ALPHABET = '23456789abcdefghijkmnopqrstuvwxyz';
+
+function generatePublicCode(length = 10): string {
+	const bytes = new Uint8Array(length);
+	crypto.getRandomValues(bytes);
+	return Array.from(bytes, (byte) => PUBLIC_CODE_ALPHABET[byte % PUBLIC_CODE_ALPHABET.length]).join('');
+}
+
+async function createUniquePublicCode(): Promise<string> {
+	for (;;) {
+		const publicCode = generatePublicCode();
+		if (!await evenementService.getByPublicCode(publicCode)) return publicCode;
+	}
+}
 
 function avgNote(items: { note: number }[]): number {
 	if (items.length === 0) return 0;
@@ -236,6 +250,22 @@ export const EvenementController = {
 		return Response.json({ ...item, id, message: 'Événement chargé avec succès' });
 	},
 
+	async getByPublicCode(req: BunRequest, params: Record<string, string>): Promise<Response> {
+		const publicCode = params.code?.trim().toLowerCase();
+		if (!publicCode || !/^[a-z0-9]{10}$/.test(publicCode)) {
+			return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		}
+
+		const item = await evenementService.getByPublicCode(publicCode);
+		if (!item || (!item.estPublie && !req.user)) {
+			return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		}
+
+		const serialized = await serializeEvenement(item.id);
+		if (!serialized) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		return Response.json({ ...serialized, id: item.id, message: 'Événement chargé avec succès' });
+	},
+
 	async getPhotos(req: BunRequest, params: Record<string, string>): Promise<Response> {
 		const id = idOrError(params);
 		if (id instanceof Response) return id;
@@ -285,6 +315,7 @@ export const EvenementController = {
 		}
 
 		const item = await evenementService.create({
+			publicCode: await createUniquePublicCode(),
 			titre,
 			description: description ?? null,
 			dateEvenement,

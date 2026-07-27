@@ -3,6 +3,7 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { img } from '../../../utils/images.js';
 import { isEventPast } from '../../../utils/dateFormatter.js';
+import { eventPath } from '../../../utils/eventUrl.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const BACKEND = API_BASE.replace(/\/api$/, '');
@@ -105,7 +106,7 @@ export function HeroSection() {
 										{photos.map((evt, i) => (
 											<a
 												key={evt.id}
-												href={`/events/${evt.id}`}
+												href={eventPath(evt)}
 												class="group relative h-16 rounded-lg overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/50 hover:scale-105 hover:z-10 shrink-0"
 												style={`width: ${i === 0 ? '96px' : '56px'}`}
 												title={evt.titre}
