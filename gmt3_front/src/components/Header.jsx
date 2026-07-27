@@ -3,8 +3,9 @@ import { useEffect, useState } from 'preact/hooks';
 
 const mobileMenuOpen = signal(false);
 
-export function Header() {
+export function Header({ theme = 'dark' }) {
 	const [scrolled, setScrolled] = useState(false);
+	const isLight = theme === 'light';
 
 	useEffect(() => {
 		const onScroll = () => setScrolled(window.scrollY > 20);
@@ -29,9 +30,11 @@ export function Header() {
 		}`}>
 			<div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
 				<div class={`relative flex items-center justify-between px-4 md:px-6 py-3 rounded-2xl border transition-all duration-500 overflow-hidden isolate ${
-					scrolled
-						? 'bg-black/60 backdrop-blur-xl border-white/10 shadow-2xl'
-						: 'bg-transparent border-transparent'
+						scrolled
+							? 'bg-black/60 backdrop-blur-xl border-white/10 shadow-2xl'
+							: isLight
+								? 'bg-surface/90 backdrop-blur-xl border-outline-variant/60 shadow-lg'
+								: 'bg-transparent border-transparent'
 				}`}>
 					{/* Scanning Line Effect (Only when scrolled) */}
 					{scrolled && (
@@ -43,7 +46,7 @@ export function Header() {
 						<div class="relative h-9 w-9 md:h-10 md:w-10 flex items-center justify-center rounded-lg shadow-lg group-hover:rotate-6 transition-transform overflow-hidden">
 							<img src="/assets/logo_gmt3.jpeg" alt="GMT+3 Logo" class="w-full h-full object-cover" />
 						</div>
-						<span class={`font-h2 text-base md:text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-on-primary'}`}>
+						<span class={`font-h2 text-base md:text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : isLight ? 'text-on-background' : 'text-on-primary'}`}>
 							GMT+3 <span class="text-primary-container hidden sm:inline">MADAGASCAR</span>
 						</span>
 					</a>
@@ -54,8 +57,10 @@ export function Header() {
 							{navLinks.map((link) => (
 								<li key={link.href}>
 									<a
-										class={`font-button text-[11px] tracking-[0.2em] transition-all duration-300 py-2 px-3 xl:px-4 rounded-full border border-transparent hover:border-white/10 hover:bg-white/5 uppercase font-bold cursor-pointer ${
-											scrolled ? 'text-white/70 hover:text-white' : 'text-white/80 hover:text-white'
+										class={`font-button text-[11px] tracking-[0.2em] transition-all duration-300 py-2 px-3 xl:px-4 rounded-full border border-transparent uppercase font-bold cursor-pointer ${
+											isLight && !scrolled ? 'hover:border-outline-variant hover:bg-surface-container' : 'hover:border-white/10 hover:bg-white/5'
+										} ${
+											scrolled ? 'text-white/70 hover:text-white' : isLight ? 'text-on-background/70 hover:text-on-background' : 'text-white/80 hover:text-white'
 										}`}
 										href={link.href}
 									>
@@ -77,7 +82,7 @@ export function Header() {
 						</a>
 
 						<button type="button"
-							class={`lg:hidden h-10 w-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${scrolled ? 'text-white bg-white/5' : 'text-white bg-black/20'}`}
+							class={`lg:hidden h-10 w-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${scrolled ? 'text-white bg-white/5' : isLight ? 'text-on-background bg-black/5 border border-outline-variant/60' : 'text-white bg-black/20'}`}
 							onClick={toggleMenu}
 							aria-label={mobileMenuOpen.value ? 'Fermer le menu' : 'Ouvrir le menu'}
 							aria-expanded={mobileMenuOpen.value}

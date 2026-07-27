@@ -9,7 +9,7 @@ const proofPoints = [
 export function ProofSection() {
 	return (
 		<section class="relative bg-on-secondary-fixed px-4 py-16 sm:px-6 lg:px-10 lg:py-24" aria-label="Pourquoi voyager avec GMT+3">
-			<div class="mx-auto max-w-container-max overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl shadow-black/30">
+			<div class="mx-auto max-w-container-max overflow-hidden rounded-2xl border border-white/10 bg-on-secondary-fixed shadow-2xl shadow-black/30">
 				<div class="grid lg:grid-cols-[0.9fr_2.1fr]">
 					<Reveal animation="fadeUp" className="relative overflow-hidden bg-primary px-7 py-9 sm:px-10 lg:flex lg:min-h-[250px] lg:flex-col lg:justify-between lg:px-12 lg:py-11">
 						<div class="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/20" aria-hidden="true" />
