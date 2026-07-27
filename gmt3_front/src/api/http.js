@@ -43,23 +43,35 @@ export async function apiRequest(path, { token, method = 'GET', body, json, defa
  * Upload FormData avec suivi de progression 0-100 — `fetch` ne remonte pas la
  * progression d'envoi, donc XMLHttpRequest est nécessaire ici.
  * @param {string} path
- * @param {{ token?: string|null; method?: string; body: FormData; defaultError?: string; onProgress?: (percent: number) => void }} options
+ * @param {{ token?: string|null; method?: string; body: FormData; defaultError?: string; onProgress?: (percent: number) => void; onProcessing?: () => void }} options
  */
-export function apiUpload(path, { token, method = 'POST', body, defaultError = 'ERREUR_SERVEUR', onProgress }) {
+export function apiUpload(path, { token, method = 'POST', body, defaultError = 'ERREUR_SERVEUR', onProgress, onProcessing }) {
 	const send = (currentToken, retried = false) => new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
+		let processingNotified = false;
 		xhr.open(method, `${API_BASE}${path}`);
 		xhr.withCredentials = true;
 		if (currentToken) xhr.setRequestHeader('Authorization', `Bearer ${currentToken}`);
 
 		xhr.upload.onprogress = (e) => {
-			if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+			if (!e.lengthComputable) return;
+			const percent = Math.round((e.loaded / e.total) * 100);
+			if (percent >= 100) {
+				if (!processingNotified) {
+					processingNotified = true;
+					onProcessing?.();
+				}
+				onProgress?.(99);
+				return;
+			}
+			onProgress?.(percent);
 		};
 
 		xhr.onload = async () => {
 			let data;
 			try { data = JSON.parse(xhr.responseText); } catch { data = { error: xhr.status === 413 ? 'FICHIER_TROP_LOURD' : 'ERREUR_SERVEUR' }; }
 			if (xhr.status >= 200 && xhr.status < 300) {
+				onProgress?.(100);
 				resolve(data);
 			} else if (xhr.status === 401 && currentToken && !retried) {
 				try {

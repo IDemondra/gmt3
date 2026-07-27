@@ -27,6 +27,7 @@ class MockXMLHttpRequest {
 		this.body = body;
 		MockXMLHttpRequest.instances.push(this);
 		const response = MockXMLHttpRequest.responses.shift();
+		this.upload.onprogress?.({ lengthComputable: true, loaded: 100, total: 100 });
 		queueMicrotask(() => {
 			this.status = response.status;
 			this.responseText = JSON.stringify(response.body);
@@ -63,5 +64,21 @@ describe('apiUpload', () => {
 			'Bearer fresh-token',
 		]);
 		expect(refreshAccessToken).toHaveBeenCalledTimes(1);
+	});
+
+	test('signale traitement serveur avant 100% final', async () => {
+		globalThis.XMLHttpRequest = MockXMLHttpRequest;
+		MockXMLHttpRequest.responses = [{ status: 200, body: { success: true } }];
+		const progress = [];
+		let processingCount = 0;
+
+		await apiUpload('/evenements/1/photos', {
+			body: new FormData(),
+			onProgress: (percent) => progress.push(percent),
+			onProcessing: () => { processingCount++; },
+		});
+
+		expect(progress).toEqual([99, 100]);
+		expect(processingCount).toBe(1);
 	});
 });

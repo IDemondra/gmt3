@@ -159,10 +159,10 @@ export function AdminDashboard() {
 
 			setUploadStatus('Envoi en cours...');
 			if (editingEvent) {
-				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd, setUploadProgress);
+				const updated = await updateEvenementApi(accessToken.value, editingEvent.id, fd, setUploadProgress, () => setUploadStatus('Traitement des images...'));
 				setEvents((prev) => prev.map((e) => e.id === editingEvent.id ? { ...updated, title: updated.titre, date: updated.dateEvenement, published: updated.estPublie } : e));
 			} else {
-				const created = await createEvenementApi(accessToken.value, fd, setUploadProgress);
+				const created = await createEvenementApi(accessToken.value, fd, setUploadProgress, () => setUploadStatus('Traitement des images...'));
 				setEvents((prev) => [...prev, { ...created, title: created.titre, date: created.dateEvenement, published: created.estPublie }]);
 			}
 			setShowForm(false);

@@ -14,6 +14,9 @@ import { ToastContainer } from '../../components/ui/Toast.jsx';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
+import { compressImageIfNeeded } from '../../utils/imageCompress.js';
+
+const MAX_REVIEW_PHOTO_BYTES = 5 * 1024 * 1024;
 
 const transformEventForCard = (evt, backend) => ({
 	id: evt.id,
@@ -58,7 +61,14 @@ export function EventDetail({ params }) {
 			fd.append('nom', reviewForm.nom.trim());
 			fd.append('note', String(reviewForm.note));
 			if (reviewForm.commentaire.trim()) fd.append('commentaire', reviewForm.commentaire.trim());
-			if (reviewPhoto) fd.append('photo', reviewPhoto);
+			if (reviewPhoto) {
+				const compressedPhoto = await compressImageIfNeeded(reviewPhoto, MAX_REVIEW_PHOTO_BYTES);
+				if (compressedPhoto.size > MAX_REVIEW_PHOTO_BYTES) {
+					addToast('Photo trop lourde après compression (maximum 5 Mo)', 'warning');
+					return;
+				}
+				fd.append('photo', compressedPhoto);
+			}
 			const res = await createAvisApi(fd);
 			addToast(res.message || 'Merci pour votre avis !', 'success');
 			setReviewForm({ nom: '', note: 0, commentaire: '' });

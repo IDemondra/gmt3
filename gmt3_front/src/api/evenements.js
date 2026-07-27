@@ -16,9 +16,10 @@ export async function evenementApi(token, id) {
  * @param {string|null} token
  * @param {FormData} formData
  * @param {(percent: number) => void} [onProgress]
+ * @param {() => void} [onProcessing]
  */
-export async function createEvenementApi(token, formData, onProgress) {
-	return apiUpload('/evenements', { token, method: 'POST', body: formData, defaultError: 'ERREUR_CREATION', onProgress });
+export async function createEvenementApi(token, formData, onProgress, onProcessing) {
+	return apiUpload('/evenements', { token, method: 'POST', body: formData, defaultError: 'ERREUR_CREATION', onProgress, onProcessing });
 }
 
 /**
@@ -26,9 +27,10 @@ export async function createEvenementApi(token, formData, onProgress) {
  * @param {number} id
  * @param {FormData} formData
  * @param {(percent: number) => void} [onProgress]
+ * @param {() => void} [onProcessing]
  */
-export async function updateEvenementApi(token, id, formData, onProgress) {
-	return apiUpload(`/evenements/${id}`, { token, method: 'PUT', body: formData, defaultError: 'ERREUR_MAJ', onProgress });
+export async function updateEvenementApi(token, id, formData, onProgress, onProcessing) {
+	return apiUpload(`/evenements/${id}`, { token, method: 'PUT', body: formData, defaultError: 'ERREUR_MAJ', onProgress, onProcessing });
 }
 
 export async function deleteEvenementApi(token, id) {
@@ -41,7 +43,8 @@ export async function deleteEvenementApi(token, id) {
  * @param {number} id
  * @param {FormData} formData FormData contenant les champs `photosEvenement`
  * @param {(percent: number) => void} [onProgress]
+ * @param {() => void} [onProcessing]
  */
-export async function replacePhotosApi(token, id, formData, onProgress) {
-	return apiUpload(`/evenements/${id}/photos`, { token, method: 'POST', body: formData, defaultError: 'ERREUR_UPLOAD', onProgress });
+export async function replacePhotosApi(token, id, formData, onProgress, onProcessing) {
+	return apiUpload(`/evenements/${id}/photos`, { token, method: 'POST', body: formData, defaultError: 'ERREUR_UPLOAD', onProgress, onProcessing });
 }

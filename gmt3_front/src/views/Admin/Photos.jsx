@@ -102,7 +102,7 @@ export function AdminPhotos() {
 				fd.append('photosEvenement', file);
 			}
 			setUploadStatus('Envoi...');
-			const res = await replacePhotosApi(accessToken.value, selected.id, fd, setUploadProgress);
+			const res = await replacePhotosApi(accessToken.value, selected.id, fd, setUploadProgress, () => setUploadStatus('Traitement des images...'));
 			setExisting(res.photosEvenement || []);
 			gallery.reset();
 			addToast('Galerie enregistrée', 'success');
