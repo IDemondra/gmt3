@@ -5,7 +5,7 @@ import type { TypeEvenement } from '../types/index.js';
 
 export class TypeEvenementRepository {
 	async findActive(): Promise<TypeEvenement[]> {
-		return db.select().from(typesEvenement).where(eq(typesEvenement.actif, true)).orderBy(asc(typesEvenement.ordre), asc(typesEvenement.nom));
+		return db.select().from(typesEvenement).where(eq(typesEvenement.actif, true)).orderBy(asc(typesEvenement.nom));
 	}
 
 	async findById(id: number): Promise<TypeEvenement | undefined> {
