@@ -70,7 +70,11 @@ export function DestinationsSection() {
 				<div class="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-auto lg:h-[700px]">
 					{sectors.map((s, i) => (
 						<Reveal key={s.id} animation="fadeUp" delay={i * 100} className={`${s.span} w-full`}>
-							<article class="group relative w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-700 shadow-2xl transition-all duration-300 cursor-pointer isolate border border-white/10 hover:shadow-2xl hover:shadow-primary/20">
+							<a
+								href="/events"
+								aria-label={`Découvrir ${s.name}, ${s.region}`}
+								class="group relative block w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-700 shadow-2xl transition-all duration-300 isolate border border-white/10 hover:shadow-2xl hover:shadow-primary/20"
+							>
 
 								{/* Background Image with Ken Burns effect on hover */}
 								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />
@@ -91,8 +95,8 @@ export function DestinationsSection() {
 								<div class="absolute inset-0 z-30 p-8 flex flex-col justify-between">
 									<div class="flex justify-between items-start translate-y-[-10px] opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
 										<div class="flex flex-col gap-1">
-															<span class="font-mono text-[9px] text-primary font-black tracking-widest">{String(i + 1).padStart(2, '0')}</span>
-															<span class="font-mono text-[9px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
+															<span class="font-mono text-[10px] text-primary font-black tracking-widest">{String(i + 1).padStart(2, '0')}</span>
+															<span class="font-mono text-[10px] text-white/40 tracking-tighter uppercase">{s.coord}</span>
 										</div>
 										<div class="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center">
 											<span class="material-symbols-outlined text-sm text-white/40">radar</span>
@@ -113,11 +117,11 @@ export function DestinationsSection() {
 										{/* Expanded Specs on Hover */}
 										<div class="mt-6 flex items-center gap-6 opacity-0 translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 border-t border-white/10 pt-6">
 											<div class="flex flex-col">
-																<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">Altitude</span>
+																<span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1">Altitude</span>
 												<span class="font-mono text-xs font-bold text-white">{s.elev}</span>
 											</div>
 											<div class="flex flex-col">
-																<span class="text-[8px] font-bold text-primary tracking-widest uppercase mb-1">À découvrir</span>
+																<span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1">À découvrir</span>
 																<span class="font-mono text-xs font-bold text-white uppercase">Toute l'année</span>
 											</div>
 											<div class="ml-auto h-10 w-10 rounded-full bg-white text-on-secondary-fixed flex items-center justify-center transition-transform hover:scale-110">
@@ -129,7 +133,7 @@ export function DestinationsSection() {
 
 								{/* Shimmer Effect */}
 								<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
-							</article>
+							</a>
 						</Reveal>
 					))}
 				</div>

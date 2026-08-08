@@ -187,7 +187,7 @@ export function AboutSection() {
 													<span key={s} class="h-1.5 w-1.5 rounded-full bg-primary/30" />
 												))}
 											</div>
-											<span class="text-[9px] font-bold tracking-tighter text-stone-400 uppercase">
+											<span class="text-[10px] font-bold tracking-tighter text-stone-400 uppercase">
 												Ref. GMT3-MADA-{i + 10}
 											</span>
 										</div>

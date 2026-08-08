@@ -1,41 +1,31 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
-import { img } from '../../../utils/images.js';
+import { img, resolveImg } from '../../../utils/images.js';
+import { fetchEvents } from '../../../utils/events.js';
 import { isEventPast } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
-const BACKEND = API_BASE.replace(/\/api$/, '');
-
-function resolveImg(url) {
-	if (!url) return '';
-	if (url.startsWith('http') || url.startsWith('blob:')) return url;
-	return `${BACKEND}${url}`;
-}
-
 export function HeroSection() {
 	const [photos, setPhotos] = useState([]);
+	const [photosLoading, setPhotosLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => {
-				if (!r.ok) throw new Error('Événements indisponibles');
-				return r.json();
-			})
-			.then((response) => {
-				const past = (Array.isArray(response.data) ? response.data : [])
+		fetchEvents()
+			.then((events) => {
+				const past = events
 					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && e.imagePrincipale);
 				setPhotos(past.slice(0, 5));
 			})
-			.catch(() => {});
+			.catch(() => {})
+			.finally(() => setPhotosLoading(false));
 	}, []);
 
 	return (
 		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden">
 
 			{/* Background — overlay intentionally light on the right to let the photo breathe */}
-			<BlurBackgroundImage src={img('/assets/hero.jpg')} alt="Groupe de voyageurs GMT+3 au sommet, au-dessus des paysages de Fianarantsoa" decorative={false} class="absolute inset-0 z-0" />
+			<BlurBackgroundImage src={img('/assets/hero.webp')} alt="Groupe de voyageurs GMT+3 au sommet, au-dessus des paysages de Fianarantsoa" decorative={false} class="absolute inset-0 z-0" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-r from-zinc-950/96 via-zinc-950/75 lg:to-zinc-950/15 to-zinc-950/60" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/50" />
 
@@ -98,10 +88,20 @@ export function HeroSection() {
 						</Reveal>
 
 						{/* Gallery strip */}
-						{photos.length > 0 && (
+						{(photosLoading || photos.length > 0) && (
 							<Reveal animation="fadeUp" delay={460} duration={800}>
 								<div class="mt-14 border-t border-white/10 pt-8">
-								<p class="font-mono text-[9px] tracking-[0.3em] text-white/30 uppercase mb-4">Quelques souvenirs de terrain</p>
+								<p class="font-mono text-[10px] tracking-[0.3em] text-white/30 uppercase mb-4">Quelques souvenirs de terrain</p>
+									{photosLoading ? (
+										<div class="flex items-center gap-2" aria-hidden="true">
+											{[0, 1, 2, 3, 4].map((i) => (
+												<div
+													key={i}
+													class={`h-16 rounded-lg border border-white/10 animate-pulse ${i === 0 ? 'w-24' : 'w-14'} shrink-0`}
+												/>
+											))}
+										</div>
+									) : (
 									<div class="flex items-center gap-2">
 										{photos.map((evt, i) => (
 											<a
@@ -115,7 +115,7 @@ export function HeroSection() {
 												<div class="absolute inset-0 bg-zinc-950/30 group-hover:bg-zinc-950/10 transition-colors duration-300" />
 												{i === 0 && (
 													<div class="absolute inset-x-0 bottom-0 px-2 py-1 bg-gradient-to-t from-zinc-950/80 to-transparent">
-														<p class="font-mono text-[7px] text-white/70 uppercase tracking-wide truncate">{evt.titre}</p>
+														<p class="font-mono text-[10px] text-white/70 uppercase tracking-wide truncate">{evt.titre}</p>
 													</div>
 												)}
 											</a>
@@ -125,9 +125,10 @@ export function HeroSection() {
 											class="shrink-0 h-16 w-14 rounded-lg border border-white/10 flex flex-col items-center justify-center gap-1 text-white/30 hover:text-white/60 hover:border-white/25 transition-all duration-200"
 										>
 											<span class="material-symbols-outlined text-[16px]">photo_library</span>
-											<span class="font-mono text-[7px] tracking-wide uppercase">Tout</span>
+											<span class="font-mono text-[10px] tracking-wide uppercase">Tout</span>
 										</a>
 									</div>
+									)}
 								</div>
 							</Reveal>
 						)}
@@ -142,14 +143,14 @@ export function HeroSection() {
 								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
 								style="transform: rotate(1.5deg);"
 							>
-								<BlurBackgroundImage src={img('/assets/hero.jpg')} class="absolute inset-0" />
+								<BlurBackgroundImage src={img('/assets/hero.webp')} class="absolute inset-0" />
 								<div class="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-zinc-950/10" />
 
 								{/* Inset badge */}
 								<div class="absolute bottom-5 left-5 right-5">
 									<div class="flex items-end justify-between">
 										<div>
-											<p class="font-mono text-[9px] tracking-[0.25em] text-white/40 uppercase mb-1">Zone</p>
+											<p class="font-mono text-[10px] tracking-[0.25em] text-white/40 uppercase mb-1">Zone</p>
 											<p class="font-h2 text-sm font-black text-white uppercase tracking-wide">Haute Matsiatra</p>
 										</div>
 										<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm">
@@ -167,13 +168,13 @@ export function HeroSection() {
 											<span key={i} class="material-symbols-outlined text-[12px] text-primary-container" style="font-variation-settings:'FILL' 1">star</span>
 										))}
 									</div>
-							<p class="font-mono text-[9px] tracking-[0.15em] text-white/40 uppercase mt-1">Voyages accompagnés localement</p>
+							<p class="font-mono text-[10px] tracking-[0.15em] text-white/40 uppercase mt-1">Voyages accompagnés localement</p>
 								</div>
 							</div>
 
 							{/* GMT+3 tag */}
 							<div class="absolute -bottom-3 -right-3 bg-primary/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
-								<p class="font-label-caps text-[9px] tracking-[0.25em] text-white font-bold uppercase">GMT +3</p>
+								<p class="font-label-caps text-[10px] tracking-[0.25em] text-white font-bold uppercase">GMT +3</p>
 							</div>
 						</div>
 					</Reveal>

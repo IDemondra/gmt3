@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
+import { resolveImg } from '../../../utils/images.js';
+import { fetchEvents } from '../../../utils/events.js';
 import { parseMarkdownInline } from '../../../utils/markdown.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
-const BACKEND = API_BASE.replace(/\/api$/, '');
-
-function resolveImg(url) {
-	if (!url) return '';
-	if (url.startsWith('http') || url.startsWith('blob:')) return url;
-	return `${BACKEND}${url}`;
-}
 
 function formatPrix(prix) {
 	if (!prix) return null;
@@ -24,20 +17,14 @@ export function ToursSection() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => {
-				if (!r.ok) throw new Error('Événements indisponibles');
-				return r.json();
-			})
-			.then((response) => {
-					const published = (Array.isArray(response.data) ? response.data : [])
+		fetchEvents()
+			.then((events) => {
+				const published = events
 					.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 					.slice(0, 3);
 				setEvents(published);
 			})
-			.catch((err) => {
-				setEvents([]);
-			})
+			.catch(() => setEvents([]))
 			.finally(() => setLoading(false));
 	}, []);
 
@@ -123,11 +110,11 @@ export function ToursSection() {
 													<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
 													<div class="absolute top-4 right-4 flex flex-col items-end gap-2">
-														<span class="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 font-mono text-[9px] text-white font-bold tracking-widest rounded-sm">
+														<span class="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 font-mono text-[10px] text-white font-bold tracking-widest rounded-sm">
 															EVT-{String(event.id).padStart(4, '0')}
 														</span>
 														{prix && (
-															<span class="bg-primary text-white px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest rounded-sm shadow-lg">
+															<span class="bg-primary text-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-sm shadow-lg">
 																{prix}
 															</span>
 														)}
@@ -154,7 +141,7 @@ export function ToursSection() {
 
 													{event.lieu && (
 														<div class={`flex items-center gap-3 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
-															<span class="px-2 py-1 rounded bg-stone-100 text-[9px] font-bold text-secondary tracking-widest border border-stone-200 uppercase flex items-center gap-1">
+															<span class="px-2 py-1 rounded bg-stone-100 text-[10px] font-bold text-secondary tracking-widest border border-stone-200 uppercase flex items-center gap-1">
 																<span class="material-symbols-outlined text-[12px]">location_on</span>
 																{event.lieu}
 															</span>

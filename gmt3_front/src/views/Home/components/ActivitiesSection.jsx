@@ -116,7 +116,7 @@ export function ActivitiesSection() {
 
 										{/* Footer: CTA */}
 									<div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-											<span class="text-[9px] font-bold tracking-widest text-primary uppercase">En savoir plus</span>
+											<span class="text-[10px] font-bold tracking-widest text-primary uppercase">En savoir plus</span>
 										<span class="material-symbols-outlined text-sm text-primary group-hover:translate-x-1 transition-transform">north_east</span>
 									</div>
 

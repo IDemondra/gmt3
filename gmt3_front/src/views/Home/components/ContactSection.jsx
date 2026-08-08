@@ -70,9 +70,9 @@ export function ContactSection() {
 									<div class="w-14 h-14 mx-auto rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-5 group-hover:bg-white/20 group-hover:scale-110 group-hover:border-white/25 transition-all duration-300">
 										<span class="material-symbols-outlined text-2xl text-white">{c.icon}</span>
 									</div>
-									<span class="font-mono text-[9px] text-white/30 tracking-[0.3em] uppercase font-bold block mb-2">{c.label}</span>
+									<span class="font-mono text-[10px] text-white/30 tracking-[0.3em] uppercase font-bold block mb-2">{c.label}</span>
 									<p class="font-body-md text-white font-semibold mb-1">{c.value}</p>
-									<p class="font-mono text-[9px] text-white/30 tracking-widest uppercase">{c.sub}</p>
+									<p class="font-mono text-[10px] text-white/30 tracking-widest uppercase">{c.sub}</p>
 								</div>
 							</div>
 						</Reveal>

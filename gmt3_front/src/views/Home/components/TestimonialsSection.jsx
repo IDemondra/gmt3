@@ -1,22 +1,17 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { StarRating } from '../../../components/ui/StarRating.jsx';
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+import { fetchEvents } from '../../../utils/events.js';
 
 export function TestimonialsSection() {
 	const [reviews, setReviews] = useState([]);
 	const [stats, setStats] = useState({ avg: 0, count: 0 });
 	const [loading, setLoading] = useState(true);
+	const [loaded, setLoaded] = useState(false);
 
 	useEffect(() => {
-		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => {
-				if (!r.ok) throw new Error('Avis indisponibles');
-				return r.json();
-			})
-			.then((response) => {
-				const events = Array.isArray(response.data) ? response.data : [];
+		fetchEvents()
+			.then((events) => {
 				const all = [];
 				for (const evt of events) {
 					for (const a of (evt.avis || [])) {
@@ -35,10 +30,13 @@ export function TestimonialsSection() {
 				}
 			})
 			.catch(() => setReviews([]))
-			.finally(() => setLoading(false));
+			.finally(() => {
+				setLoading(false);
+				setLoaded(true);
+			});
 	}, []);
 
-	if (loading || reviews.length === 0) return null;
+	if (loaded && reviews.length === 0) return null;
 
 	return (
 		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="temoignages">
@@ -62,37 +60,59 @@ export function TestimonialsSection() {
 
 					<Reveal animation="fadeLeft" delay={120}>
 						<div class="flex items-center gap-4 rounded-2xl border border-outline-variant/60 bg-white px-6 py-4 shadow-sm">
-							<span class="font-h2 text-4xl font-black text-on-background">{stats.avg}</span>
+							<span class="font-h2 text-4xl font-black text-on-background">{loading ? '—' : stats.avg}</span>
 							<div class="flex flex-col gap-1">
-								<StarRating value={stats.avg} size="text-[18px]" />
-								<span class="font-mono text-[10px] text-on-background/50 tracking-widest uppercase">{stats.count} avis vérifiés</span>
+								{loading ? (
+									<div class="h-[18px] w-24 rounded bg-stone-200 animate-pulse" />
+								) : (
+									<StarRating value={stats.avg} size="text-[18px]" />
+								)}
+								<span class="font-mono text-[10px] text-on-background/50 tracking-widest uppercase">{loading ? 'Chargement des avis…' : `${stats.count} avis vérifiés`}</span>
 							</div>
 						</div>
 					</Reveal>
 				</div>
 
 				{/* Cards */}
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-					{reviews.map((rev, i) => (
-						<Reveal key={rev.id} animation="fadeUp" delay={i * 100}>
-							<figure class="h-full flex flex-col rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg">
-								<StarRating value={rev.note} size="text-[16px]" />
-								<blockquote class="mt-4 flex-1 font-body-md text-secondary leading-relaxed">
-									“{rev.commentaire}”
-								</blockquote>
-								<figcaption class="mt-6 flex items-center gap-3 border-t border-outline-variant/40 pt-4">
-									<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-black uppercase">
-										{rev.nom.charAt(0)}
-									</div>
-									<div class="min-w-0">
-										<p class="font-body-md font-bold text-on-background leading-tight truncate">{rev.nom}</p>
-										<p class="font-mono text-[10px] text-on-background/40 truncate uppercase tracking-wider">{rev.evenement}</p>
-									</div>
-								</figcaption>
-							</figure>
-						</Reveal>
-					))}
-				</div>
+				{loading ? (
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-6" aria-hidden="true">
+						{[0, 1, 2].map((i) => (
+							<div key={i} class="rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-sm">
+								<div class="h-4 w-28 rounded bg-stone-200 animate-pulse" />
+								<div class="mt-4 space-y-2">
+									<div class="h-3 w-full rounded bg-stone-200 animate-pulse" />
+									<div class="h-3 w-4/5 rounded bg-stone-200 animate-pulse" />
+								</div>
+								<div class="mt-6 flex items-center gap-3 border-t border-outline-variant/40 pt-4">
+									<div class="h-10 w-10 rounded-full bg-stone-200 animate-pulse" />
+									<div class="h-3 w-24 rounded bg-stone-200 animate-pulse" />
+								</div>
+							</div>
+						))}
+					</div>
+				) : (
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+						{reviews.map((rev, i) => (
+							<Reveal key={rev.id} animation="fadeUp" delay={i * 100}>
+								<figure class="h-full flex flex-col rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg">
+									<StarRating value={rev.note} size="text-[16px]" />
+									<blockquote class="mt-4 flex-1 font-body-md text-secondary leading-relaxed">
+										“{rev.commentaire}”
+									</blockquote>
+									<figcaption class="mt-6 flex items-center gap-3 border-t border-outline-variant/40 pt-4">
+										<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-black uppercase">
+											{rev.nom ? rev.nom.charAt(0) : 'G'}
+										</div>
+										<div class="min-w-0">
+											<p class="font-body-md font-bold text-on-background leading-tight truncate">{rev.nom}</p>
+											<p class="font-mono text-[10px] text-on-background/40 truncate uppercase tracking-wider">{rev.evenement}</p>
+										</div>
+									</figcaption>
+								</figure>
+							</Reveal>
+						))}
+					</div>
+				)}
 			</div>
 		</section>
 	);
