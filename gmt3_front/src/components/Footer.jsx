@@ -2,10 +2,10 @@ import { Reveal } from './ui/Reveal.jsx';
 
 const socialLinks = [
 	{
-		label: 'Instagram',
-		href: '#',
-		viewBox: '0 0 24 24',
-		path: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+		label: 'WhatsApp',
+		href: 'https://wa.me/261340312401',
+		viewBox: '0 0 32 32',
+		path: 'M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.128 6.744 3.046 9.38L1.05 31.33l6.156-1.968A15.9 15.9 0 0 0 16.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0Zm9.318 22.594c-.386 1.09-1.92 1.994-3.142 2.258-.836.178-1.928.32-5.604-1.204-4.7-1.948-7.726-6.724-7.962-7.034-.226-.31-1.9-2.53-1.9-4.826s1.168-3.42 1.638-3.89c.386-.386.842-.562 1.122-.562.14 0 .266.007.38.013.328.014.492.034.708.55.27.648.928 2.244 1.006 2.408.08.164.134.356.024.566-.102.21-.192.328-.356.518-.164.19-.346.424-.494.57-.164.164-.336.342-.144.67.19.328.852 1.404 1.83 2.274 1.26 1.122 2.32 1.47 2.69 1.624.276.114.604.086.81-.13.262-.28.586-.744.916-1.2.234-.328.53-.368.84-.252.316.11 1.998.942 2.34 1.112.342.17.568.252.652.394.082.142.082.812-.304 1.902Z',
 	},
 	{
 		label: 'Facebook',
@@ -15,7 +15,7 @@ const socialLinks = [
 	},
 	{
 		label: 'Email',
-		href: '/#contact',
+		href: 'mailto:hanitra@great-madagascar-tours.com',
 		viewBox: '0 0 24 24',
 		path: 'M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z',
 	},
@@ -32,9 +32,6 @@ const infoLinks = [
 	{ label: 'Contact', href: '/#contact' },
 	{ label: 'FAQ', href: '/faq' },
 	{ label: 'Recherche', href: '/recherche' },
-	{ label: 'Conditions', href: '#' },
-	{ label: 'Confidentialité', href: '#' },
-	{ label: 'Partenaires', href: '#' },
 ];
 
 export function Footer() {
@@ -72,7 +69,7 @@ export function Footer() {
 									<h2 class="font-h3 text-xl font-black uppercase tracking-tighter leading-none">
 										GMT+3 <span class="text-primary-container">MADAGASCAR</span>
 									</h2>
-									<p class="font-mono text-[9px] text-primary font-bold tracking-widest mt-1">FIANARANTSOA, MG</p>
+									<p class="font-mono text-[10px] text-primary font-bold tracking-widest mt-1">FIANARANTSOA, MG</p>
 								</div>
 							</div>
 							<p class="font-body-md text-white/40 max-w-sm leading-relaxed mb-10 italic">
@@ -136,21 +133,26 @@ export function Footer() {
 								</div>
 								
 								<h4 class="font-h3 text-lg font-bold text-white mb-2 uppercase tracking-tight">Mission Briefings</h4>
-								<p class="text-xs text-white/40 leading-relaxed mb-6">Inscrivez-vous pour recevoir les rapports d'exploration et les créneaux d'expédition prioritaires.</p>
+								<p class="text-xs text-white/40 leading-relaxed mb-6">Des questions sur une expédition ? Contactez-nous directement, réponse sous 24 h.</p>
 								
-								<form onSubmit={(e) => e.preventDefault()} class="space-y-3">
-									<div class="relative">
-										<input
-											type="email"
-										aria-label="Votre adresse email"
-										placeholder="VOTRE ADRESSE EMAIL"
-											class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono tracking-widest text-white placeholder:text-white/10 focus:outline-none focus:border-primary transition-colors uppercase"
-										/>
-									</div>
-									<button type="button" class="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all hover:shadow-2xl hover:shadow-primary/20 active:scale-95">
-										JOIN NETWORK
-									</button>
-								</form>
+								<div class="space-y-3">
+									<a
+										href="https://wa.me/261340312401?text=Bonjour%20GMT3%2C%20je%20souhaite%20des%20informations%20sur%20vos%20exp%C3%A9ditions."
+										target="_blank"
+										rel="noopener noreferrer"
+										class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all hover:shadow-2xl hover:shadow-primary/20 active:scale-95"
+									>
+										<span class="material-symbols-outlined text-base">chat</span>
+										PARLER SUR WHATSAPP
+									</a>
+									<a
+										href="mailto:hanitra@great-madagascar-tours.com"
+										class="w-full flex items-center justify-center gap-2 border border-white/15 hover:border-white/40 text-white/70 hover:text-white py-3 rounded-xl font-button text-[10px] tracking-[0.2em] font-black transition-all active:scale-95"
+									>
+										<span class="material-symbols-outlined text-base">mail</span>
+										NOUS ÉCRIRE
+									</a>
+								</div>
 							</div>
 						</Reveal>
 					</div>
@@ -159,7 +161,7 @@ export function Footer() {
 				{/* Liens légaux et crédits */}
 				<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
 					<div class="flex flex-col md:items-start gap-1">
-						<p class="font-mono text-[9px] text-white/20 uppercase tracking-widest">
+						<p class="font-mono text-[10px] text-white/20 uppercase tracking-widest">
 							&copy; {currentYear} GMT+3 MADAGASCAR / CONÇU PAR <a href="https://www.facebook.com/hajarison.raphael" target="_blank" class="text-white/40 hover:text-primary transition-colors">DEMONDRA</a>
 						</p>
 					</div>

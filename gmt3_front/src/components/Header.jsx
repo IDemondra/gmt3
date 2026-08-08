@@ -13,6 +13,24 @@ export function Header({ theme = 'dark' }) {
 		return () => window.removeEventListener('scroll', onScroll);
 	}, []);
 
+	useEffect(() => {
+		if (mobileMenuOpen.value) {
+			const previous = document.body.style.overflow;
+			document.body.style.overflow = 'hidden';
+			return () => {
+				document.body.style.overflow = previous;
+			};
+		}
+	}, [mobileMenuOpen.value]);
+
+	useEffect(() => {
+		const onKey = (e) => {
+			if (e.key === 'Escape') mobileMenuOpen.value = false;
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, []);
+
 	const toggleMenu = () => {
 		mobileMenuOpen.value = !mobileMenuOpen.value;
 	};

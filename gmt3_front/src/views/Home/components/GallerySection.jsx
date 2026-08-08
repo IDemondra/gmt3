@@ -2,18 +2,10 @@ import { useState, useEffect } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { ImagePreview } from '../../../components/ui/ImagePreview.jsx';
 import { BlurImg } from '../../../components/ui/BlurImg.jsx';
-import { img } from '../../../utils/images.js';
+import { img, resolveImg } from '../../../utils/images.js';
+import { fetchEvents } from '../../../utils/events.js';
 import { isEventPast, formatDateFr } from '../../../utils/dateFormatter.js';
 import { buildDailyGallery, getLocalDayKey } from '../../../utils/dailyGallery.js';
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
-const BACKEND = API_BASE.replace(/\/api$/, '');
-
-function resolveImg(url) {
-	if (!url) return '';
-	if (url.startsWith('http') || url.startsWith('blob:')) return url;
-	return `${BACKEND}${url}`;
-}
 
 export function GallerySection() {
 	const [lightbox, setLightbox] = useState(null);
@@ -23,19 +15,12 @@ export function GallerySection() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${API_BASE}/evenements`, { credentials: 'include' })
-			.then((r) => {
-				if (!r.ok) throw new Error('Galerie indisponible');
-				return r.json();
+		fetchEvents()
+			.then((events) => {
+				const past = events.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
+				setPastEvents(past);
 			})
-			.then((response) => {
-				const events = (Array.isArray(response.data) ? response.data : [])
-					.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
-				setPastEvents(events);
-			})
-			.catch((err) => {
-				setCards([]);
-			})
+			.catch(() => setCards([]))
 			.finally(() => setLoading(false));
 	}, []);
 
@@ -131,8 +116,8 @@ export function GallerySection() {
 								>
                                     {/* Card Header (System Style) */}
                                     <div class="absolute top-0 left-0 right-0 z-20 p-4 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-black/80 to-transparent">
-                                        <span class="font-mono text-[9px] text-primary font-bold tracking-widest">{card.id}</span>
-                                        <span class="font-mono text-[9px] text-white/40">{card.coord}</span>
+                                        <span class="font-mono text-[10px] text-primary font-bold tracking-widest">{card.id}</span>
+                                        <span class="font-mono text-[10px] text-white/40">{card.coord}</span>
                                     </div>
 
 									<BlurImg
@@ -155,7 +140,7 @@ export function GallerySection() {
 									
                                     {/* Content Info */}
 									<div class="absolute inset-x-0 bottom-0 p-6 z-20 flex flex-col gap-2">
-										<span class="w-fit border border-primary/40 bg-primary/10 backdrop-blur-md px-2 py-0.5 font-mono text-[9px] text-primary font-bold tracking-widest uppercase rounded-sm">
+										<span class="w-fit border border-primary/40 bg-primary/10 backdrop-blur-md px-2 py-0.5 font-mono text-[10px] text-primary font-bold tracking-widest uppercase rounded-sm">
 											{card.label}
 										</span>
                                         <div class="flex justify-between items-end">
