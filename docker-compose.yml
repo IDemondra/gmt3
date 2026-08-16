@@ -24,6 +24,12 @@ services:
       - traefik.http.routers.gmt3-api.entrypoints=websecure
       - traefik.http.routers.gmt3-api.tls.certresolver=myresolver
       - traefik.http.routers.gmt3-api.priority=100
+      # Uploads photos : le backend accepte jusqu'à 40 Mo de galerie (5 Mo/fichier).
+      # Le défaut Traefik est sans limite de corps ; on pose un garde-fou 50 Mo au niveau proxy
+      # pour que les envois ~10 Mo ne soient plus coupés avant d'atteindre l'app.
+      - traefik.http.routers.gmt3-api.middlewares=gmt3-upload-limit
+      - traefik.http.middlewares.gmt3-upload-limit.buffering.maxRequestBodyBytes=52428800
+      - traefik.http.middlewares.gmt3-upload-limit.buffering.memRequestBodyBytes=26214400
       - traefik.http.services.gmt3-api.loadbalancer.server.port=3000
       - traefik.docker.network=traefik_preprod
     healthcheck:
