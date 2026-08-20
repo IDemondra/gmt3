@@ -26,7 +26,7 @@ const contacts = [
 
 export function ContactSection() {
 	return (
-		<section id="contact" class="relative bg-primary py-24 overflow-hidden">
+		<section id="contact" class="relative bg-primary py-24 overflow-hidden" style="content-visibility:auto; contain-intrinsic-size:auto 500px">
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />

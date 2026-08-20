@@ -12,11 +12,18 @@ function formatPrix(prix) {
 	return `${Number(prix).toLocaleString('fr-FR')} Ar`;
 }
 
-export function ToursSection() {
-	const [events, setEvents] = useState([]);
-	const [loading, setLoading] = useState(true);
+export function ToursSection({ initialEvents = null }) {
+	const getInitial = () => {
+		if (Array.isArray(initialEvents)) {
+			return initialEvents.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement)).slice(0, 3);
+		}
+		return [];
+	};
+	const [events, setEvents] = useState(getInitial);
+	const [loading, setLoading] = useState(!initialEvents);
 
 	useEffect(() => {
+		if (initialEvents) { setLoading(false); return; }
 		fetchEvents()
 			.then((events) => {
 				const published = events
@@ -26,10 +33,10 @@ export function ToursSection() {
 			})
 			.catch(() => setEvents([]))
 			.finally(() => setLoading(false));
-	}, []);
+	}, [initialEvents]);
 
 	return (
-		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="expeditions">
+		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="expeditions" style="content-visibility:auto; contain-intrinsic-size:auto 900px">
 			{/* Technical Bridge Line */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -94,14 +101,14 @@ export function ToursSection() {
 								const prix = formatPrix(event.prix);
 
 								return (
-									<Reveal key={event.id} animation={i % 2 === 0 ? 'fadeRight' : 'fadeLeft'} delay={i * 100}>
+									<Reveal key={event.id} animation="clip" creative index={i} stagger={120}>
 										<div class={`flex flex-col md:flex-row items-center gap-12 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
 
-											{/* Photo */}
+											{/* Photo — native img with lazy, width/height for CLS */}
 											<div class="w-full md:w-1/2">
 								<a href={eventPath(event)} class="group block relative aspect-[16/10] overflow-hidden rounded-2xl shadow-2xl border-4 border-white hover:shadow-2xl transition-shadow">
 													{imgUrl ? (
-														<BlurBackgroundImage src={imgUrl} class="absolute inset-0 group-hover:scale-110" />
+														<img src={imgUrl} alt={event.titre} loading="lazy" decoding="async" width="640" height="400" class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
 													) : (
 														<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
 															<span class="material-symbols-outlined text-6xl text-primary/30">landscape</span>

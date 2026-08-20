@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Header } from '../../components/Header.jsx';
 import { EventDetail } from '../../views/Events/Detail.jsx';
 
+export const prerender = false;
+
 const id = Astro.params.id;
 // Fetch SSR -> backend interne (runtime), distinct du /api client (navigateur)
 const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';

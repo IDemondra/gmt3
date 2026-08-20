@@ -45,7 +45,7 @@ export function ActivitiesSection() {
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="specialites">
+		<section class="relative overflow-hidden bg-on-secondary-fixed py-section-gap text-white" id="specialites" style="content-visibility:auto; contain-intrinsic-size:auto 600px">
 			{/* Transition visuelle légère depuis le hero */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -86,8 +86,8 @@ export function ActivitiesSection() {
 							: "md:col-span-2 lg:col-span-3 md:row-span-1";
 
 						return (
-							<Reveal key={activity.title} animation="fadeUp" delay={index * 100} className={spanClass}>
-								<a href="#contact" aria-label={`${activity.title}, nous contacter`} class="group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
+							<Reveal key={activity.title} animation="clip" creative index={index} stagger={80} className={spanClass}>
+								<a href="#contact" aria-label={`${activity.title}, nous contacter`} class="magnetic-card group relative h-full w-full overflow-hidden bg-white/5 border border-white/10 rounded-xl transition-all duration-500 hover:border-primary/50 hover:bg-white/10 flex flex-col p-6 isolate cursor-pointer">
 
 									{/* Corner Accents */}
 									<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-primary transition-colors" />

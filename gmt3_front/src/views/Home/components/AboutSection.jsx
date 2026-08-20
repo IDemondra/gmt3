@@ -27,7 +27,7 @@ export function AboutSection() {
 			role: 'Manager',
 			meta: 'Faune & flore endémiques',
 			note: '« Une grande expédition, c\'est d\'abord une grande vision. Je m\'assure que chacun avance dans la même direction. »',
-			src: '/assets/hanitra.jpeg',
+			src: '/assets/hanitra-400.webp',
 			accent: 'rotate-[-1.2deg]',
 		},
 		{
@@ -35,7 +35,7 @@ export function AboutSection() {
 			role: 'Responsable Marketing',
 			meta: 'Traditions & artisanat',
 			note: '« Chaque histoire de Madagascar mérite d\'être contée. Je suis là pour que le monde entende nos voix authentiques. »',
-			src: '/assets/hasina.jpeg',
+			src: '/assets/hasina-400.webp',
 			accent: 'rotate-[0.8deg]',
 		},
 		{
@@ -43,7 +43,7 @@ export function AboutSection() {
 			role: "Relation Publique",
 			meta: 'Trek & orientation',
 			note: '« Être le lien entre deux mondes, c\'est une responsabilité que je prends avec fierté. Le respect mutuel, c\'est ma langue maternelle. »',
-			src: '/assets/heritiana.jpeg',
+			src: '/assets/heritiana-400.webp',
 			accent: 'rotate-[-0.6deg]',
 		},
 		{
@@ -51,7 +51,7 @@ export function AboutSection() {
 			role: 'Responsable Eduque Tour',
 			meta: 'Campements & intendance',
 			note: '« Je connais chaque sentier, chaque raccourci, chaque danger. Votre sécurité est ma première destination. »',
-			src: '/assets/ando.jpeg',
+			src: '/assets/ando-400.webp',
 			accent: 'rotate-[1.5deg]',
 		},
 		{
@@ -59,7 +59,7 @@ export function AboutSection() {
 			role: 'Animateur',
 			meta: 'Mémoire visuelle',
 			note: '« L\'aventure sans rires et sans connexions humaines, ce n\'est que du tourisme. Je suis là pour créer la magie. »',
-			src: '/assets/billy.jpeg',
+			src: '/assets/billy-400.webp',
 			accent: 'rotate-[-1deg]',
 		},
 		{
@@ -67,7 +67,7 @@ export function AboutSection() {
 			role: 'Responsable Logistique',
 			meta: 'Lien avec les villages',
 			note: '« Les détails que personne ne voit, ce sont ceux qui font la différence. Chaque campement est une œuvre d\'art bien organisée. »',
-			src: '/assets/tantely.jpeg',
+			src: '/assets/tantely-400.webp',
 			accent: 'rotate-[0.5deg]',
 		},
 	];
@@ -125,11 +125,13 @@ export function AboutSection() {
 					{team.map((member, i) => (
 						<Reveal
 							key={member.name}
-							animation="fadeUp"
-							delay={i * 100}
+							animation="warp"
+							creative
+							index={i}
+							stagger={100}
 							className={i % 2 !== 0 ? 'lg:translate-y-16' : ''}
 						>
-							<article class="group relative">
+							<article class="magnetic-card group relative">
 								{/* The "Notebook Page" Card */}
 								<div class={`relative flex flex-col rounded-[0.5rem] bg-[#fdfcf8] p-4 pt-12 shadow-md transition-[transform,box-shadow] duration-500 hover:-translate-y-2 hover:shadow-2xl hover:rotate-0 isolate ${member.accent} border-b-4 border-stone-300/50`}>
 									
@@ -150,10 +152,12 @@ export function AboutSection() {
 									{/* Main Photo area: Inset and slightly aged */}
 									<div class="relative aspect-[4/5] overflow-hidden rounded-sm bg-stone-200 shadow-inner">
 										<BlurImg
-											alt={member.name}
+											alt={`Portrait de ${member.name}, ${member.role} chez GMT+3 Fianarantsoa`}
 											class="h-full w-full object-cover group-hover:scale-105"
 											loading="lazy"
 											decoding="async"
+											width="400"
+											height="500"
 											src={img(member.src)}
 										/>
 										{/* Overlay vignette */}

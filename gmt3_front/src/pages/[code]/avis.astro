@@ -4,6 +4,8 @@ import { Header } from '../../components/Header.jsx';
 import { Footer } from '../../components/Footer.jsx';
 import { EventReviews } from '../../views/Events/Reviews.jsx';
 
+export const prerender = false;
+
 const code = Astro.params.code;
 const API_BASE = process.env.API_BASE_INTERNAL || 'http://localhost:3000/api';
 const SITE = 'https://gmt3-fianarantsoa.mg';

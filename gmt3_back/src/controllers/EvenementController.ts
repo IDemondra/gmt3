@@ -3,7 +3,7 @@ import { EvenementRepository } from '../repositories/EvenementRepository.js';
 import { PhotoEvenementRepository } from '../repositories/PhotoEvenementRepository.js';
 import { AvisRepository } from '../repositories/AvisRepository.js';
 import type { BunRequest } from '../types/http.js';
-import type { Evenement } from '../types/index.js';
+import type { Evenement, PhotoEvenement } from '../types/index.js';
 import { buildGalleryUploadPlan } from '../utils/photoGallery.js';
 import { formatDateFields } from '../utils/date.js';
 import { mkdirSync, existsSync, writeFileSync } from 'fs';
@@ -27,11 +27,15 @@ const MAX_DESCRIPTION_LENGTH = 1000;
 const MAX_GALLERY_PHOTOS = 10;
 const MAX_GALLERY_TOTAL_SIZE = 40 * 1024 * 1024; // 40 MB — garde-fou avant tout traitement (compression HEIC/sharp coûteuse)
 
-async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: string } | null> {
-	if (file.size > MAX_FILE_SIZE) return null;
+type ImageValidationResult =
+	| { ok: true; buf: Buffer; ext: string }
+	| { ok: false; reason: 'TROP_LOURDE' | 'INVALIDE' };
+
+async function validateImageBuffer(file: File): Promise<ImageValidationResult> {
+	if (file.size > MAX_FILE_SIZE) return { ok: false, reason: 'TROP_LOURDE' };
 	const rawBuf = Buffer.from(await file.arrayBuffer());
 	const type = await fileTypeFromBuffer(rawBuf);
-	if (!type) return null;
+	if (!type) return { ok: false, reason: 'INVALIDE' };
 
 	if (HEIC_MIMES.has(type.mime)) {
 		// Photos iPhone (réglage "Format élevé") sont exportées en HEIC/HEIF.
@@ -39,17 +43,19 @@ async function validateImageBuffer(file: File): Promise<{ buf: Buffer; ext: stri
 		try {
 			const jpegArrayBuffer = await heicConvert({ buffer: rawBuf, format: 'JPEG', quality: 0.9 });
 			const jpegBuf = Buffer.from(jpegArrayBuffer);
-			if (jpegBuf.length > MAX_FILE_SIZE) return null;
-			return optimizeImage(jpegBuf, 'jpg');
+			if (jpegBuf.length > MAX_FILE_SIZE) return { ok: false, reason: 'TROP_LOURDE' };
+			const optimized = await optimizeImage(jpegBuf, 'jpg');
+			return { ok: true, ...optimized };
 		} catch {
-			return null;
+			return { ok: false, reason: 'INVALIDE' };
 		}
 	}
 
-	if (!ALLOWED_IMAGE_MIMES.has(type.mime)) return null;
+	if (!ALLOWED_IMAGE_MIMES.has(type.mime)) return { ok: false, reason: 'INVALIDE' };
 	const metadata = await sharp(rawBuf, { limitInputPixels: 40_000_000 }).metadata();
-	if (!metadata.width || !metadata.height || metadata.width * metadata.height > 40_000_000) return null;
-	return optimizeImage(rawBuf, type.ext);
+	if (!metadata.width || !metadata.height || metadata.width * metadata.height > 40_000_000) return { ok: false, reason: 'INVALIDE' };
+	const optimized = await optimizeImage(rawBuf, type.ext);
+	return { ok: true, ...optimized };
 }
 
 function formatEvenementDates<T extends { dateEvenement?: string | null; dateDepart?: string | null; dateRetour?: string | null; dateCreation?: string | null }>(e: T): T {
@@ -160,14 +166,26 @@ async function serializeEvenement(id: number) {
 	return { ...formatted, typeEvenement: typeEvenement ?? null, photosEvenement, avis, noteMoyenne: avgNote(avis), nombreAvis: avis.length, placesReservees: Number(reservationRows[0]?.places ?? 0), duration: calculateDuration(item) };
 }
 
-async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData) {
+export async function storeGalleryPhotos(evenementId: number, fd: GalleryFormData): Promise<PhotoEvenement[] | Response> {
 	const files = getGalleryFiles(fd);
 	if (files.length === 0) return [];
 
 	const validatedFiles: Array<{ file: File; buf: Buffer; ext: string }> = [];
 	for (const file of files) {
 		const validated = await validateImageBuffer(file);
-		if (validated) validatedFiles.push({ file, buf: validated.buf, ext: validated.ext });
+		if (!validated.ok) {
+			const tooLarge = validated.reason === 'TROP_LOURDE';
+			return Response.json(
+				{
+					error: tooLarge ? 'FICHIER_TROP_LOURD' : 'FICHIER_INVALIDE',
+					message: tooLarge
+						? `Photo "${file.name}" trop lourde (max 5 Mo par photo)`
+						: `Photo "${file.name}" invalide (JPEG/PNG/WEBP/GIF/HEIC, max 5 Mo)`,
+				},
+				{ status: 400 },
+			);
+		}
+		validatedFiles.push({ file, buf: validated.buf, ext: validated.ext });
 	}
 	if (validatedFiles.length === 0) return [];
 
@@ -302,6 +320,7 @@ export const EvenementController = {
 		if (sizeError) return sizeError;
 
 		const photos = await storeGalleryPhotos(id, fd);
+		if (photos instanceof Response) return photos;
 		return Response.json({ success: true, photosEvenement: photos }, { status: 201 });
 	},
 
@@ -352,7 +371,7 @@ export const EvenementController = {
 		const imageFile = fd.get('imagePrincipale') as File | null;
 		if (imageFile && imageFile.size > 0) {
 			const validated = await validateImageBuffer(imageFile);
-			if (!validated) {
+			if (!validated.ok) {
 				await evenementService.delete(item.id);
 				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
@@ -369,7 +388,12 @@ export const EvenementController = {
 			return createSizeError;
 		}
 
-		await storeGalleryPhotos(item.id, fd);
+		const galleryResult = await storeGalleryPhotos(item.id, fd);
+		if (galleryResult instanceof Response) {
+			await evenementService.delete(item.id);
+			removeEventUploadDir(item.id);
+			return galleryResult;
+		}
 		const created = await serializeEvenement(item.id);
 		if (!created) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		return Response.json({ ...created, id: item.id, message: 'Événement créé avec succès' }, { status: 201 });
@@ -419,7 +443,7 @@ export const EvenementController = {
 		let newImagePath: string | null = null;
 		if (imageFile && imageFile.size > 0) {
 			const validated = await validateImageBuffer(imageFile);
-			if (!validated) {
+			if (!validated.ok) {
 				return Response.json({ error: 'FICHIER_INVALIDE', message: 'Image invalide ou trop grande (max 5 Mo, formats: JPEG/PNG/WEBP/GIF/HEIC)' }, { status: 400 });
 			}
 			const dir = ensureDir(id);
@@ -436,7 +460,8 @@ export const EvenementController = {
 		}
 		if (newImagePath && existingItem.imagePrincipale) removeUploadFile(existingItem.imagePrincipale);
 
-		await storeGalleryPhotos(id, fd);
+		const galleryResult = await storeGalleryPhotos(id, fd);
+		if (galleryResult instanceof Response) return galleryResult;
 		const updated = await serializeEvenement(id);
 		if (!updated) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		return Response.json({ ...updated, id, message: 'Événement modifié avec succès' });
