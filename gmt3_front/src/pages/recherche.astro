@@ -28,13 +28,12 @@ if (q) {
 			const data = await res.json();
 			const list = Array.isArray(data.data) ? data.data : [];
 			const needle = q.toLowerCase();
-			results = list
-				.filter((e: any) => e.estPublie && isDateInFuture(e.dateDepart || e.dateEvenement))
-				.filter((e: any) =>
-					[e.titre, e.lieu, e.description]
-						.filter(Boolean)
-						.some((f: string) => f.toLowerCase().includes(needle)),
-				);
+			results = list.filter((e: any) => {
+				if (!e.estPublie || !isDateInFuture(e.dateDepart || e.dateEvenement)) return false;
+				return [e.titre, e.lieu, e.description]
+					.filter(Boolean)
+					.some((f: string) => f.toLowerCase().includes(needle));
+			});
 		}
 	} catch {
 		results = [];

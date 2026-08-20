@@ -101,7 +101,7 @@ export function HeroSection({ initialEvents = null }) {
 								<a
 									ref={ctaMag}
 									href="#contact"
-									class="magnetic-cta h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container will-change-transform"
+									class="magnetic-cta h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container hover:scale-[1.02] active:scale-[0.98]"
 								>
 									PRÉPARER MON VOYAGE
 									<span class="material-symbols-outlined text-[18px]">north_east</span>
@@ -109,7 +109,7 @@ export function HeroSection({ initialEvents = null }) {
 								<a
 									ref={ctaMag2}
 									href="#expeditions"
-									class="magnetic-cta h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white will-change-transform"
+									class="magnetic-cta h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white hover:scale-[1.02] active:scale-[0.98]"
 								>
 									VOIR LES RANDONNÉES
 								</a>
@@ -170,7 +170,7 @@ export function HeroSection({ initialEvents = null }) {
 							{/* Main framed card — tilt 3D */}
 							<div
 								ref={tiltRef}
-								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl will-change-transform"
+								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
 								style="transform: perspective(900px) rotate(1.5deg); transform-style: preserve-3d;"
 							>
 								<img src="/assets/hero-640.webp" alt="" width="420" height="560" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />

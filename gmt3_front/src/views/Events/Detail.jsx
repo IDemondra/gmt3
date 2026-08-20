@@ -7,7 +7,6 @@ import { BlurBackgroundImage } from '../../components/ui/BlurBackgroundImage.jsx
 import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { buildPreviewGallery } from '../../utils/gallery.js';
 import { img } from '../../utils/images.js';
-import { parseMarkdownInline } from '../../utils/markdown.js';
 import { evenementApi } from '../../api/evenements.js';
 import { createAvisApi } from '../../api/avis.js';
 import { ToastContainer } from '../../components/ui/Toast.jsx';
@@ -50,7 +49,7 @@ function DescriptionContent({ value }) {
 const transformEventForCard = (evt, backend) => ({
 	id: evt.id,
 	title: evt.titre,
-	description: parseMarkdownInline(evt.description),
+	description: evt.description,
 	image: evt.imagePrincipale ? `${backend}${evt.imagePrincipale}` : '',
 	date: evt.dateDepart || evt.dateEvenement || 'Non précisé',
 	badge: evt.typeEvenement?.nom || 'EXPEDITION',

@@ -21,7 +21,7 @@ export function Header({ theme = 'dark' }) {
 				document.body.style.overflow = previous;
 			};
 		}
-	}, [mobileMenuOpen.value]);
+	}, [mobileMenuOpen.value]); // eslint-disable-line react-doctor/exhaustive-deps -- preact signal .value is reactive subscription
 
 	useEffect(() => {
 		const onKey = (e) => {
