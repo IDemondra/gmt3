@@ -26,22 +26,22 @@ try {
 } catch {}
 
 const SITE = 'https://gmt3-fianarantsoa.mg';
-const breadcrumbLd = {
+const breadcrumbLd: Record<string, unknown> = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',
 	itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` }],
 };
-const itemListLd = initialEvents.length > 0 ? {
+const itemListLd: Record<string, unknown> | null = initialEvents.length > 0 ? {
 	'@context': 'https://schema.org',
 	'@type': 'ItemList',
 	name: 'Expéditions GMT+3 Fianarantsoa',
-	itemListElement: initialEvents.filter(e=>e.estPublie).slice(0,5).map((e,i)=>({ '@type':'ListItem', position:i+1, url:`${SITE}/events/${e.id}`, name:e.titre })),
+	itemListElement: (initialEvents as any[]).filter((e: any)=>e.estPublie).slice(0,5).map((e: any,i: number)=>({ '@type':'ListItem', position:i+1, url:`${SITE}/events/${e.id}`, name:e.titre })),
 } : null;
-let aggregateLd = null;
+let aggregateLd: Record<string, unknown> | null = null;
 try {
-	const allAvis = initialEvents.flatMap(e=> (e.avis||[]));
+	const allAvis = (initialEvents as any[]).flatMap((e: any)=> (e.avis||[]));
 	if (allAvis.length > 0) {
-		const avg = Math.round((allAvis.reduce((s,a)=>s+(a.note||0),0)/allAvis.length)*10)/10;
+		const avg = Math.round((allAvis.reduce((s: number,a: any)=>s+(a.note||0),0)/allAvis.length)*10)/10;
 		aggregateLd = {
 			'@context':'https://schema.org',
 			'@type':'TravelAgency',
@@ -51,7 +51,7 @@ try {
 		};
 	}
 } catch {}
-const pageLd = [breadcrumbLd, itemListLd, aggregateLd].filter(Boolean);
+const pageLd = [breadcrumbLd, itemListLd, aggregateLd].filter((v): v is Record<string, unknown> => Boolean(v));
 ---
 
 <BaseLayout jsonLd={pageLd}>
