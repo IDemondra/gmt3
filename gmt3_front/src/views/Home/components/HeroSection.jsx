@@ -5,12 +5,29 @@ import { img, resolveImg } from '../../../utils/images.js';
 import { fetchEvents } from '../../../utils/events.js';
 import { isEventPast } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
+import { useMagnetic } from '../../../hooks/useMagnetic.js';
+import { useTilt } from '../../../hooks/useTilt.js';
 
-export function HeroSection() {
-	const [photos, setPhotos] = useState([]);
-	const [photosLoading, setPhotosLoading] = useState(true);
+export function HeroSection({ initialEvents = null }) {
+	const ctaMag = useMagnetic(0.4);
+	const ctaMag2 = useMagnetic(0.25);
+	const tiltRef = useTilt(8);
+	const getInitialPhotos = () => {
+		if (Array.isArray(initialEvents) && initialEvents.length > 0) {
+			return initialEvents
+				.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement) && e.imagePrincipale)
+				.slice(0, 5);
+		}
+		return [];
+	};
+	const [photos, setPhotos] = useState(getInitialPhotos);
+	const [photosLoading, setPhotosLoading] = useState(!initialEvents);
 
 	useEffect(() => {
+		if (initialEvents) {
+			setPhotosLoading(false);
+			return;
+		}
 		fetchEvents()
 			.then((events) => {
 				const past = events
@@ -19,13 +36,27 @@ export function HeroSection() {
 			})
 			.catch(() => {})
 			.finally(() => setPhotosLoading(false));
-	}, []);
+	}, [initialEvents]);
 
 	return (
 		<section class="relative min-h-[100dvh] w-full flex items-center bg-zinc-950 overflow-hidden">
 
-			{/* Background — overlay intentionally light on the right to let the photo breathe */}
-			<BlurBackgroundImage src={img('/assets/hero.webp')} alt="Groupe de voyageurs GMT+3 au sommet, au-dessus des paysages de Fianarantsoa" decorative={false} class="absolute inset-0 z-0" />
+			{/* LCP Hero — parallax view-timeline (compositor, zero JS) */}
+			<picture class="absolute inset-0 z-0">
+				<source type="image/avif" srcset="/assets/hero-640.avif 640w, /assets/hero-1280.avif 1280w, /assets/hero-1920-q50.avif 1920w" sizes="100vw" />
+				<img
+					src="/assets/hero-1280-q65.webp"
+					srcset="/assets/hero-640.webp 640w, /assets/hero-1280-q65.webp 1280w, /assets/hero-1920-q65.webp 1920w"
+					sizes="100vw"
+					alt="Groupe de voyageurs GMT+3 au sommet, au-dessus des paysages de Fianarantsoa"
+					width="1280"
+					height="720"
+					fetchpriority="high"
+					loading="eager"
+					decoding="async"
+					class="parallax-hero h-full w-full object-cover"
+				/>
+			</picture>
 			<div class="absolute inset-0 z-10 bg-gradient-to-r from-zinc-950/96 via-zinc-950/75 lg:to-zinc-950/15 to-zinc-950/60" />
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/50" />
 
@@ -40,8 +71,8 @@ export function HeroSection() {
 					{/* LEFT — Text block */}
 					<div class="flex flex-col">
 
-						{/* Eyebrow */}
-						<Reveal animation="fadeUp" duration={700}>
+						{/* Eyebrow — clip reveal */}
+						<Reveal animation="clip" creative duration={800}>
 							<div class="flex items-center gap-4 mb-10">
 								<div class="h-px w-8 bg-primary" />
 								<span class="font-label-caps text-[10px] tracking-[0.35em] text-white/45 font-bold uppercase">
@@ -50,37 +81,35 @@ export function HeroSection() {
 							</div>
 						</Reveal>
 
-						{/* Headline */}
-						<Reveal animation="arc" delay={80} duration={950}>
-							<h1
-								class="font-h1 leading-[0.88] tracking-tighter uppercase font-black text-white overflow-visible"
-								style="font-size: clamp(2.75rem, 6.5vw, 6rem);"
-							>
-								Découvrez<br />
-								<span class="text-gradient">Madagascar<br />autrement</span>
-							</h1>
-						</Reveal>
+						{/* Headline — split words stagger kinetic */}
+						<h1 class="font-h1 leading-[0.88] tracking-tighter uppercase font-black text-white overflow-visible" style="font-size: clamp(2.75rem, 6.5vw, 6rem);">
+							<Reveal animation="kinetic" creative duration={900}><span class="inline-block">Découvrez</span></Reveal>
+							<Reveal animation="kinetic" creative delay={90} duration={900}><span class="inline-block text-gradient">Madagascar</span></Reveal>
+							<Reveal animation="kinetic" creative delay={180} duration={900}><span class="inline-block text-gradient">autrement</span></Reveal>
+						</h1>
 
-						{/* Subtext */}
-						<Reveal animation="fadeUp" delay={220} duration={800}>
+						{/* Subtext — blurScale */}
+						<Reveal animation="blurScale" creative delay={220} duration={900}>
 							<p class="mt-8 font-body-lg text-base md:text-[17px] text-white/55 max-w-sm leading-relaxed pl-5 border-l border-primary/35">
 								Randonnées, rencontres et voyages sur mesure, guidés par ceux qui vivent et aiment la Grande Île.
 							</p>
 						</Reveal>
 
-						{/* CTAs */}
-						<Reveal animation="fadeUp" delay={340} duration={800}>
+						{/* CTAs — magnetic spring */}
+						<Reveal animation="warp" creative delay={340} duration={800}>
 							<div class="mt-10 flex flex-wrap items-center gap-4">
 								<a
+									ref={ctaMag}
 									href="#contact"
-									class="h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container hover:scale-[1.03] active:scale-[0.97]"
+									class="magnetic-cta h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container will-change-transform"
 								>
 									PRÉPARER MON VOYAGE
 									<span class="material-symbols-outlined text-[18px]">north_east</span>
 								</a>
 								<a
+									ref={ctaMag2}
 									href="#expeditions"
-									class="h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white active:scale-[0.97]"
+									class="magnetic-cta h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white will-change-transform"
 								>
 									VOIR LES RANDONNÉES
 								</a>
@@ -134,16 +163,17 @@ export function HeroSection() {
 						)}
 					</div>
 
-					{/* RIGHT — Floating photo panel (desktop only) */}
-					<Reveal animation="driftRight" delay={300} duration={1000} className="hidden lg:block">
-						<div class="relative flex justify-center items-center">
+					{/* RIGHT — Floating photo panel 3D tilt */}
+					<Reveal animation="warp" creative delay={320} duration={1000} className="hidden lg:block">
+						<div class="relative flex justify-center items-center" style="perspective: 1000px;">
 
-							{/* Main framed card */}
+							{/* Main framed card — tilt 3D */}
 							<div
-								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
-								style="transform: rotate(1.5deg);"
+								ref={tiltRef}
+								class="relative w-full max-w-[420px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl will-change-transform"
+								style="transform: perspective(900px) rotate(1.5deg); transform-style: preserve-3d;"
 							>
-								<BlurBackgroundImage src={img('/assets/hero.webp')} class="absolute inset-0" />
+								<img src="/assets/hero-640.webp" alt="" width="420" height="560" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />
 								<div class="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-zinc-950/10" />
 
 								{/* Inset badge */}

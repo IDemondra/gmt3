@@ -3,43 +3,44 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { StarRating } from '../../../components/ui/StarRating.jsx';
 import { fetchEvents } from '../../../utils/events.js';
 
-export function TestimonialsSection() {
-	const [reviews, setReviews] = useState([]);
-	const [stats, setStats] = useState({ avg: 0, count: 0 });
-	const [loading, setLoading] = useState(true);
-	const [loaded, setLoaded] = useState(false);
+export function TestimonialsSection({ initialEvents = null }) {
+	const computeFromEvents = (events) => {
+		const all = [];
+		for (const evt of events) {
+			for (const a of (evt.avis || [])) {
+				all.push({ ...a, evenement: evt.titre });
+			}
+		}
+		if (all.length === 0) return { stats:{avg:0,count:0}, reviews:[] };
+		const avg = Math.round((all.reduce((s, a) => s + a.note, 0) / all.length) * 10) / 10;
+		const top = all.filter((a) => a.commentaire).sort((a, b) => b.note - a.note).slice(0, 3);
+		return { stats:{avg, count:all.length}, reviews: top.length>0? top : all.slice(0,3) };
+	};
+	const initial = Array.isArray(initialEvents) ? computeFromEvents(initialEvents) : { stats:{avg:0,count:0}, reviews:[] };
+	const [reviews, setReviews] = useState(initial.reviews);
+	const [stats, setStats] = useState(initial.stats);
+	const [loading, setLoading] = useState(!initialEvents);
+	const [loaded, setLoaded] = useState(!!initialEvents && initial.reviews.length>0);
 
 	useEffect(() => {
+		if (initialEvents) { setLoading(false); setLoaded(true); return; }
 		fetchEvents()
 			.then((events) => {
-				const all = [];
-				for (const evt of events) {
-					for (const a of (evt.avis || [])) {
-						all.push({ ...a, evenement: evt.titre });
-					}
-				}
-				if (all.length > 0) {
-					const avg = Math.round((all.reduce((s, a) => s + a.note, 0) / all.length) * 10) / 10;
-					setStats({ avg, count: all.length });
-					// 3 meilleurs avis (note décroissante), commentaire requis
-					const top = all
-						.filter((a) => a.commentaire)
-						.sort((a, b) => b.note - a.note)
-						.slice(0, 3);
-					setReviews(top.length > 0 ? top : all.slice(0, 3));
-				}
+				const { stats, reviews } = computeFromEvents(events);
+				setStats(stats);
+				setReviews(reviews);
 			})
 			.catch(() => setReviews([]))
 			.finally(() => {
 				setLoading(false);
 				setLoaded(true);
 			});
-	}, []);
+	}, [initialEvents]);
 
 	if (loaded && reviews.length === 0) return null;
 
 	return (
-		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="temoignages">
+		<section class="relative overflow-hidden bg-[#faf9f6] py-section-gap" id="temoignages" style="content-visibility:auto; contain-intrinsic-size:auto 600px">
 			<div class="absolute inset-0 opacity-[0.03] pointer-events-none"
 				style="background-image: radial-gradient(#1a1c1c 1px, transparent 1px); background-size: 22px 22px;" />
 
@@ -93,7 +94,7 @@ export function TestimonialsSection() {
 				) : (
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{reviews.map((rev, i) => (
-							<Reveal key={rev.id} animation="fadeUp" delay={i * 100}>
+							<Reveal key={rev.id} animation="clip" creative index={i} stagger={100}>
 								<figure class="h-full flex flex-col rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg">
 									<StarRating value={rev.note} size="text-[16px]" />
 									<blockquote class="mt-4 flex-1 font-body-md text-secondary leading-relaxed">

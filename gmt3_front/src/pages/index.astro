@@ -1,10 +1,70 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Header } from '../components/Header.jsx';
-import { Home } from '../views/Home/index.jsx';
+import { HeroSection } from '../views/Home/components/HeroSection.jsx';
+import { ProofSection } from '../views/Home/components/ProofSection.jsx';
+import { ActivitiesSection } from '../views/Home/components/ActivitiesSection.jsx';
+import { DestinationsSection } from '../views/Home/components/DestinationsSection.jsx';
+import { ToursSection } from '../views/Home/components/ToursSection.jsx';
+import { AboutSection } from '../views/Home/components/AboutSection.jsx';
+import { GallerySection } from '../views/Home/components/GallerySection.jsx';
+import { TestimonialsSection } from '../views/Home/components/TestimonialsSection.jsx';
+import { ContactSection } from '../views/Home/components/ContactSection.jsx';
+import { Footer } from '../components/Footer.jsx';
+import { ScrollProgress } from '../components/ui/ScrollProgress.jsx';
+
+export const prerender = false;
+
+const API_BASE = process.env.API_BASE_INTERNAL || import.meta.env.PUBLIC_API_BASE || 'http://localhost:3000/api';
+let initialEvents = [];
+try {
+	const res = await fetch(`${API_BASE}/evenements`, { headers: { accept: 'application/json' } });
+	if (res.ok) {
+		const data = await res.json();
+		initialEvents = Array.isArray(data.data) ? data.data : [];
+	}
+} catch {}
+
+const SITE = 'https://gmt3-fianarantsoa.mg';
+const breadcrumbLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE}/` }],
+};
+const itemListLd = initialEvents.length > 0 ? {
+	'@context': 'https://schema.org',
+	'@type': 'ItemList',
+	name: 'Expéditions GMT+3 Fianarantsoa',
+	itemListElement: initialEvents.filter(e=>e.estPublie).slice(0,5).map((e,i)=>({ '@type':'ListItem', position:i+1, url:`${SITE}/events/${e.id}`, name:e.titre })),
+} : null;
+let aggregateLd = null;
+try {
+	const allAvis = initialEvents.flatMap(e=> (e.avis||[]));
+	if (allAvis.length > 0) {
+		const avg = Math.round((allAvis.reduce((s,a)=>s+(a.note||0),0)/allAvis.length)*10)/10;
+		aggregateLd = {
+			'@context':'https://schema.org',
+			'@type':'TravelAgency',
+			'@id': `${SITE}/#organization-aggregate`,
+			name: 'GMT+3 Fianarantsoa',
+			aggregateRating: { '@type':'AggregateRating', ratingValue: String(avg), reviewCount: String(allAvis.length), bestRating:'5', worstRating:'1' }
+		};
+	}
+} catch {}
+const pageLd = [breadcrumbLd, itemListLd, aggregateLd].filter(Boolean);
 ---
 
-<BaseLayout>
+<BaseLayout jsonLd={pageLd}>
 	<Header client:load />
-	<Home client:load />
+	<ScrollProgress client:visible />
+	<HeroSection client:load initialEvents={initialEvents} />
+	<ProofSection client:visible />
+	<ActivitiesSection client:visible />
+	<DestinationsSection client:visible />
+	<ToursSection client:visible initialEvents={initialEvents} />
+	<AboutSection client:visible />
+	<GallerySection client:visible initialEvents={initialEvents} />
+	<TestimonialsSection client:visible initialEvents={initialEvents} />
+	<ContactSection client:visible />
+	<Footer client:visible />
 </BaseLayout>

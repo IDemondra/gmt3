@@ -180,6 +180,87 @@ body {
   transform: translate3d(0, 0, 0) scale(1);
 }
 
+/* ===== Creative 2026 — view-timeline scroll-driven (compositor thread) ===== */
+@keyframes creative-clip {
+  from { clip-path: inset(0 100% 0 0); filter: blur(8px); transform: translateY(18px) scale(0.96); opacity: 0; }
+  to { clip-path: inset(0 0% 0 0); filter: blur(0); transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes creative-warp {
+  from { filter: blur(6px); transform: translateY(14px) scale(0.92) rotate(-0.8deg); opacity: 0; }
+  to { filter: blur(0); transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes creative-blur {
+  from { filter: blur(10px); transform: translateY(10px) scale(0.94); opacity: 0; }
+  to { filter: blur(0); transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes creative-kinetic {
+  from { clip-path: inset(0 0 100% 0); filter: blur(6px); transform: translateY(20px) skewY(1deg); opacity: 0; }
+  to { clip-path: inset(0 0 0% 0); filter: blur(0); transform: translateY(0) skewY(0); opacity: 1; }
+}
+@keyframes parallax-hero {
+  from { transform: scale(1.08) translateY(-4%); }
+  to { transform: scale(1.08) translateY(4%); }
+}
+
+/* view-timeline: scroll = document, view() = element */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .creative-reveal {
+      opacity: 0;
+      animation: creative-clip linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+      will-change: transform, opacity, filter, clip-path;
+    }
+    .creative-reveal[data-creative="warp"] { animation-name: creative-warp; animation-range: entry 0% cover 32%; }
+    .creative-reveal[data-creative="blurScale"] { animation-name: creative-blur; animation-range: entry 0% cover 24%; }
+    .creative-reveal[data-creative="kinetic"] { animation-name: creative-kinetic; animation-range: entry 0% cover 30%; }
+    .creative-reveal.is-visible { opacity: 1; } /* fallback JS déjà visible */
+    .parallax-hero {
+      animation: parallax-hero linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+      will-change: transform;
+    }
+    /* stagger naturel via view() déjà décalé, mais on garde --index pour grille dense */
+    .creative-reveal[data-index] { animation-delay: calc(var(--index, 0) * 0ms); }
+  }
+}
+
+/* ===== Magnetic hover — spring via CSS linear() (2026) ===== */
+.magnetic-card {
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 420ms cubic-bezier(0.16,1,0.3,1);
+  will-change: transform;
+}
+.magnetic-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25);
+}
+.magnetic-cta {
+  position: relative;
+  overflow: hidden;
+}
+.magnetic-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 40%);
+  opacity: 0;
+  transition: opacity 300ms;
+  pointer-events: none;
+}
+.magnetic-cta:hover::before { opacity: 1; }
+
+/* View Transitions — fluid page */
+::view-transition-old(root), ::view-transition-new(root) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.16,1,0.3,1);
+}
+::view-transition-old(root) { animation-name: vt-out; }
+::view-transition-new(root) { animation-name: vt-in; }
+@keyframes vt-out { from { opacity:1; transform: translateY(0) scale(1); filter: blur(0); } to { opacity:0; transform: translateY(-8px) scale(0.98); filter: blur(4px); } }
+@keyframes vt-in { from { opacity:0; transform: translateY(12px) scale(0.98); filter: blur(4px); } to { opacity:1; transform: translateY(0) scale(1); filter: blur(0); } }
+
 /* ===== Keyframe Animations ===== */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }

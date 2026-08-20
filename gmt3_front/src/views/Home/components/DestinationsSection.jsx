@@ -2,10 +2,6 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { img } from '../../../utils/images.js';
 
 export function DestinationsSection() {
-	const bg1 = `url('${img('https://images.unsplash.com/photo-1695236268766-cd55f5502fba?w=1200&q=80')}')`;
-	const bg2 = `url('${img('https://images.unsplash.com/photo-1656163157901-8715e42adeb4?w=1200&q=80')}')`;
-	const bg3 = `url('${img('https://images.unsplash.com/photo-1662567534419-b955d8b50cdf?w=1200&q=80')}')`;
-
 	const sectors = [
 		{
 			id: 'SEC-01',
@@ -14,7 +10,7 @@ export function DestinationsSection() {
 			desc: 'Plongez au coeur de la capitale du Betsileo, entre vignobles en terrasses et artisanat.',
 			coord: '21.4536° S, 47.0858° E',
 			elev: '1,374m',
-			bg: bg1,
+			src: 'https://images.unsplash.com/photo-1695236268766-cd55f5502fba?w=800&q=75&auto=format&fit=crop',
 			span: 'lg:col-span-2 lg:row-span-2'
 		},
 		{
@@ -24,7 +20,7 @@ export function DestinationsSection() {
 			desc: 'Forêt tropicale, lémuriens et sources chaudes.',
 			coord: '21.2585° S, 47.4521° E',
 			elev: '1,100m',
-			bg: bg2,
+			src: 'https://images.unsplash.com/photo-1656163157901-8715e42adeb4?w=800&q=75&auto=format&fit=crop',
 			span: 'lg:col-span-1 lg:row-span-1'
 		},
 		{
@@ -34,13 +30,13 @@ export function DestinationsSection() {
 			desc: 'Réserve d\'Anja et artisanat Antaimoro.',
 			coord: '21.8333° S, 46.9333° E',
 			elev: '1,020m',
-			bg: bg3,
+			src: 'https://images.unsplash.com/photo-1662567534419-b955d8b50cdf?w=800&q=75&auto=format&fit=crop',
 			span: 'lg:col-span-1 lg:row-span-1'
 		}
 	];
 
 	return (
-		<section class="relative overflow-hidden bg-on-secondary-fixed py-[120px] text-white" id="destinations">
+		<section class="relative overflow-hidden bg-on-secondary-fixed py-[120px] text-white" id="destinations" style="content-visibility:auto; contain-intrinsic-size:auto 700px">
 			{/* Technical Bridge from Activities */}
 			<div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
 				<div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -69,15 +65,15 @@ export function DestinationsSection() {
 				{/* ── Exploration Grid ── */}
 				<div class="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-auto lg:h-[700px]">
 					{sectors.map((s, i) => (
-						<Reveal key={s.id} animation="fadeUp" delay={i * 100} className={`${s.span} w-full`}>
+						<Reveal key={s.id} animation="warp" creative index={i} stagger={90} className={`${s.span} w-full`}>
 							<a
 								href="/events"
 								aria-label={`Découvrir ${s.name}, ${s.region}`}
 								class="group relative block w-full min-h-[320px] sm:min-h-[380px] lg:min-h-0 lg:h-full overflow-hidden rounded-2xl bg-stone-700 shadow-2xl transition-all duration-300 isolate border border-white/10 hover:shadow-2xl hover:shadow-primary/20"
 							>
 
-								{/* Background Image with Ken Burns effect on hover */}
-								<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={`background-image: ${s.bg}`} />
+								{/* Image — native img lazy for SEO + performance, Ken Burns on hover */}
+								<img src={s.src} alt={`${s.name} - ${s.region} Madagascar`} loading="lazy" decoding="async" width="800" height="600" class="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />
 
 								{/* Technical Overlays with Duotone */}
 								<div class="absolute inset-0 z-10 bg-gradient-to-t from-on-secondary-fixed via-on-secondary-fixed/30 to-transparent transition-opacity duration-300 group-hover:opacity-80" />

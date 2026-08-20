@@ -7,14 +7,21 @@ import { fetchEvents } from '../../../utils/events.js';
 import { isEventPast, formatDateFr } from '../../../utils/dateFormatter.js';
 import { buildDailyGallery, getLocalDayKey } from '../../../utils/dailyGallery.js';
 
-export function GallerySection() {
+export function GallerySection({ initialEvents = null }) {
+	const getInitialPast = () => {
+		if (Array.isArray(initialEvents)) {
+			return initialEvents.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
+		}
+		return [];
+	};
 	const [lightbox, setLightbox] = useState(null);
 	const [cards, setCards] = useState([]);
-	const [pastEvents, setPastEvents] = useState([]);
+	const [pastEvents, setPastEvents] = useState(getInitialPast);
 	const [dayKey, setDayKey] = useState(() => getLocalDayKey());
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(!initialEvents);
 
 	useEffect(() => {
+		if (initialEvents) { setLoading(false); return; }
 		fetchEvents()
 			.then((events) => {
 				const past = events.filter((e) => e.estPublie && isEventPast(e.dateDepart, e.dateRetour, e.dateEvenement));
@@ -22,7 +29,7 @@ export function GallerySection() {
 			})
 			.catch(() => setCards([]))
 			.finally(() => setLoading(false));
-	}, []);
+	}, [initialEvents]);
 
 	useEffect(() => {
 		const dailyPhotos = buildDailyGallery(pastEvents, 5, dayKey);
@@ -50,7 +57,7 @@ export function GallerySection() {
 	}, [dayKey]);
 
     return (
-        <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery">
+        <section class="relative w-full overflow-hidden bg-on-secondary-fixed px-margin-mobile py-section-gap md:px-margin-desktop" id="gallery" style="content-visibility:auto; contain-intrinsic-size:auto 800px">
 			{/* Transition dark → dark (Offers → Gallery) */}
 			<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none z-10" />
 			
@@ -105,8 +112,10 @@ export function GallerySection() {
 						<div key={card.id} class={`${card.span}`}>
 							<Reveal
 								className="h-full"
-								animation="fadeUp"
-								delay={index * 100}
+								animation="blurScale"
+								creative
+								index={index}
+								stagger={90}
 								duration={800}
 							>
 								<button

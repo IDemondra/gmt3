@@ -62,7 +62,7 @@ export function Header({ theme = 'dark' }) {
 					{/* Left: Brand */}
 					<a class="flex items-center gap-2 md:gap-3 group cursor-pointer shrink-0" href="/">
 						<div class="relative h-9 w-9 md:h-10 md:w-10 flex items-center justify-center rounded-lg shadow-lg group-hover:rotate-6 transition-transform overflow-hidden">
-							<img src="/assets/logo_gmt3.jpeg" alt="GMT+3 Logo" class="w-full h-full object-cover" />
+							<img src="/assets/logo_gmt3.jpeg" alt="GMT+3 Fianarantsoa - Great Madagascar Tours logo" width="40" height="40" loading="eager" decoding="async" class="w-full h-full object-cover" />
 						</div>
 						<span class={`font-h2 text-base md:text-lg font-black uppercase tracking-tighter transition-colors ${scrolled ? 'text-white' : isLight ? 'text-on-background' : 'text-on-primary'}`}>
 							GMT+3 <span class="text-primary-container hidden sm:inline">MADAGASCAR</span>
