@@ -3,9 +3,24 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { resolveImg } from '../../../utils/images.js';
 import { fetchEvents } from '../../../utils/events.js';
-import { parseMarkdownInline } from '../../../utils/markdown.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
+
+const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
+function InlineMd({ text }) {
+	const occ = new Map();
+	return String(text || '').split(INLINE_MD).map((part, idx) => {
+		const c = occ.get(part) || 0;
+		occ.set(part, c + 1);
+		const key = `${idx}-${c}`;
+		if (part.startsWith('**') && part.endsWith('**')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('__') && part.endsWith('__')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('~~') && part.endsWith('~~')) return <del key={key}>{part.slice(2, -2)}</del>;
+		if (part.startsWith('*') && part.endsWith('*')) return <em key={key}>{part.slice(1, -1)}</em>;
+		if (part.startsWith('_') && part.endsWith('_')) return <em key={key}>{part.slice(1, -1)}</em>;
+		return <span key={key}>{part}</span>;
+	});
+}
 
 function formatPrix(prix) {
 	if (!prix) return null;
@@ -156,7 +171,7 @@ export function ToursSection({ initialEvents = null }) {
 													)}
 
 													{event.description && (
-														<p class="font-body-md text-secondary leading-relaxed max-w-md line-clamp-3" dangerouslySetInnerHTML={{ __html: parseMarkdownInline(event.description) }} />
+														<p class="font-body-md text-secondary leading-relaxed max-w-md line-clamp-3 whitespace-pre-line"><InlineMd text={event.description} /></p>
 													)}
 
 													<a

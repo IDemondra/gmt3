@@ -25,7 +25,7 @@ export function FormModal({ open, title, submitLabel = 'Enregistrer', onClose, o
 				<form
 					encType={encType}
 					onSubmit={(e) => {
-						e.preventDefault();
+						e.preventDefault(); // eslint-disable-line react-doctor/no-prevent-default -- SPA FormData handling, no page reload
 						if (submitting) return;
 						onSubmit(new FormData(e.currentTarget));
 					}}

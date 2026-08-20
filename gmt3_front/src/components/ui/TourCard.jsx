@@ -2,6 +2,22 @@ import { Card } from './Card.jsx';
 import { BlurBackgroundImage } from './BlurBackgroundImage.jsx';
 import { img } from '../../utils/images.js';
 
+const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
+function InlineMd({ text }) {
+	const occ = new Map();
+	return String(text || '').split(INLINE_MD).map((part, idx) => {
+		const c = occ.get(part) || 0;
+		occ.set(part, c + 1);
+		const key = `${idx}-${c}`;
+		if (part.startsWith('**') && part.endsWith('**')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('__') && part.endsWith('__')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('~~') && part.endsWith('~~')) return <del key={key}>{part.slice(2, -2)}</del>;
+		if (part.startsWith('*') && part.endsWith('*')) return <em key={key}>{part.slice(1, -1)}</em>;
+		if (part.startsWith('_') && part.endsWith('_')) return <em key={key}>{part.slice(1, -1)}</em>;
+		return <span key={key}>{part}</span>;
+	});
+}
+
 export function TourCard({ image, badge, date, title, description, location, eventType, eventTypeIcon = 'category', href }) {
   return (
     <Card className="group h-full min-h-[36rem] overflow-hidden border border-outline-variant/70 bg-white/90">
@@ -41,7 +57,9 @@ export function TourCard({ image, badge, date, title, description, location, eve
               <h3 class="clamp-2 font-h3 text-h3 text-on-primary uppercase font-black leading-tight tracking-tight">
                 {title}
               </h3>
-              <p class="clamp-3 font-body-md text-body-md text-on-primary/82 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: description }} />
+              <p class="clamp-3 font-body-md text-body-md text-on-primary/82 leading-relaxed max-w-md whitespace-pre-line">
+                <InlineMd text={description} />
+              </p>
             </div>
           </div>
         </div>

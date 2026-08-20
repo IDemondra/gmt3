@@ -5,7 +5,6 @@ import { Footer } from '../../components/Footer.jsx';
 import { ImagePreview } from '../../components/ui/ImagePreview.jsx';
 import { BlurImg } from '../../components/ui/BlurImg.jsx';
 import { formatDateFr, getEventStatus, isEventActive, isEventPast } from '../../utils/dateFormatter.js';
-import { parseMarkdownInline } from '../../utils/markdown.js';
 import { StarRating } from '../../components/ui/StarRating.jsx';
 import { eventPath } from '../../utils/eventUrl.js';
 import { getEventTypeIcon } from '../../utils/eventType.js';
@@ -52,7 +51,7 @@ export function Events() {
 	const transformEvent = (event) => ({
 		id: event.id,
 		title: event.titre,
-		description: parseMarkdownInline(event.description),
+		description: event.description,
 		image: event.imagePrincipale ? resolveImg(event.imagePrincipale) : '',
 		date: event.dateDepart || event.dateEvenement || 'Non précisé',
 		badge: getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement) === 'ongoing' ? 'EN COURS' : 'EXPEDITION',

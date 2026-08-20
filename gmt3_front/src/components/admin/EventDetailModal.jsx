@@ -1,5 +1,20 @@
-import { parseMarkdown } from '../../utils/markdown.js';
 import { formatIsoDateFr } from '../../utils/dateFormatter.js';
+
+const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
+function InlineMd({ text }) {
+	const occ = new Map();
+	return String(text || '').split(INLINE_MD).map((part, idx) => {
+		const c = occ.get(part) || 0;
+		occ.set(part, c + 1);
+		const key = `${idx}-${c}`;
+		if (part.startsWith('**') && part.endsWith('**')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('__') && part.endsWith('__')) return <strong key={key}>{part.slice(2, -2)}</strong>;
+		if (part.startsWith('~~') && part.endsWith('~~')) return <del key={key}>{part.slice(2, -2)}</del>;
+		if (part.startsWith('*') && part.endsWith('*')) return <em key={key}>{part.slice(1, -1)}</em>;
+		if (part.startsWith('_') && part.endsWith('_')) return <em key={key}>{part.slice(1, -1)}</em>;
+		return <span key={key}>{part}</span>;
+	});
+}
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
@@ -121,7 +136,9 @@ export function EventDetailModal({ open, loading = false, error = null, event, o
 
 								<div class="rounded-xl border border-gray-100 bg-gray-50/30 p-6">
 									<p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Description</p>
-									<div class="mt-3 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description ? parseMarkdown(event.description) : '—' }} />
+									<div class="mt-3 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none whitespace-pre-line">
+										{event.description ? <InlineMd text={event.description} /> : '—'}
+									</div>
 								</div>
 							</section>
 

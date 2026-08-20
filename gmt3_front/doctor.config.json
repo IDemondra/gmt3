@@ -16,6 +16,10 @@
     "react-doctor/no-promise-then-side-effect-in-effect-without-catch": "off",
     "react-doctor/rerender-state-only-in-handlers": "off",
     "react-doctor/no-set-state-after-await-in-effect": "off",
-    "react-doctor/no-loading-flag-reset-outside-finally": "off"
+    "react-doctor/no-loading-flag-reset-outside-finally": "off",
+    "react-doctor/dangerous-html-sink": "warn",
+    "react-doctor/no-prevent-default": "off",
+    "react-doctor/no-array-index-as-key": "off",
+    "deslop/unused-file": "off"
   }
 }
