@@ -202,7 +202,7 @@ body {
   to { transform: scale(1.08) translateY(4%); }
 }
 
-/* view-timeline: scroll = document, view() = element */
+/* view-timeline: scroll = document, view() = element — PC 6 cartes = 6 timelines simultanées = jank si blur+clip */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .creative-reveal {
@@ -210,20 +210,27 @@ body {
       animation: creative-clip linear both;
       animation-timeline: view();
       animation-range: entry 0% cover 28%;
-      will-change: transform, opacity, filter, clip-path;
+      will-change: transform, opacity;
     }
     .creative-reveal[data-creative="warp"] { animation-name: creative-warp; animation-range: entry 0% cover 32%; }
     .creative-reveal[data-creative="blurScale"] { animation-name: creative-blur; animation-range: entry 0% cover 24%; }
     .creative-reveal[data-creative="kinetic"] { animation-name: creative-kinetic; animation-range: entry 0% cover 30%; }
-    .creative-reveal.is-visible { opacity: 1; } /* fallback JS déjà visible */
+    .creative-reveal.is-visible { opacity: 1; }
     .parallax-hero {
       animation: parallax-hero linear both;
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
       will-change: transform;
     }
-    /* stagger naturel via view() déjà décalé, mais on garde --index pour grille dense */
-    .creative-reveal[data-index] { animation-delay: calc(var(--index, 0) * 0ms); }
+  }
+}
+/* PC dense 6 cartes — clip/warp complet blur+clip = burst 6 d'un coup, lite (transform+opacity seul) pour fluidité */
+@media (min-width: 1024px) {
+  #equipes .creative-reveal[data-creative="clip"],
+  #equipes .creative-reveal[data-creative="warp"] {
+    animation-name: lite-fade !important;
+    animation-range: entry 0% cover 22% !important;
+    will-change: transform, opacity !important;
   }
 }
 
