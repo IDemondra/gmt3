@@ -28,21 +28,24 @@ const baseStyle = {
 	transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
 };
 
+
+const getRevealStyle = (preset, isVisible, staggerDelay, duration) => ({
+	...baseStyle,
+	transitionDelay: `${staggerDelay}ms`,
+	transitionDuration: `${duration}ms`,
+	transform: `translate(${isVisible ? 0 : preset.x}px, ${isVisible ? 0 : preset.y}px) scale(${isVisible ? 1 : preset.scale}) ${preset.rotate ? `rotate(${isVisible ? '0deg' : preset.rotate})` : ''}`,
+	opacity: isVisible ? 1 : 0,
+	filter: isVisible ? 'blur(0px)' : preset.filter,
+	clipPath: preset.clip ? (isVisible ? 'inset(0 0% 0 0)' : preset.clip) : undefined,
+});
+
 export function Reveal({ children, animation = 'fadeUp', delay = 0, duration = 650, className = '', creative = false, stagger = 0, index = 0 }) {
 	const { ref, isVisible } = useScrollReveal();
 	const preset = presets[animation] || presets.fadeUp;
 	const isCreative = creative || creativeAnimations.has(animation);
 	const staggerDelay = stagger ? index * stagger : delay;
 
-	const style = {
-		...baseStyle,
-		transitionDelay: `${staggerDelay}ms`,
-		transitionDuration: `${duration}ms`,
-		transform: `translate(${isVisible ? 0 : preset.x}px, ${isVisible ? 0 : preset.y}px) scale(${isVisible ? 1 : preset.scale}) ${preset.rotate ? `rotate(${isVisible ? '0deg' : preset.rotate})` : ''}`,
-		opacity: isVisible ? 1 : 0,
-		filter: isVisible ? 'blur(0px)' : preset.filter,
-		clipPath: preset.clip ? (isVisible ? 'inset(0 0% 0 0)' : preset.clip) : undefined,
-	};
+	const style = getRevealStyle(preset, isVisible, staggerDelay, duration);
 
 	const creativeClass = isCreative ? 'creative-reveal' : '';
 

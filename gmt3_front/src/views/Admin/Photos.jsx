@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 import { Navbar } from '../../components/admin/Navbar.jsx';
 import { Sidebar } from '../../components/admin/Sidebar.jsx';
+import { AdminPagination } from '../../components/admin/AdminPagination.jsx';
 import { currentUser, accessToken, useLogout } from '../../stores/auth.js';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
@@ -19,6 +20,90 @@ function resolveImg(url) {
 	if (!url) return '';
 	if (url.startsWith('http') || url.startsWith('blob:')) return url;
 	return `${BACKEND}${url}`;
+}
+
+function ExistingPhotos({ existing, resolveImg }) {
+	if (!existing.length) return null;
+	return (
+		<div class="mb-6">
+			<p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Actuellement en ligne ({existing.length}) — sera remplacé</p>
+			<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+				{existing.map((p, idx) => (
+					<div key={p.id || p.url} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
+						<img src={resolveImg(p.url)} alt={`Événement ${idx + 1}`} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function PreviewPhotos({ gallery }) {
+	if (!gallery.previews.length) return null;
+	return (
+		<div class="mb-6">
+			<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-3">À envoyer ({gallery.previews.length})</p>
+			<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+				{gallery.previews.map((src, idx) => (
+					<div key={src} class="relative group aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
+						<img src={src} alt={`Aperçu ${idx + 1}`} class="h-full w-full object-cover" />
+						<button type="button" onClick={() => gallery.removeFile(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+							<span class="material-symbols-outlined text-[14px]">close</span>
+						</button>
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function GalleryEditor({ selected, existing, gallery, uploading, uploadProgress, uploadStatus, requestSave, handleFileInput }) {
+	return (
+		<div class="p-6 md:p-8">
+			<div class="flex items-center justify-between gap-4 mb-2">
+				<h2 class="text-xl font-extrabold text-gray-900 tracking-tight">{selected.titre}</h2>
+				<span class={`px-3 py-1 rounded-full text-[11px] font-bold border ${gallery.count >= gallery.maxPhotos ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+					{gallery.count} / {gallery.maxPhotos}
+				</span>
+			</div>
+			{(gallery.count > 0 || gallery.compressingCount > 0) && (
+				<p class={`text-[11px] mb-4 flex items-center gap-2 ${gallery.totalBytes > gallery.maxTotalBytes ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
+					<span>{formatMo(gallery.totalBytes)} Mo / {formatMo(gallery.maxTotalBytes)} Mo au total</span>
+					{gallery.compressingCount > 0 && <span class="text-primary">— compression {gallery.compressingCount} photo(s)...</span>}
+				</p>
+			)}
+
+			<div class="mb-6 flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-100 px-4 py-3 text-[12px] text-amber-700">
+				<span class="material-symbols-outlined text-[16px] mt-0.5">warning</span>
+				<span>L'enregistrement <b>remplace</b> toute la galerie existante par les nouvelles photos sélectionnées.</span>
+			</div>
+
+			<ExistingPhotos existing={existing} resolveImg={resolveImg} />
+
+			<PreviewPhotos gallery={gallery} />
+
+			<label class={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-10 transition-colors cursor-pointer ${gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0 ? 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-primary/40 hover:bg-primary/5'}`}>
+				<span class="material-symbols-outlined text-3xl text-gray-300">add_photo_alternate</span>
+				<span class="text-sm font-semibold text-gray-500">{gallery.count >= gallery.maxPhotos ? `Limite ${gallery.maxPhotos} atteinte` : gallery.compressingCount > 0 ? 'Compression en cours...' : 'Cliquez pour ajouter des photos'}</span>
+				<span class="text-[11px] text-gray-400">JPEG / PNG / WEBP / GIF / HEIC — max 5 Mo</span>
+				<input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="hidden" disabled={gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0} onInput={handleFileInput} />
+			</label>
+
+			{uploading && <ProgressBar percent={uploadProgress} label={uploadStatus} class="mt-6" />}
+
+			<div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-50">
+				<button
+					type="button"
+					onClick={requestSave}
+					disabled={uploading || gallery.compressingCount > 0 || gallery.count === 0}
+					class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+				>
+					<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+					{uploading ? 'Envoi...' : 'Enregistrer la galerie'}
+				</button>
+			</div>
+		</div>
+	);
 }
 
 export function AdminPhotos() {
@@ -160,98 +245,21 @@ export function AdminPhotos() {
 									</button>
 								))}
 							</div>
-							<div class="p-4 border-t border-gray-50 flex justify-between items-center gap-4 bg-gray-50/20">
-								<span class="text-xs text-gray-400 font-medium">{events.length === 0 ? 'Aucun résultat' : `${page * ROWS_PER_PAGE + 1}-${Math.min((page + 1) * ROWS_PER_PAGE, events.length)} sur ${events.length}`}</span>
-								<div class="flex gap-2">
-									<button type="button" aria-label="Page précédente" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page === 0} onClick={() => setPage((p) => p - 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span></button>
-									<button type="button" aria-label="Page suivante" class="p-1.5 rounded-md border border-gray-100 text-gray-400 hover:bg-white transition-all disabled:opacity-30" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span></button>
-								</div>
+							<AdminPagination page={page} pageSize={ROWS_PER_PAGE} total={events.length} totalPages={totalPages} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} emptyLabel="Aucun résultat" />
 							</div>
 						</div>
 
 						{/* ── Éditeur galerie ── */}
 						<div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-							{!selected && (
+							{selected ? (
+								<GalleryEditor selected={selected} existing={existing} gallery={gallery} uploading={uploading} uploadProgress={uploadProgress} uploadStatus={uploadStatus} requestSave={requestSave} handleFileInput={handleFileInput} />
+							) : (
 								<div class="p-16 text-center text-gray-400">
 									<span class="material-symbols-outlined text-5xl text-gray-200 mb-4">photo_library</span>
 									<p class="text-sm">Sélectionnez un événement à gauche pour gérer ses photos.</p>
 								</div>
 							)}
 
-							{selected && (
-								<div class="p-6 md:p-8">
-									<div class="flex items-center justify-between gap-4 mb-2">
-										<h2 class="text-xl font-extrabold text-gray-900 tracking-tight">{selected.titre}</h2>
-										<span class={`px-3 py-1 rounded-full text-[11px] font-bold border ${gallery.count >= gallery.maxPhotos ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
-											{gallery.count} / {gallery.maxPhotos}
-										</span>
-									</div>
-									{(gallery.count > 0 || gallery.compressingCount > 0) && (
-										<p class={`text-[11px] mb-4 flex items-center gap-2 ${gallery.totalBytes > gallery.maxTotalBytes ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
-											<span>{formatMo(gallery.totalBytes)} Mo / {formatMo(gallery.maxTotalBytes)} Mo au total</span>
-											{gallery.compressingCount > 0 && <span class="text-primary">— compression {gallery.compressingCount} photo(s)...</span>}
-										</p>
-									)}
-
-									<div class="mb-6 flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-100 px-4 py-3 text-[12px] text-amber-700">
-										<span class="material-symbols-outlined text-[16px] mt-0.5">warning</span>
-										<span>L'enregistrement <b>remplace</b> toute la galerie existante par les nouvelles photos sélectionnées.</span>
-									</div>
-
-									{/* Photos actuellement en ligne (aperçu read-only — sera remplacé) */}
-									{existing.length > 0 && (
-										<div class="mb-6">
-											<p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Actuellement en ligne ({existing.length}) — sera remplacé</p>
-											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-								{existing.map((p, idx) => (
-									<div key={p.id || p.url} class="relative aspect-square rounded-lg overflow-hidden border border-gray-100 opacity-60">
-									<img src={resolveImg(p.url)} alt={`Événement ${idx + 1}`} class="h-full w-full object-cover" referrerPolicy="no-referrer" />
-													</div>
-												))}
-											</div>
-										</div>
-									)}
-
-									{/* Nouvelles photos */}
-									{gallery.previews.length > 0 && (
-										<div class="mb-6">
-											<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-3">À envoyer ({gallery.previews.length})</p>
-											<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-												{gallery.previews.map((src, idx) => (
-													<div key={src} class="relative group aspect-square rounded-lg overflow-hidden border-2 border-primary/30">
-									<img src={src} alt={`Aperçu ${idx + 1}`} class="h-full w-full object-cover" />
-														<button type="button" onClick={() => gallery.removeFile(idx)} class="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-															<span class="material-symbols-outlined text-[14px]">close</span>
-														</button>
-													</div>
-												))}
-											</div>
-										</div>
-									)}
-
-									{/* Zone upload */}
-									<label class={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-10 transition-colors cursor-pointer ${gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0 ? 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-primary/40 hover:bg-primary/5'}`}>
-										<span class="material-symbols-outlined text-3xl text-gray-300">add_photo_alternate</span>
-										<span class="text-sm font-semibold text-gray-500">{gallery.count >= gallery.maxPhotos ? `Limite ${gallery.maxPhotos} atteinte` : gallery.compressingCount > 0 ? 'Compression en cours...' : 'Cliquez pour ajouter des photos'}</span>
-										<span class="text-[11px] text-gray-400">JPEG / PNG / WEBP / GIF / HEIC — max 5 Mo</span>
-										<input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.heif,image/*" class="hidden" disabled={gallery.count >= gallery.maxPhotos || gallery.compressingCount > 0} onInput={handleFileInput} />
-									</label>
-
-									{uploading && <ProgressBar percent={uploadProgress} label={uploadStatus} class="mt-6" />}
-
-									<div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-50">
-										<button type="button"
-											onClick={requestSave}
-											disabled={uploading || gallery.compressingCount > 0 || gallery.count === 0}
-											class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary-container font-semibold text-sm transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
-										>
-											<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
-											{uploading ? 'Envoi...' : 'Enregistrer la galerie'}
-										</button>
-									</div>
-								</div>
-							)}
-						</div>
 					</div>
 
 					<p class="mt-12 text-center text-[11px] text-gray-300 font-bold tracking-widest uppercase">GMT+3 Admin Panel — Fianarantsoa</p>

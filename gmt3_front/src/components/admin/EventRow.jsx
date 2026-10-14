@@ -15,18 +15,81 @@ const resolveUrl = (url) => {
 	return `${BACKEND}${url}`;
 };
 
+function EventAvatar({ event, onImageClick }) {
+	const hasImage = event.imagePrincipale && typeof event.imagePrincipale === 'string' && event.imagePrincipale.length > 0;
+	if (hasImage) {
+		return (
+			<button
+				type="button"
+				onClick={() => onImageClick?.(resolveUrl(event.imagePrincipale))}
+				class="h-9 w-9 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20 hover:ring-2 hover:ring-primary-container/40 transition-all cursor-pointer"
+				title="Voir l'image"
+			>
+				<img
+					src={resolveUrl(event.imagePrincipale)}
+					alt=""
+					class="w-full h-full object-cover"
+					referrerPolicy="no-referrer"
+					loading="lazy"
+				/>
+			</button>
+		);
+	}
+	return (
+		<div class="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shrink-0">
+			<span class="material-symbols-outlined text-primary-container text-[18px]">landscape</span>
+		</div>
+	);
+}
+
+function EventSchedule({ event, eventTypeIcon, eventTypeLabel }) {
+	const depart = event.dateDepart ? (
+		<span class="flex flex-col gap-0.5">
+			<span class="flex items-center gap-1">
+				<span class="material-symbols-outlined text-[14px] text-primary-container" aria-label={`Départ — ${eventTypeLabel}`}>{eventTypeIcon}</span>
+				{event.dateDepart}{event.heureDepart ? ` ${event.heureDepart}` : ''}
+			</span>
+			{event.dateRetour ? (
+				<span class="flex items-center gap-1">
+					<span class="material-symbols-outlined text-[14px] text-secondary" aria-label={`Retour — ${eventTypeLabel}`}>{eventTypeIcon}</span>
+					{event.dateRetour}{event.heureRetour ? ` ${event.heureRetour}` : ''}
+				</span>
+			) : null}
+		</span>
+	) : (event.date || event.dateEvenement || '—');
+	return <td class="px-6 py-4 text-sm text-secondary whitespace-nowrap">{depart}</td>;
+}
+
+function EventStatusBadges({ event, timeStatus }) {
+	const published = event.estPublie || event.published;
+	return (
+		<div class="flex flex-col items-start gap-1.5">
+			<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${published ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+				<span class={`w-1.5 h-1.5 rounded-full ${event.published ? 'bg-green-500' : 'bg-amber-500'}`} />
+				{published ? 'Publié' : 'Brouillon'}
+			</span>
+			<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${timeStatus.cls}`}>
+				<span class={`w-1.5 h-1.5 rounded-full ${timeStatus.dot}`} />
+				{timeStatus.label}
+			</span>
+		</div>
+	);
+}
+
 export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewDetails }) {
 	const isEven = index % 2 === 0;
-
-	const hasImage = event.imagePrincipale && typeof event.imagePrincipale === 'string' && event.imagePrincipale.length > 0;
 	const timeStatus = STATUS_STYLES[getEventStatus(event.dateDepart, event.dateRetour, event.dateEvenement)] || STATUS_STYLES.unknown;
 	const eventTypeIcon = getEventTypeIcon(event.typeEvenement);
 	const eventTypeLabel = event.typeEvenement?.nom || 'Type d’événement';
 
+	const activateRow = (e) => {
+		if (e.key !== 'Enter' && e.key !== ' ') return;
+		e.preventDefault();
+		onViewDetails?.(event);
+	};
+
 	return (
-		<tr onClick={() => onViewDetails?.(event)} class={`cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 ${
-			isEven ? 'bg-transparent' : 'bg-surface-container/40'
-		} hover:bg-primary/5`}>
+		<tr onClick={() => onViewDetails?.(event)} onKeyDown={activateRow} tabIndex={0} class={`cursor-pointer border-b border-outline-variant/30 transition-colors duration-150 ${isEven ? 'bg-transparent' : 'bg-surface-container/40'} hover:bg-primary/5`}>
 			<td class="px-6 py-4">
 				<span class="font-mono text-xs text-secondary bg-surface-container px-2.5 py-1 rounded-lg font-semibold">
 					{event.id}
@@ -34,77 +97,30 @@ export function EventRow({ event, index, onDelete, onEdit, onImageClick, onViewD
 			</td>
 			<td class="px-6 py-4">
 				<div class="flex items-center gap-3">
-					{hasImage ? (
-						<button
-							type="button"
-							onClick={() => onImageClick?.(resolveUrl(event.imagePrincipale))}
-							class="h-9 w-9 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20 hover:ring-2 hover:ring-primary-container/40 transition-all cursor-pointer"
-							title="Voir l'image"
-						>
-							<img
-								src={resolveUrl(event.imagePrincipale)}
-								alt=""
-								class="w-full h-full object-cover"
-								referrerPolicy="no-referrer"
-								loading="lazy"
-							/>
-						</button>
-					) : (
-						<div class="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shrink-0">
-							<span class="material-symbols-outlined text-primary-container text-[18px]">landscape</span>
-						</div>
-					)}
+					<EventAvatar event={event} onImageClick={onImageClick} />
 					<div class="flex flex-col gap-0.5">
 						<span class="font-body-md text-body-md text-on-background font-semibold">{event.titre || event.title}</span>
 						<span class="text-xs text-secondary">Places : {event.placesReservees ?? 0} / {event.capaciteMax ?? 'Illimitée'}</span>
 					</div>
 				</div>
 			</td>
-			<td class="px-6 py-4 text-sm text-secondary whitespace-nowrap">
-			{event.dateDepart ? (
-				<span class="flex flex-col gap-0.5">
-					<span class="flex items-center gap-1">
-						<span class="material-symbols-outlined text-[14px] text-primary-container" aria-label={`Départ — ${eventTypeLabel}`}>{eventTypeIcon}</span>
-						{event.dateDepart}{event.heureDepart ? ` ${event.heureDepart}` : ''}
-					</span>
-					{event.dateRetour ? (
-						<span class="flex items-center gap-1">
-							<span class="material-symbols-outlined text-[14px] text-secondary" aria-label={`Retour — ${eventTypeLabel}`}>{eventTypeIcon}</span>
-							{event.dateRetour}{event.heureRetour ? ` ${event.heureRetour}` : ''}
-						</span>
-					) : null}
-				</span>
-			) : event.date || event.dateEvenement || '—'}
-		</td>
+			<EventSchedule event={event} eventTypeIcon={eventTypeIcon} eventTypeLabel={eventTypeLabel} />
 			<td class="px-6 py-4">
 				<span class="font-mono text-sm font-semibold text-on-background bg-surface-container px-3 py-1 rounded-lg">
 					{event.prix ? `${Number(event.prix).toLocaleString()} Ar` : '—'}
 				</span>
 			</td>
 			<td class="px-6 py-4">
-				<div class="flex flex-col items-start gap-1.5">
-					<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-						(event.estPublie || event.published)
-							? 'bg-green-50 text-green-700 border border-green-200'
-							: 'bg-amber-50 text-amber-700 border border-amber-200'
-					}`}>
-						<span class={`w-1.5 h-1.5 rounded-full ${event.published ? 'bg-green-500' : 'bg-amber-500'}`} />
-						{(event.estPublie || event.published) ? 'Publié' : 'Brouillon'}
-					</span>
-					<span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${timeStatus.cls}`}>
-						<span class={`w-1.5 h-1.5 rounded-full ${timeStatus.dot}`} />
-						{timeStatus.label}
-					</span>
-				</div>
+				<EventStatusBadges event={event} timeStatus={timeStatus} />
 			</td>
 			<td class="px-6 py-4 text-right">
-					<div class="flex items-center justify-end gap-1">
-										<button type="button" onClick={(e) => { e.stopPropagation(); onViewDetails?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
-							<span class="material-symbols-outlined text-[20px]">visibility</span>
-						</button>
-										<button type="button" onClick={(e) => { e.stopPropagation(); onEdit?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
-							<span class="material-symbols-outlined text-[20px]">edit</span>
-						</button>
+				<div class="flex items-center justify-end gap-1">
+					<button type="button" onClick={(e) => { e.stopPropagation(); onViewDetails?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-on-background hover:bg-surface-container transition-all duration-150" title="Détails">
+						<span class="material-symbols-outlined text-[20px]">visibility</span>
+					</button>
+					<button type="button" onClick={(e) => { e.stopPropagation(); onEdit?.(event); }} class="p-2.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-150" title="Modifier">
+						<span class="material-symbols-outlined text-[20px]">edit</span>
+					</button>
 					<button type="button"
 						onClick={(e) => { e.stopPropagation(); onDelete?.(event.id); }}
 						class="p-2.5 rounded-xl text-secondary hover:text-red-600 hover:bg-red-50 transition-all duration-150"
