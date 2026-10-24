@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { resolveImg } from '../../../utils/images.js';
 import { fetchEvents } from '../../../utils/events.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
+import { buildForecastTarget, pickNextExpedition } from '../../../utils/weather.js';
+import { WeatherForecast } from './WeatherForecast.jsx';
 
 const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
 function InlineMd({ text }) {
@@ -34,8 +36,15 @@ export function ToursSection({ initialEvents = null }) {
 		}
 		return [];
 	};
+	const getInitialNext = () => {
+		if (!Array.isArray(initialEvents)) return null;
+		return pickNextExpedition(initialEvents)?.event ?? null;
+	};
 	const [events, setEvents] = useState(getInitial);
+	const [nextExpedition, setNextExpedition] = useState(getInitialNext);
 	const [loading, setLoading] = useState(!initialEvents);
+
+	const forecastTarget = useMemo(() => buildForecastTarget(nextExpedition), [nextExpedition]);
 
 	useEffect(() => {
 		if (initialEvents) { setLoading(false); return; }
@@ -45,6 +54,7 @@ export function ToursSection({ initialEvents = null }) {
 					.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
 					.slice(0, 3);
 				setEvents(published);
+				setNextExpedition(pickNextExpedition(events)?.event ?? null);
 			})
 			.catch(() => setEvents([]))
 			.finally(() => setLoading(false));
@@ -81,6 +91,13 @@ export function ToursSection({ initialEvents = null }) {
 							<span class="font-button text-xs tracking-widest font-bold">VOIR TOUTES LES DATES</span>
 							<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">calendar_month</span>
 						</a>
+					</Reveal>
+				</div>
+
+				{/* ── Météo du jour J de la prochaine expédition ── */}
+				<div class="mb-16">
+					<Reveal animation="fadeUp">
+						<WeatherForecast event={forecastTarget} />
 					</Reveal>
 				</div>
 
