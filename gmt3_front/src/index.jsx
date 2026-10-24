@@ -11,6 +11,7 @@ import { AdminUsers } from './pages/Admin/Users.jsx';
 import { AdminClients } from './pages/Admin/Clients.jsx';
 import { AdminReservations } from './pages/Admin/Reservations.jsx';
 import { NotFound } from './pages/_404.jsx';
+import { Conditions } from './components/Conditions.jsx';
 import './index.css';
 
 export function App() {
@@ -47,6 +48,7 @@ function AppShell() {
 					<Route path="/admin/clients" component={AdminClients} />
 					<Route path="/admin/reservations" component={AdminReservations} />
 					<Route path="/:code" component={EventDetail} />
+			<Route path="/conditions-utilisation" component={Conditions} />
 					<Route default component={NotFound} />
 				</Router>
 			</main>
