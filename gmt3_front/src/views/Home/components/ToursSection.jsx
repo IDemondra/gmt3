@@ -5,7 +5,7 @@ import { resolveImg } from '../../../utils/images.js';
 import { fetchEvents } from '../../../utils/events.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
-import { buildForecastTarget, pickNextExpedition } from '../../../utils/weather.js';
+import { buildDefaultForecastTarget, buildForecastTarget, pickNextExpedition } from '../../../utils/weather.js';
 import { WeatherForecast } from './WeatherForecast.jsx';
 
 const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
@@ -44,7 +44,10 @@ export function ToursSection({ initialEvents = null }) {
 	const [nextExpedition, setNextExpedition] = useState(getInitialNext);
 	const [loading, setLoading] = useState(!initialEvents);
 
-	const forecastTarget = useMemo(() => buildForecastTarget(nextExpedition), [nextExpedition]);
+	const forecastTarget = useMemo(
+		() => buildForecastTarget(nextExpedition) ?? buildDefaultForecastTarget(),
+		[nextExpedition],
+	);
 
 	useEffect(() => {
 		if (initialEvents) { setLoading(false); return; }
@@ -94,10 +97,10 @@ export function ToursSection({ initialEvents = null }) {
 					</Reveal>
 				</div>
 
-				{/* ── Météo du jour J de la prochaine expédition ── */}
+				{/* ── Météo du jour J de la prochaine expédition (repli Fianarantsoa) ── */}
 				<div class="mb-16">
 					<Reveal animation="fadeUp">
-						<WeatherForecast event={forecastTarget} />
+						<WeatherForecast event={loading ? null : forecastTarget} pending={loading} />
 					</Reveal>
 				</div>
 

@@ -6,11 +6,15 @@ import { WeatherForecastCard } from './WeatherForecastCard.jsx';
  * Bloc météo du jour J de la prochaine expédition.
  * Données Open-Meteo (offre gratuite, sans clé), chargées côté client.
  */
-export function WeatherForecast({ event = null }) {
+export function WeatherForecast({ event = null, pending = false }) {
 	const [forecast, setForecast] = useState(null);
 	const [loading, setLoading] = useState(Boolean(event));
 
 	useEffect(() => {
+		if (pending) {
+			setLoading(true);
+			return;
+		}
 		if (!event?.dateIso) {
 			setLoading(false);
 			setForecast(null);
@@ -31,7 +35,7 @@ export function WeatherForecast({ event = null }) {
 		return () => {
 			active = false;
 		};
-	}, [event?.dateIso, event?.lieu]);
+	}, [event?.dateIso, event?.lieu, pending]);
 
-	return <WeatherForecastCard event={event} forecast={forecast} loading={loading} />;
+	return <WeatherForecastCard event={event} forecast={forecast} loading={loading || pending} />;
 }

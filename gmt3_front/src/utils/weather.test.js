@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import {
+	buildDefaultForecastTarget,
 	buildForecastTarget,
 	describeWeatherCode,
 	pickGeocodeResult,
@@ -7,6 +8,7 @@ import {
 	parseEventDate,
 	selectForecastDay,
 	toIsoDate,
+	todayInForecastTimezone,
 } from './weather.js';
 
 const TODAY = new Date(2026, 9, 24); // 24/10/2026
@@ -74,6 +76,29 @@ describe('buildForecastTarget', () => {
 
 	test('retourne null sans date exploitable', () => {
 		expect(buildForecastTarget({ titre: 'Sans date' }, TODAY)).toBeNull();
+	});
+});
+
+describe('buildDefaultForecastTarget', () => {
+	test('replie sur la météo du jour à Fianarantsoa', () => {
+		const target = buildDefaultForecastTarget(TODAY);
+		expect(target.isFallback).toBe(true);
+		expect(target.titre).toBe('Météo à Fianarantsoa');
+		expect(target.lieu).toBe('Fianarantsoa');
+		expect(target.dateIso).toBe('2026-10-24');
+		expect(target.dateFr).toBe('24/10/2026');
+	});
+
+	test('utilise la date de Madagascar quand aucune date n’est fournie', () => {
+		const target = buildDefaultForecastTarget();
+		expect(target.dateIso).toBe(toIsoDate(todayInForecastTimezone()));
+	});
+});
+
+describe('todayInForecastTimezone', () => {
+	test('convertit un instant UTC vers la date de Madagascar', () => {
+		expect(toIsoDate(todayInForecastTimezone(new Date('2026-10-23T22:30:00Z')))).toBe('2026-10-24');
+		expect(toIsoDate(todayInForecastTimezone(new Date('2026-10-23T20:30:00Z')))).toBe('2026-10-23');
 	});
 });
 

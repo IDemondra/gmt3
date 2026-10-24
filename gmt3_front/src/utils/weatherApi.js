@@ -9,8 +9,10 @@
 import {
 	FALLBACK_LOCATION,
 	FORECAST_HORIZON_DAYS,
+	FORECAST_TIMEZONE,
 	addDays,
 	describeWeatherCode,
+	getReferenceDay,
 	parseEventDate,
 	pickGeocodeResult,
 	selectForecastDay,
@@ -106,7 +108,7 @@ async function fetchDaily(latitude, longitude, isoDate) {
 		latitude: String(latitude),
 		longitude: String(longitude),
 		daily: DAILY_FIELDS,
-		timezone: 'Indian/Antananarivo',
+		timezone: FORECAST_TIMEZONE,
 		start_date: isoDate,
 		end_date: isoDate,
 	});
@@ -120,17 +122,18 @@ async function fetchDaily(latitude, longitude, isoDate) {
  * Prévision du jour J d'une expédition.
  * status : 'ok' | 'out_of_range' | 'unavailable'
  */
-export async function getEventForecast(event, today = new Date()) {
+export async function getEventForecast(event, today = null) {
 	const target = event?.dateIso;
 	if (!target) return { status: 'unavailable' };
 	const targetDate = parseEventDate(target);
 	if (!targetDate) return { status: 'unavailable' };
-	const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+	const start = getReferenceDay(today);
 	const daysUntil = Math.round((targetDate.getTime() - start.getTime()) / 86400000);
 	const base = {
 		lieu: event.lieu || '',
 		dateFr: event.dateFr || '',
 		titre: event.titre || '',
+		isFallback: event.isFallback === true,
 	};
 	if (daysUntil > FORECAST_HORIZON_DAYS) {
 		const availableFrom = addDays(targetDate, -FORECAST_HORIZON_DAYS);
@@ -142,7 +145,9 @@ export async function getEventForecast(event, today = new Date()) {
 		};
 	}
 	try {
-		const location = await resolveLocation(event.lieu);
+		const location = event.isFallback
+			? { ...FALLBACK_LOCATION, fallback: false }
+			: await resolveLocation(event.lieu);
 		const daily = await fetchDaily(location.latitude, location.longitude, target);
 		if (!daily) return { ...base, status: 'unavailable' };
 		const day = selectForecastDay(daily, target);

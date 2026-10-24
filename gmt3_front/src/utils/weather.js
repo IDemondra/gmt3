@@ -11,6 +11,9 @@ const NEARBY_REGIONS = ['matsiatra supérieur', 'vatovavy', 'ihorombe', "amoron'
 /** Horizon du palier gratuit : J-15 au maximum. */
 export const FORECAST_HORIZON_DAYS = 15;
 
+/** Fuseau de Madagascar : sert de référence pour la date du jour affichée. */
+export const FORECAST_TIMEZONE = 'Indian/Antananarivo';
+
 const WEATHER_CODES = {
 	0: { label: 'Ensoleillé', icon: 'sunny' },
 	1: { label: 'Peu nuageux', icon: 'partly_cloudy_day' },
@@ -132,8 +135,8 @@ export function selectForecastDay(daily, isoDate) {
  * Prochaine expédition publiée : à venir en priorité, sinon en cours.
  * Retourne null si aucune expédition publiée n'est active.
  */
-export function pickNextExpedition(events, today = new Date()) {
-	const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+export function pickNextExpedition(events, today = null) {
+	const start = getReferenceDay(today);
 	const candidates = (Array.isArray(events) ? events : [])
 		.filter((e) => e && e.estPublie)
 		.map((e) => {
@@ -149,19 +152,62 @@ export function pickNextExpedition(events, today = new Date()) {
 }
 
 /**
+ * Date du jour à Madagascar (UTC+3). La date affichée doit correspondre à
+ * celle de l'API (fuseau `Indian/Antananarivo`), pas à celle du navigateur.
+ */
+export function todayInForecastTimezone(now = new Date()) {
+	try {
+		const parts = new Intl.DateTimeFormat('en-CA', {
+			timeZone: FORECAST_TIMEZONE,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+		}).formatToParts(now);
+		const value = (type) => parts.find((p) => p.type === type)?.value;
+		return new Date(Number(value('year')), Number(value('month')) - 1, Number(value('day')));
+	} catch {
+		return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	}
+}
+
+/**
+ * Jour de référence : date Madagascar si `today` est absent, sinon jour local
+ * de la date fournie (comportement déterministe des tests).
+ */
+export function getReferenceDay(today) {
+	if (!today) return todayInForecastTimezone();
+	return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+/**
  * Construit la cible météo (jour J) d'une expédition.
  * Pour une expédition en cours, la cible devient la date du jour.
  */
-export function buildForecastTarget(event, today = new Date()) {
+export function buildForecastTarget(event, today = null) {
 	const date = parseEventDate(event?.dateEvenement || event?.dateDepart);
 	if (!date) return null;
-	const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+	const start = getReferenceDay(today);
 	const target = date < start ? start : date;
 	return {
 		titre: event?.titre || 'Prochaine expédition',
 		lieu: event?.lieu || '',
-		dateFr: toFrDate(date),
+		dateFr: toFrDate(target),
 		dateIso: toIsoDate(target),
+	};
+}
+
+/**
+ * Cible de repli : aucune expédition à venir => météo du jour à Fianarantsoa.
+ * `isFallback` indique qu'il ne s'agit pas d'une expédition.
+ */
+export function buildDefaultForecastTarget(now = null) {
+	const today = getReferenceDay(now);
+	return {
+		titre: 'Météo à Fianarantsoa',
+		lieu: FALLBACK_LOCATION.name,
+		dateFr: toFrDate(today),
+		dateIso: toIsoDate(today),
+		isFallback: true,
 	};
 }
 

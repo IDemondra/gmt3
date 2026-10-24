@@ -16,39 +16,57 @@ export function formatMillimeters(value) {
 /** Vue pure du bloc météo : testable sans réseau ni navigateur. */
 export function WeatherForecastCard({ event = null, forecast = null, loading = false }) {
 	if (!event) {
+		if (loading) {
+			return (
+				<div class="rounded-xl border border-stone-200 bg-white/70 px-6 py-5 flex items-center gap-4 min-h-[132px]" aria-hidden="true">
+					<div class="w-16 h-16 rounded-xl bg-stone-100 animate-pulse shrink-0" />
+					<div class="space-y-2">
+						{SKELETON_ROWS.map((row) => (
+							<div key={row} class="h-3 rounded bg-stone-100 animate-pulse" style={`width:${72 - row * 16}px`} />
+						))}
+					</div>
+				</div>
+			);
+		}
 		return (
 			<div class="rounded-xl border border-stone-200 bg-white/70 px-6 py-5 flex items-center gap-4 min-h-[132px]">
 				<span class="material-symbols-outlined text-3xl text-stone-300 shrink-0">cloud_off</span>
 				<div>
-					<p class="font-label-caps text-[10px] tracking-[0.25em] text-secondary font-bold uppercase">Météo du jour J</p>
-					<p class="mt-2 font-body-md text-secondary">Aucune expédition à venir : les prévisions s'afficheront ici dès la prochaine date publiée.</p>
+					<p class="font-label-caps text-[10px] tracking-[0.25em] text-secondary font-bold uppercase">Météo du jour</p>
+					<p class="mt-2 font-body-md text-secondary">Prévisions météo momentanément indisponibles.</p>
 				</div>
 			</div>
 		);
 	}
 
-	const dateLabel = formatDateFr(event.dateFr) || event.dateFr;
 	const status = forecast?.status;
 	const hasRain = forecast?.precipitationProbability !== null && forecast?.precipitationProbability !== undefined;
+	const isFallback = event.isFallback === true;
+	const dateLabel = isFallback ? 'Aujourd’hui' : formatDateFr(event.dateFr) || event.dateFr;
 
 	return (
 		<div class="rounded-xl border border-stone-200 bg-white/70 px-6 py-5 min-h-[132px]">
 			<div class="flex flex-wrap items-center justify-between gap-4">
 				<div class="min-w-0">
-					<p class="font-label-caps text-[10px] tracking-[0.25em] text-secondary font-bold uppercase">Météo du jour J</p>
+					<p class="font-label-caps text-[10px] tracking-[0.25em] text-secondary font-bold uppercase">
+						{isFallback ? 'Météo du jour' : 'Météo du jour J'}
+					</p>
 					<p class="mt-2 font-h3 text-lg font-black text-on-background uppercase tracking-tight truncate">{event.titre || 'Prochaine expédition'}</p>
 					<p class="mt-1 font-body-md text-secondary flex items-center gap-2 flex-wrap">
 						<span class="inline-flex items-center gap-1">
 							<span class="material-symbols-outlined text-sm">calendar_today</span>
 							{dateLabel}
 						</span>
-						{event.lieu && (
+						{event.lieu && !isFallback && (
 							<span class="inline-flex items-center gap-1">
 								<span class="material-symbols-outlined text-sm">location_on</span>
 								{event.lieu}
 							</span>
 						)}
 					</p>
+					{isFallback && (
+						<p class="mt-1 font-body-md text-secondary/80">Aucune expédition à venir : météo par défaut à Fianarantsoa.</p>
+					)}
 				</div>
 
 				{loading && (

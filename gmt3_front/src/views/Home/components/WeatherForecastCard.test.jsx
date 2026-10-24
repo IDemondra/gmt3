@@ -9,11 +9,46 @@ const EVENT = {
 	dateIso: '2026-11-02',
 };
 
+const FALLBACK_EVENT = {
+	titre: 'Météo à Fianarantsoa',
+	lieu: 'Fianarantsoa',
+	dateFr: '24/10/2026',
+	dateIso: '2026-10-24',
+	isFallback: true,
+};
+
 describe('WeatherForecastCard', () => {
-	test('affiche le message d’absence d’expédition', () => {
+	test('affiche le message d’indisponibilité sans cible météo', () => {
 		const html = render(<WeatherForecastCard event={null} />);
-		expect(html).toContain('Météo du jour J');
+		expect(html).toContain('Météo du jour');
+		expect(html).toContain('momentanément indisponibles');
+	});
+
+	test('affiche le squelette pendant le chargement sans cible météo', () => {
+		const html = render(<WeatherForecastCard event={null} loading />);
+		expect(html).toContain('animate-pulse');
+	});
+
+	test('affiche le repli Fianarantsoa quand aucune expédition n’est à venir', () => {
+		const html = render(
+			<WeatherForecastCard
+				event={FALLBACK_EVENT}
+				forecast={{
+					status: 'ok',
+					label: 'Ensoleillé',
+					icon: 'sunny',
+					tMax: 26.4,
+					tMin: 13.2,
+					precipitationProbability: 5,
+				}}
+			/>,
+		);
+		expect(html).toContain('Météo du jour');
+		expect(html).not.toContain('Météo du jour J');
+		expect(html).toContain('Météo à Fianarantsoa');
 		expect(html).toContain('Aucune expédition à venir');
+		expect(html).toContain('Aujourd’hui');
+		expect(html).toContain('26°');
 	});
 
 	test('affiche le squelette pendant le chargement', () => {
