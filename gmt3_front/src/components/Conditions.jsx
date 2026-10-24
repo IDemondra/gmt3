@@ -1,7 +1,7 @@
 export function Conditions() {
 	return (
 		<section class="flex flex-1 flex-col bg-background text-on-background">
-			<div class="max-w-2xl mx-auto px-margin-mobile py-16 md:py-24">
+			<div class="max-w-2xl mx-auto px-margin-mobile pt-32 pb-24">
 				<div class="mx-auto mb-10 flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary">
 					<span class="material-symbols-outlined text-4xl" aria-hidden="true">description</span>
 				</div>
@@ -45,7 +45,7 @@ const sections = [
 		title: '1. Acceptation des conditions',
 		body: [
 			"En accédant au site GMT+3 Madagascar et en l'utilisant, vous acceptez les présentes conditions d'utilisation. Si vous n'êtes pas d'accord, veuillez ne pas utiliser le site.",
-			"Ces conditions s'appliquent à tous les visiteurs, utilisateurs et clients réserver une expédition ou un circuit via la plateforme.",
+			"Ces conditions s'appliquent à tous les visiteurs, utilisateurs et clients qui réservent une expédition ou un circuit via la plateforme.",
 		],
 	},
 	{

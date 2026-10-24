@@ -26,7 +26,7 @@ function AppShell() {
 	const { url } = useLocation();
 	
 	// Liste blanche des préfixes de routes publiques
-	const publicPrefixes = ['/events', '/404'];
+	const publicPrefixes = ['/events', '/404', '/conditions-utilisation'];
 	const isHome = url === '/';
 	const isShortEvent = /^\/[a-z0-9]{10}(?:\/|$)/i.test(url);
 	const isPublic = isHome || isShortEvent || publicPrefixes.some(p => url.startsWith(p));
@@ -47,8 +47,8 @@ function AppShell() {
 					<Route path="/admin/utilisateurs" component={AdminUsers} />
 					<Route path="/admin/clients" component={AdminClients} />
 					<Route path="/admin/reservations" component={AdminReservations} />
+					<Route path="/conditions-utilisation" component={Conditions} />
 					<Route path="/:code" component={EventDetail} />
-			<Route path="/conditions-utilisation" component={Conditions} />
 					<Route default component={NotFound} />
 				</Router>
 			</main>
