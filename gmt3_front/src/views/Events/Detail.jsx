@@ -208,7 +208,7 @@ async function submitEventBooking({ e, event, eventId, bookingData, getEventStat
 		addToast('Veuillez remplir tous les champs', 'warning');
 		return;
 	}
-	if (!/^\\d{10}$/.test(bookingData.contact)) {
+	if (!/^\d{10}$/.test(bookingData.contact)) {
 		addToast('Le contact doit être un numéro de 10 chiffres', 'warning');
 		return;
 	}
@@ -271,7 +271,7 @@ function EventBookingModal({ open, onClose, bookingLoading, placesRestantes, boo
 							maxLength="10"
 							value={bookingData.contact}
 							onInput={(e) => {
-								const value = e.currentTarget.value.replace(/\\D/g, '').slice(0, 10);
+								const value = e.currentTarget.value.replace(/\D/g, '').slice(0, 10);
 								setBookingData({ ...bookingData, contact: value });
 							}}
 							class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
