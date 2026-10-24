@@ -171,6 +171,28 @@ export function todayInForecastTimezone(now = new Date()) {
 }
 
 /**
+ * Millisecondes restantes avant le prochain minuit du fuseau de prévision.
+ * Buffer de 1 s inclus pour basculer après le changement de jour.
+ */
+export function millisecondsUntilNextMidnight(now = new Date()) {
+	let elapsed = 0;
+	try {
+		const parts = new Intl.DateTimeFormat('en-GB', {
+			timeZone: FORECAST_TIMEZONE,
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hourCycle: 'h23',
+		}).formatToParts(now);
+		const value = (type) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+		elapsed = ((value('hour') * 60 + value('minute')) * 60 + value('second')) * 1000 + now.getMilliseconds();
+	} catch {
+		elapsed = 0;
+	}
+	return Math.max(1000, 86400000 - elapsed);
+}
+
+/**
  * Jour de référence : date Madagascar si `today` est absent, sinon jour local
  * de la date fournie (comportement déterministe des tests).
  */

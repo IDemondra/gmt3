@@ -3,6 +3,7 @@ import {
 	buildDefaultForecastTarget,
 	buildForecastTarget,
 	describeWeatherCode,
+	millisecondsUntilNextMidnight,
 	pickGeocodeResult,
 	pickNextExpedition,
 	parseEventDate,
@@ -99,6 +100,20 @@ describe('todayInForecastTimezone', () => {
 	test('convertit un instant UTC vers la date de Madagascar', () => {
 		expect(toIsoDate(todayInForecastTimezone(new Date('2026-10-23T22:30:00Z')))).toBe('2026-10-24');
 		expect(toIsoDate(todayInForecastTimezone(new Date('2026-10-23T20:30:00Z')))).toBe('2026-10-23');
+	});
+});
+
+describe('millisecondsUntilNextMidnight', () => {
+	test('calcule le temps restant avant minuit à Madagascar', () => {
+		// 24/10/2026 20:00 UTC = 23:00 Madagascar -> 1 h restantes
+		const delay = millisecondsUntilNextMidnight(new Date('2026-10-24T20:00:00Z'));
+		expect(delay).toBe(3600000);
+	});
+
+	test('reste dans une fenêtre de 24 h', () => {
+		const delay = millisecondsUntilNextMidnight(new Date('2026-10-24T00:00:00Z'));
+		expect(delay).toBeGreaterThan(0);
+		expect(delay).toBeLessThanOrEqual(86400000);
 	});
 });
 

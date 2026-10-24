@@ -6,6 +6,7 @@ import { fetchEvents } from '../../../utils/events.js';
 import { formatDateFr, isEventActive } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
 import { buildDefaultForecastTarget, buildForecastTarget, pickNextExpedition } from '../../../utils/weather.js';
+import { useForecastDay } from '../../../hooks/useForecastDay.js';
 import { WeatherForecast } from './WeatherForecast.jsx';
 
 const INLINE_MD = /(\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|\*[^*\n]+\*|_[^_\n]+_)/g;
@@ -30,36 +31,32 @@ function formatPrix(prix) {
 }
 
 export function ToursSection({ initialEvents = null }) {
-	const getInitial = () => {
-		if (Array.isArray(initialEvents)) {
-			return initialEvents.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement)).slice(0, 3);
-		}
-		return [];
-	};
-	const getInitialNext = () => {
-		if (!Array.isArray(initialEvents)) return null;
-		return pickNextExpedition(initialEvents)?.event ?? null;
-	};
-	const [events, setEvents] = useState(getInitial);
-	const [nextExpedition, setNextExpedition] = useState(getInitialNext);
+	const [allEvents, setAllEvents] = useState(() => (Array.isArray(initialEvents) ? initialEvents : []));
 	const [loading, setLoading] = useState(!initialEvents);
+	const day = useForecastDay();
+
+	const events = useMemo(
+		() =>
+			allEvents
+				.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
+				.slice(0, 3),
+		[allEvents],
+	);
+
+	const nextExpedition = useMemo(() => pickNextExpedition(allEvents, day)?.event ?? null, [allEvents, day]);
 
 	const forecastTarget = useMemo(
-		() => buildForecastTarget(nextExpedition) ?? buildDefaultForecastTarget(),
-		[nextExpedition],
+		() => buildForecastTarget(nextExpedition, day) ?? buildDefaultForecastTarget(day),
+		[nextExpedition, day],
 	);
 
 	useEffect(() => {
 		if (initialEvents) { setLoading(false); return; }
 		fetchEvents()
-			.then((events) => {
-				const published = events
-					.filter((e) => e.estPublie && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
-					.slice(0, 3);
-				setEvents(published);
-				setNextExpedition(pickNextExpedition(events)?.event ?? null);
+			.then((fetched) => {
+				setAllEvents(Array.isArray(fetched) ? fetched : []);
 			})
-			.catch(() => setEvents([]))
+			.catch(() => setAllEvents([]))
 			.finally(() => setLoading(false));
 	}, [initialEvents]);
 
@@ -100,7 +97,7 @@ export function ToursSection({ initialEvents = null }) {
 				{/* ── Météo du jour J de la prochaine expédition (repli Fianarantsoa) ── */}
 				<div class="mb-16">
 					<Reveal animation="fadeUp">
-						<WeatherForecast event={loading ? null : forecastTarget} pending={loading} />
+						<WeatherForecast event={loading ? null : forecastTarget} pending={loading} day={day} />
 					</Reveal>
 				</div>
 

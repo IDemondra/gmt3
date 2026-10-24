@@ -1,0 +1,59 @@
+bun test v1.4.4 (38afee6c8)
+
+src\api\http.test.js:
+(pass) apiUpload > utilise le token rafraîchi après une réponse 401 [0.66ms]
+(pass) apiUpload > signale traitement serveur avant 100% final [0.09ms]
+
+src\utils\dailyGallery.test.js:
+(pass) buildDailyGallery > garde même sélection pendant journée [0.44ms]
+(pass) buildDailyGallery > mélange événements passés dans sélection [0.05ms]
+(pass) buildDailyGallery > change sélection entre deux jours [0.63ms]
+(pass) buildDailyGallery > ne modifie pas données source et ignore doublons invalides [0.05ms]
+(pass) getLocalDayKey > utilise date locale avec format stable [4.78ms]
+
+src\utils\gallery.test.js:
+(pass) buildPreviewGallery > keeps the main image first and removes duplicates [0.08ms]
+(pass) buildPreviewGallery > limits the preview gallery to ten images [0.15ms]
+
+src\utils\weather.test.js:
+(pass) parseEventDate > parse le format API DD/MM/YYYY [0.15ms]
+(pass) parseEventDate > parse le format ISO de la base [0.04ms]
+(pass) parseEventDate > rejette une date invalide [0.01ms]
+(pass) pickNextExpedition > retourne la première expédition publiée à venir [0.12ms]
+(pass) pickNextExpedition > ignore les expéditions terminées et les brouillons [0.02ms]
+(pass) pickNextExpedition > retourne null sans événement [0.01ms]
+(pass) buildForecastTarget > cible le jour J de la prochaine expédition [0.06ms]
+(pass) buildForecastTarget > cible la date du jour pour une expédition en cours [0.02ms]
+(pass) buildForecastTarget > retourne null sans date exploitable
+(pass) buildDefaultForecastTarget > replie sur la météo du jour à Fianarantsoa [0.03ms]
+(pass) buildDefaultForecastTarget > utilise la date de Madagascar quand aucune date n’est fournie [1.87ms]
+(pass) todayInForecastTimezone > convertit un instant UTC vers la date de Madagascar [0.11ms]
+(pass) millisecondsUntilNextMidnight > calcule le temps restant avant minuit à Madagascar [0.52ms]
+(pass) millisecondsUntilNextMidnight > reste dans une fenêtre de 24 h [0.07ms]
+(pass) describeWeatherCode > traduit les codes WMO courants [0.03ms]
+(pass) describeWeatherCode > retombe sur un libellé générique [0.02ms]
+(pass) selectForecastDay > extrait la journée demandée [0.06ms]
+(pass) selectForecastDay > retourne null hors de la fenêtre [0.01ms]
+(pass) pickGeocodeResult > privilégie le site proche de l’agence et le parc naturel [0.15ms]
+(pass) pickGeocodeResult > retourne null sans résultat exploitable [0.01ms]
+
+src\utils\weatherApi.test.js:
+(pass) getEventForecast — données volatiles > lit la prévision en direct chez Open-Meteo [0.56ms]
+(pass) getEventForecast — données volatiles > n’interroge jamais un fichier local de secours [0.12ms]
+(pass) getEventForecast — données volatiles > indique l’indisponibilité quand Open-Meteo est injoignable [0.08ms]
+(pass) getEventForecast — données volatiles > sert le cache mémoire puis le purge après invalidation [0.10ms]
+(pass) getEventForecast — données volatiles > signale l’horizon indisponible au-delà de J-15 [0.07ms]
+
+src\views\Home\components\WeatherForecastCard.test.jsx:
+(pass) WeatherForecastCard > affiche le message d’indisponibilité sans cible météo [0.85ms]
+(pass) WeatherForecastCard > affiche le squelette pendant le chargement sans cible météo [0.09ms]
+(pass) WeatherForecastCard > affiche le repli Fianarantsoa quand aucune expédition n’est à venir [0.44ms]
+(pass) WeatherForecastCard > affiche le squelette pendant le chargement [0.37ms]
+(pass) WeatherForecastCard > affiche température, libellé et pluie quand la prévision est disponible [0.67ms]
+(pass) WeatherForecastCard > indique la date de disponibilité hors horizon [0.14ms]
+(pass) WeatherForecastCard > affiche un message quand l’API échoue [0.08ms]
+
+ 41 pass
+ 0 fail
+ 87 expect() calls
+Ran 41 tests across 6 files. [29.00ms]

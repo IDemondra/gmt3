@@ -2,8 +2,8 @@
  * Appels réseau Open-Meteo (offre gratuite, sans clé API).
  *
  * Exécuté côté client uniquement : aucune donnée sensible, aucun secret exposé,
- * et le rendu serveur (SSR) reste rapide. Les réponses sont mises en cache
- * session pour éviter de répéter les appels à chaque navigation.
+ * et le rendu serveur (SSR) reste rapide. Aucune météo n'est persistée :
+ * le cache vit en mémoire (volatile) et expire après CACHE_TTL_MS.
  */
 
 import {
@@ -30,36 +30,34 @@ const DAILY_FIELDS = [
 	'wind_speed_10m_max',
 ].join(',');
 const REQUEST_TIMEOUT_MS = 6000;
-const CACHE_TTL_MS = 30 * 60 * 1000;
+const CACHE_TTL_MS = 10 * 60 * 1000;
 const MAX_PLACE_NAME_LENGTH = 100;
 const MAX_CACHE_ENTRIES = 50;
 
+/** Cache volatile : mémoire uniquement, perdu au rechargement de la page. */
 const memoryCache = new Map();
 
-function readSessionCache(key) {
-	if (typeof sessionStorage === 'undefined') return null;
-	try {
-		const raw = sessionStorage.getItem(key);
-		if (!raw) return null;
-		const entry = JSON.parse(raw);
-		if (!entry || typeof entry.expires !== 'number' || entry.expires < Date.now()) return null;
-		return entry.value;
-	} catch {
+function readCache(key) {
+	const entry = memoryCache.get(key);
+	if (!entry) return null;
+	if (entry.expires <= Date.now()) {
+		memoryCache.delete(key);
 		return null;
 	}
+	return entry.value;
 }
 
-function writeSessionCache(key, value) {
-	const entry = { value, expires: Date.now() + CACHE_TTL_MS };
-	memoryCache.set(key, value);
+function writeCache(key, value) {
+	memoryCache.set(key, { value, expires: Date.now() + CACHE_TTL_MS });
 	if (memoryCache.size > MAX_CACHE_ENTRIES) {
 		const oldest = memoryCache.keys().next().value;
 		if (oldest !== undefined) memoryCache.delete(oldest);
 	}
-	if (typeof sessionStorage === 'undefined') return;
-	try {
-		sessionStorage.setItem(key, JSON.stringify(entry));
-	} catch {}
+}
+
+/** Vide le cache météo (changement de jour, invalidation explicite). */
+export function clearWeatherCache() {
+	memoryCache.clear();
 }
 
 async function fetchJson(url) {
@@ -79,7 +77,7 @@ export async function resolveLocation(lieu) {
 	const name = String(lieu || '').trim();
 	if (!name || name.length > MAX_PLACE_NAME_LENGTH) return { ...FALLBACK_LOCATION, fallback: true };
 	const cacheKey = `geo:${name.toLowerCase()}`;
-	const cached = memoryCache.get(cacheKey) ?? readSessionCache(cacheKey);
+	const cached = readCache(cacheKey);
 	if (cached) return cached;
 	try {
 		const params = new URLSearchParams({
@@ -93,7 +91,7 @@ export async function resolveLocation(lieu) {
 		const value = best
 			? { latitude: best.latitude, longitude: best.longitude, name: best.name || name, fallback: false }
 			: { ...FALLBACK_LOCATION, fallback: true };
-		writeSessionCache(cacheKey, value);
+		writeCache(cacheKey, value);
 		return value;
 	} catch {
 		return { ...FALLBACK_LOCATION, fallback: true };
@@ -102,7 +100,7 @@ export async function resolveLocation(lieu) {
 
 async function fetchDaily(latitude, longitude, isoDate) {
 	const cacheKey = `forecast:${Number(latitude).toFixed(3)},${Number(longitude).toFixed(3)}:${isoDate}`;
-	const cached = memoryCache.get(cacheKey) ?? readSessionCache(cacheKey);
+	const cached = readCache(cacheKey);
 	if (cached) return cached;
 	const params = new URLSearchParams({
 		latitude: String(latitude),
@@ -114,7 +112,7 @@ async function fetchDaily(latitude, longitude, isoDate) {
 	});
 	const json = await fetchJson(`${FORECAST_URL}?${params.toString()}`);
 	const daily = json?.daily ?? null;
-	if (daily) writeSessionCache(cacheKey, daily);
+	if (daily) writeCache(cacheKey, daily);
 	return daily;
 }
 

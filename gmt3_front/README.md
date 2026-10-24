@@ -117,6 +117,14 @@ Corrections d'incohérences entre `ContactSection.jsx`, footer et JSON-LD :
 - `text-gradient` (dégradé rouge monochrome) recentré sur Hero/Activités/Testimonials au lieu d'être répété sur tous les titres de section.
 - **Bug réel corrigé** : lightbox de `GallerySection.jsx` (Home) — `setLightbox()` mettait à jour un état jamais consommé, aucun aperçu ne s'ouvrait au clic malgré l'icône "zoom". Branché sur `ImagePreview`. Même correction sur la galerie "Preuves de Terrain" de `Events/index.jsx` (ouvrait un nouvel onglet au lieu d'un aperçu in-page).
 
+## Météo Open-Meteo — données 100 % volatiles
+- Source unique : API `https://api.open-meteo.com/v1/forecast`, interrogée **directement côté client** (`src/utils/weatherApi.js`). Unités par défaut : °C, mm, %, km/h (aucun `temperature_unit` personnalisé).
+- **Aucun stockage** : pas de snapshot sur disque, pas de fichier `public/data/`, pas de cache `sessionStorage`/`localStorage`. Le cache vit uniquement en mémoire du navigateur (`memoryCache`, TTL 10 min) et disparaît au rechargement.
+- **Rafraîchissement quotidien automatique, minuit heure de Madagascar** : `src/hooks/useForecastDay.js` calcule la prochaine minuit `Indian/Antananarivo` (`millisecondsUntilNextMidnight`) et programme un `setTimeout` récursif. Au passage de minuit (ou au retour de visibilité de l'onglet), le jour de référence change, le cache mémoire est purgé (`clearWeatherCache`) et `WeatherForecast` refait une requête Open-Meteo.
+- **Revalidation continue** : `WeatherForecast` réinterroge l'API toutes les 15 min et à chaque retour de visibilité de l'onglet (données toujours à jour à l'ouverture de la page).
+- Aucune tâche externe (cron, planificateur système, CI) n'est nécessaire : tout vit dans le code du projet.
+- Si l'API est injoignable, le bloc affiche « Prévisions météo momentanément indisponibles. » (aucune donnée périmée servie).
+
 ## Getting Started
 - `bun run dev` — Starts dev server at http://localhost:4321/
 - `bun run check` — Checks Astro files and SSR frontmatter
