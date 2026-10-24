@@ -109,6 +109,61 @@ const getDisplayDescription = (descriptionRaw, descriptionPlain, descriptionExpa
 	descriptionExpanded || !hasMoreDescription ? descriptionRaw : `${descriptionPlain.slice(0, DESCRIPTION_PREVIEW_LENGTH).trimEnd()}…`
 );
 
+function loadEventDetail({ routeKey, routeId, isPublicCode, BACKEND, setEvent, setLoading, setRelatedEvents }) {
+	if (!routeKey || (!isPublicCode && Number.isNaN(routeId))) {
+		setLoading(false);
+		return undefined;
+	}
+
+	const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+	const controller = new AbortController();
+	let scrollFrame;
+
+	const eventEndpoint = isPublicCode ? `evenements/code/${encodeURIComponent(routeKey)}` : `evenements/${routeId}`;
+	fetch(`${API_BASE}/${eventEndpoint}`, { credentials: 'include', signal: controller.signal })
+		.then((res) => {
+			if (!res.ok) throw new Error('Not found');
+			return res.json();
+		})
+		.then((data) => {
+			setEvent(data);
+			setLoading(false);
+
+			// Scroll vers la section avis si l'URL pointe dessus (#avis), une fois rendue.
+			if (typeof window !== 'undefined' && window.location.hash === '#avis') {
+				scrollFrame = requestAnimationFrame(() => document.getElementById('avis')?.scrollIntoView({ behavior: 'smooth' }));
+			}
+
+			// Load related events
+			fetch(`${API_BASE}/evenements`, { credentials: 'include', signal: controller.signal })
+				.then((r) => {
+					if (!r.ok) throw new Error('Related events not found');
+					return r.json();
+				})
+				.then((response) => {
+					const related = (Array.isArray(response.data) ? response.data : [])
+						.filter((e) => e.estPublie && e.id !== data.id && isEventActive(e.dateDepart, e.dateRetour, e.dateEvenement))
+						.slice(0, 2)
+						.map((evt) => transformEventForCard(evt, BACKEND));
+					setRelatedEvents(related);
+				})
+				.catch((err) => {
+					if (err?.name === 'AbortError') return;
+					console.error('Error loading related events:', err);
+				});
+		})
+		.catch((err) => {
+			if (err.name === 'AbortError') return;
+			console.error('Error loading event:', err);
+			setLoading(false);
+		});
+
+	return () => {
+		cancelAnimationFrame(scrollFrame);
+		controller.abort();
+	};
+}
+
 async function submitEventReview({ e, eventId, reviewForm, reviewPhoto, addToast, setReviewLoading, setReviewForm, setReviewPhoto, setReviewSent }) {
 	e.preventDefault();
 	if (reviewForm.note < 1) {
