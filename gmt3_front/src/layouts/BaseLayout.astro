@@ -193,7 +193,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 
 			document.addEventListener('click', (event) => {
 				if (!(event.target instanceof Element)) return;
-				const link = event.target.closest('[data-analytics-event]');
+				const link = event.target.closest<HTMLElement>('[data-analytics-event]');
 				if (!link) return;
 				trackEvent(link.dataset.analyticsEvent, { location: link.dataset.analyticsLocation || 'unknown' });
 			});
