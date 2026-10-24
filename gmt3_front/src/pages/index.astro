@@ -54,7 +54,7 @@ try {
 const pageLd = [breadcrumbLd, itemListLd, aggregateLd].filter((v): v is Record<string, unknown> => Boolean(v));
 ---
 
-<BaseLayout jsonLd={pageLd} preloadHero>
+<BaseLayout jsonLd={pageLd}>
 	<Header client:load />
 	<ScrollProgress client:visible />
 	<HeroSection client:load initialEvents={initialEvents} />

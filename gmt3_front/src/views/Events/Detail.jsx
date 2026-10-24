@@ -110,7 +110,7 @@ const getDisplayDescription = (descriptionRaw, descriptionPlain, descriptionExpa
 );
 
 function loadEventDetail({ routeKey, routeId, isPublicCode, BACKEND, setEvent, setLoading, setRelatedEvents }) {
-	if (!routeKey || (!isPublicCode && Number.isNaN(routeId))) {
+	if (!routeKey || (!isPublicCode && routeId === null)) {
 		setLoading(false);
 		return undefined;
 	}
@@ -320,7 +320,9 @@ function EventBookingModal({ open, onClose, bookingLoading, placesRestantes, boo
 export function EventDetail({ params }) {
 	const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 	const routeKey = params.code || params.id;
-	const routeId = Number.parseInt(params.id, 10);
+	const parsedRouteId = Number.parseInt(params.id, 10);
+	// null plutôt que NaN : NaN !== NaN ferait relancer l'effet à chaque rendu.
+	const routeId = Number.isNaN(parsedRouteId) ? null : parsedRouteId;
 	const isPublicCode = Boolean(params.code);
 
 	const [event, setEvent] = useState(null);
@@ -339,7 +341,7 @@ export function EventDetail({ params }) {
 	const [reviewLoading, setReviewLoading] = useState(false);
 	const [reviewSent, setReviewSent] = useState(false);
 	const [reviewPreview, setReviewPreview] = useState(null);
-	const eventId = event?.id ?? (Number.isNaN(routeId) ? null : routeId);
+	const eventId = event?.id ?? routeId;
 
 	const handleReviewSubmit = (e) => submitEventReview({
 		e,

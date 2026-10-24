@@ -36,6 +36,6 @@ const breadcrumbLd = {
 
 <BaseLayout title={title} description={description} jsonLd={breadcrumbLd}>
 	<Header theme="light" client:load />
-	<EventReviews eventId={eventId} client:load />
+	<EventReviews eventId={Number.isNaN(eventId) ? null : eventId} client:load />
 	<Footer />
 </BaseLayout>
