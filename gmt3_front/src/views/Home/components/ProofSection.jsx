@@ -1,4 +1,5 @@
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { trackEvent } from '../../../utils/analytics.js';
 
 const proofPoints = [
 	{ index: '01', icon: 'person_pin', title: 'Une équipe du pays', text: 'Des guides qui partagent leurs chemins, leurs adresses et leurs histoires.' },
@@ -19,7 +20,7 @@ export function ProofSection() {
 								Un voyage qui reste avec vous.
 							</h2>
 						</div>
-						<a href="#contact" class="relative mt-8 inline-flex w-fit items-center gap-2 border-b border-white/60 pb-1 font-button text-xs font-bold uppercase tracking-widest text-white transition-colors hover:border-white hover:text-white/75 active:translate-y-px">
+						<a href="#contact" onClick={() => trackEvent('cta_contact', { location: 'proof' })} class="relative mt-8 inline-flex w-fit items-center gap-2 border-b border-white/60 pb-1 font-button text-xs font-bold uppercase tracking-widest text-white transition-colors hover:border-white hover:text-white/75 active:translate-y-px">
 							Parler de votre projet
 							<span class="material-symbols-outlined text-base" aria-hidden="true">north_east</span>
 						</a>
@@ -44,7 +45,7 @@ export function ProofSection() {
 				</div>
 				<div class="flex flex-col gap-2 border-t border-white/10 bg-black/15 px-7 py-4 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-10">
 					<span>Une question avant de partir ?</span>
-					<a href="https://wa.me/261340312401" target="_blank" rel="noopener noreferrer" class="font-button text-xs font-bold uppercase tracking-widest text-white transition-colors hover:text-primary">
+					<a href="https://wa.me/261340312401" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('whatsapp_click', { location: 'proof' })} class="font-button text-xs font-bold uppercase tracking-widest text-white transition-colors hover:text-primary">
 						Réponse sur WhatsApp sous 24 h
 					</a>
 				</div>

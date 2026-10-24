@@ -177,6 +177,8 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 				href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				data-analytics-event="whatsapp_click"
+				data-analytics-location="floating"
 				aria-label="Contacter GMT3 sur WhatsApp"
 				class:list={["group fixed right-5 z-[150] flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3.5 shadow-lg shadow-black/20 transition-all duration-300 hover:pr-5 hover:scale-105", mobileBottomBar ? "bottom-24 lg:bottom-5" : "bottom-5"]}
 			>
@@ -186,5 +188,15 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 				<span class="max-w-0 overflow-hidden whitespace-nowrap text-sm font-bold text-white transition-all duration-300 group-hover:max-w-[140px]">WhatsApp</span>
 			</a>
 		)}
+		<script>
+			import { trackEvent } from '../utils/analytics.js';
+
+			document.addEventListener('click', (event) => {
+				if (!(event.target instanceof Element)) return;
+				const link = event.target.closest('[data-analytics-event]');
+				if (!link) return;
+				trackEvent(link.dataset.analyticsEvent, { location: link.dataset.analyticsLocation || 'unknown' });
+			});
+		</script>
 	</body>
 </html>

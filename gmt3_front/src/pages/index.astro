@@ -59,9 +59,9 @@ const pageLd = [breadcrumbLd, itemListLd, aggregateLd].filter((v): v is Record<s
 	<ScrollProgress client:visible />
 	<HeroSection client:load initialEvents={initialEvents} />
 	<ProofSection client:visible />
+	<ToursSection client:visible initialEvents={initialEvents} />
 	<ActivitiesSection client:visible />
 	<DestinationsSection client:visible />
-	<ToursSection client:visible initialEvents={initialEvents} />
 	<AboutSection client:visible />
 	<GallerySection client:visible initialEvents={initialEvents} />
 	<TestimonialsSection client:visible initialEvents={initialEvents} />

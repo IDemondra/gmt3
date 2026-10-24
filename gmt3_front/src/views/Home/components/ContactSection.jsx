@@ -1,4 +1,5 @@
 import { Reveal } from '../../../components/ui/Reveal.jsx';
+import { trackEvent } from '../../../utils/analytics.js';
 
 const contacts = [
 	{
@@ -84,6 +85,7 @@ export function ContactSection() {
 					<div class="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4">
 						<a
 							href="mailto:hanitra@great-madagascar-tours.com"
+							onClick={() => trackEvent('cta_contact', { location: 'contact_email' })}
 							class="group inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-button text-xs tracking-widest font-black uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 hover:scale-105 active:scale-95 cursor-pointer"
 						>
 							PRÉPARER MON VOYAGE
@@ -91,6 +93,7 @@ export function ContactSection() {
 						</a>
 						<a
 							href="tel:+261340312401"
+							onClick={() => trackEvent('phone_click', { location: 'contact' })}
 							class="inline-flex items-center gap-2 border border-white/20 text-white/70 hover:text-white hover:border-white/40 px-8 py-4 rounded-full font-button text-[10px] tracking-widest font-bold uppercase transition-all duration-300 cursor-pointer"
 						>
 							<span class="material-symbols-outlined text-sm">phone</span>

@@ -17,6 +17,7 @@ import { useToast } from '../../hooks/useToast.js';
 import { formatDateTimeWithHour, getEventStatus, isEventActive, parseFrDate } from '../../utils/dateFormatter.js';
 import { compressImageIfNeeded } from '../../utils/imageCompress.js';
 import { eventPath } from '../../utils/eventUrl.js';
+import { trackEvent } from '../../utils/analytics.js';
 import { getEventTypeIcon } from '../../utils/eventType.js';
 
 const MAX_REVIEW_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -233,6 +234,7 @@ async function submitEventBooking({ e, event, eventId, bookingData, getEventStat
 		}
 		const data = await res.json();
 		addToast(data.message || 'Réservation confirmée !', 'success');
+		trackEvent('booking_submit', { event_id: eventId ?? null, places: parseInt(bookingData.nombrePlaces, 10) });
 		setBookingModal(false);
 		setBookingData({ nom: '', contact: '', nombrePlaces: 1 });
 	} catch (err) {

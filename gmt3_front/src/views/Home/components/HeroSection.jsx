@@ -3,6 +3,7 @@ import { Reveal } from '../../../components/ui/Reveal.jsx';
 import { BlurBackgroundImage } from '../../../components/ui/BlurBackgroundImage.jsx';
 import { img, resolveImg } from '../../../utils/images.js';
 import { fetchEvents } from '../../../utils/events.js';
+import { trackEvent } from '../../../utils/analytics.js';
 import { isEventPast } from '../../../utils/dateFormatter.js';
 import { eventPath } from '../../../utils/eventUrl.js';
 import { useMagnetic } from '../../../hooks/useMagnetic.js';
@@ -91,7 +92,7 @@ export function HeroSection({ initialEvents = null }) {
 						{/* Subtext — blurScale */}
 						<Reveal animation="blurScale" creative delay={220} duration={900}>
 							<p class="mt-8 font-body-lg text-base md:text-[17px] text-white/55 max-w-sm leading-relaxed pl-5 border-l border-primary/35">
-								Randonnées, rencontres et voyages sur mesure, guidés par ceux qui vivent et aiment la Grande Île.
+								Randonnées, immersion Betsileo et voyages sur mesure au départ de Fianarantsoa. Petits groupes, à votre rythme.
 							</p>
 						</Reveal>
 
@@ -101,6 +102,7 @@ export function HeroSection({ initialEvents = null }) {
 								<a
 									ref={ctaMag}
 									href="#contact"
+									onClick={() => trackEvent('cta_contact', { location: 'hero' })}
 									class="magnetic-cta h-14 px-8 flex items-center justify-center gap-3 bg-primary text-white font-button text-[13px] tracking-widest rounded-full shadow-xl shadow-primary/30 transition-all duration-200 hover:bg-primary-container hover:scale-[1.02] active:scale-[0.98]"
 								>
 									PRÉPARER MON VOYAGE
@@ -109,9 +111,10 @@ export function HeroSection({ initialEvents = null }) {
 								<a
 									ref={ctaMag2}
 									href="#expeditions"
+									onClick={() => trackEvent('cta_expeditions', { location: 'hero' })}
 									class="magnetic-cta h-14 px-7 flex items-center justify-center border border-white/20 text-white/75 font-button text-[13px] tracking-widest rounded-full transition-all duration-200 hover:border-white/45 hover:text-white hover:scale-[1.02] active:scale-[0.98]"
 								>
-									VOIR LES RANDONNÉES
+									PROCHAINES DATES
 								</a>
 							</div>
 						</Reveal>
