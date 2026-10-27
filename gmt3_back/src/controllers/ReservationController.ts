@@ -115,7 +115,7 @@ export const ReservationController = {
 				},
 			);
 		} catch (error) {
-			const code = error?.message ?? 'RESERVATION_ECHEC';
+			const code = error instanceof Error ? error.message : 'RESERVATION_ECHEC';
 			return Response.json(
 				{ error: code, message: availabilityMessage(code) },
 				{ status: code === 'EVENEMENT_INTROUVABLE' ? 404 : 409 },
