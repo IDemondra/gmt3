@@ -32,6 +32,7 @@ const {
 
 const canonical = `${SITE}${Astro.url.pathname}`;
 const ogImage = image.startsWith('http') ? image : `${SITE}${image}`;
+const isAdmin = Astro.url.pathname.startsWith('/admin');
 
 const organizationLd = {
 	'@context': 'https://schema.org',
@@ -104,7 +105,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="color-scheme" content="light" />
 		<meta name="theme-color" content="#ba0013" />
-		<ClientRouter />
+		{!isAdmin && <ClientRouter />}
 		<link rel="icon" type="image/jpeg" href="/assets/logo_gmt3.jpeg" />
 		{/* Le hero est SSR dans le HTML avec fetchpriority="high" : précharger en plus
 			les 2 formats faisait doublon et déclenchait un warning "preload not used"
