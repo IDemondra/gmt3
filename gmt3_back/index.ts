@@ -104,33 +104,7 @@ Bun.serve({
 			);
 		}
 
-		// Serve uploaded files — Bun.file() (streaming, non-bloquant) + cache conditionnel.
-		// Les galeries peuvent être remplacées en conservant le même nom de fichier
-		// (photoGallery.ts), donc pas de cache "immutable" : max-age modéré + revalidation
-		// via Last-Modified pour que le navigateur détecte un remplacement (304 sinon).
-		if (path.startsWith('/uploads/') && req.method === 'GET') {
-			const filePath = resolve(import.meta.dir, `.${path}`);
-			const file = Bun.file(filePath);
-			if (!(await file.exists())) {
-				return new Response('Not Found', { status: 404 });
-			}
-
-			const lastModified = new Date(file.lastModified).toUTCString();
-			const ifModifiedSince = req.headers.get('if-modified-since');
-			if (ifModifiedSince && ifModifiedSince === lastModified) {
-				return new Response(null, { status: 304 });
-			}
-
-			const ext = path.split('.').pop() || '';
-			const mime: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
-			return new Response(file, {
-				headers: {
-					'Content-Type': mime[ext] || 'application/octet-stream',
-					'Cache-Control': 'public, max-age=3600, must-revalidate',
-					'Last-Modified': lastModified,
-				},
-			});
-		}
+		
 		const start = performance.now();
 		const method = req.method;
 

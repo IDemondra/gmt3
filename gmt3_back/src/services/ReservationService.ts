@@ -16,6 +16,15 @@ export class ReservationService {
 		return this.reservationRepo.getReservedPlaces(evenementId, excludeReservationId);
 	}
 
+	async reservePlaces(
+		evenementId: number,
+		nombrePlaces: number,
+		data: NewReservation,
+		excludeReservationId?: number,
+	): Promise<Reservation> {
+		return this.reservationRepo.reservePlaces(evenementId, nombrePlaces, data, excludeReservationId);
+	}
+
 	async create(data: NewReservation): Promise<Reservation> {
 		return this.reservationRepo.create(data);
 	}

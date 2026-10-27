@@ -78,15 +78,12 @@ export const ReservationController = {
 				message: 'Veuillez remplir tous les champs obligatoires'
 			}, { status: 400 });
 		}
-		const availabilityError = await validateAvailability(evenementId, nombrePlaces);
-		if (availabilityError) return Response.json({ error: availabilityError, message: availabilityMessage(availabilityError) }, { status: availabilityError === 'EVENEMENT_INTROUVABLE' ? 404 : 409 });
 
 		let clientId = req.user ? toPositiveInteger(body.clientId) : null;
 		if (clientId && !(await clientRepository.findById(clientId))) {
 			return Response.json({ error: 'CLIENT_INTROUVABLE', message: 'Client introuvable' }, { status: 404 });
 		}
 
-		// Si clientId n'est pas fourni, créer ou récupérer un client avec nom et contact
 		if (!clientId) {
 			const contact = body.contact?.replace(/\D/g, '');
 			if (!body.nom || !contact) {
@@ -104,13 +101,26 @@ export const ReservationController = {
 			}
 		}
 
-		const reservation = await reservationService.create({
-			clientId,
-			evenementId,
-			nombrePlaces,
-			statut: req.user ? body.statut ?? 'confirmee' : 'en_attente',
-			dateReservation: req.user ? body.dateReservation || new Date().toISOString() : new Date().toISOString(),
-		});
+		let reservation;
+		try {
+			reservation = await reservationService.reservePlaces(
+				evenementId,
+				nombrePlaces,
+				{
+					clientId,
+					evenementId,
+					nombrePlaces,
+					statut: req.user ? body.statut ?? 'confirmee' : 'en_attente',
+					dateReservation: req.user ? body.dateReservation || new Date().toISOString() : new Date().toISOString(),
+				},
+			);
+		} catch (error) {
+			const code = error?.message ?? 'RESERVATION_ECHEC';
+			return Response.json(
+				{ error: code, message: availabilityMessage(code) },
+				{ status: code === 'EVENEMENT_INTROUVABLE' ? 404 : 409 },
+			);
+		}
 
 		return Response.json({
 			...formatReservationDates(reservation),

@@ -194,21 +194,21 @@ export async function storeGalleryPhotos(evenementId: number, fd: GalleryFormDat
 	const previousGalleryFiles = listGalleryFilePaths(evenementId);
 	const createdGalleryFiles: string[] = [];
 
-	for (let i = 0; i < plan.length; i++) {
-		const item = plan[i]!;
-		const validated = validatedFiles[i]!;
-		const correctedFilename = `${String(item.ordre).padStart(2, '0')}-${crypto.randomUUID()}.${validated.ext}`;
-		const filePath = resolve(galleryDir, correctedFilename);
-		writeFileSync(filePath, validated.buf);
-		createdGalleryFiles.push(filePath);
-		item.filename = correctedFilename;
-		item.url = `/uploads/evenements/${evenementId}/gallery/${correctedFilename}`;
-	}
-
-	let photos;
+	let photos: PhotoEvenement[];
 	try {
-		await photoRepository.deleteByEvenementId(evenementId);
-		photos = await photoRepository.createMany(
+		for (let i = 0; i < plan.length; i++) {
+			const item = plan[i]!;
+			const validated = validatedFiles[i]!;
+			const correctedFilename = `${String(item.ordre).padStart(2, '0')}-${crypto.randomUUID()}.${validated.ext}`;
+			const filePath = resolve(galleryDir, correctedFilename);
+			createdGalleryFiles.push(filePath);
+			writeFileSync(filePath, validated.buf);
+			item.filename = correctedFilename;
+			item.url = `/uploads/evenements/${evenementId}/gallery/${correctedFilename}`;
+		}
+
+		photos = await photoRepository.replaceByEvenementId(
+			evenementId,
 			plan.map((item) => ({
 				evenementId,
 				url: item.url,
@@ -217,11 +217,21 @@ export async function storeGalleryPhotos(evenementId: number, fd: GalleryFormDat
 			})),
 		);
 	} catch (error) {
-		removeFiles(createdGalleryFiles);
+		try {
+			removeFiles(createdGalleryFiles);
+		} catch (cleanupError) {
+			console.error('[GALERIE] Échec du nettoyage des nouveaux fichiers après rollback', cleanupError);
+		}
 		throw error;
 	}
 
-	removeFiles(previousGalleryFiles);
+	try {
+		removeFiles(previousGalleryFiles);
+	} catch (cleanupError) {
+		// La transaction est déjà validée : ne pas transformer un nettoyage
+		// d'anciens fichiers en échec de remplacement de la galerie.
+		console.error('[GALERIE] Échec du nettoyage des anciens fichiers', cleanupError);
+	}
 	return photos;
 }
 
@@ -315,6 +325,11 @@ export const EvenementController = {
 		const item = await evenementService.getById(id);
 		if (!item) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
 
+		// Vérification ownership : seul l'admin ou le créateur peut modifier
+		if (req.user?.role !== 'admin' && req.user?.id !== item.utilisateurId) {
+			return Response.json({ error: 'ACCES_REFUSE', message: 'Vous ne pouvez modifier que vos propres événements' }, { status: 403 });
+		}
+
 		const fd = await req.formData();
 		const sizeError = galleryTotalSizeError(fd);
 		if (sizeError) return sizeError;
@@ -353,6 +368,7 @@ export const EvenementController = {
 		const item = await evenementService.create({
 			publicCode: await createUniquePublicCode(),
 			typeEvenementId: resolvedType.id,
+			utilisateurId: req.user?.id ?? null,
 			titre,
 			description: description ?? null,
 			dateEvenement,
@@ -436,6 +452,12 @@ export const EvenementController = {
 		if (!validEventData(data)) return Response.json({ error: 'CHAMPS_INVALIDES' }, { status: 400 });
 		const existingItem = await evenementService.getById(id);
 		if (!existingItem) return Response.json({ error: 'EVENEMENT_INTROUVABLE' }, { status: 404 });
+
+		// Vérification ownership : seul l'admin ou le créateur peut modifier
+		if (req.user?.role !== 'admin' && req.user?.id !== existingItem.utilisateurId) {
+			return Response.json({ error: 'ACCES_REFUSE', message: 'Vous ne pouvez modifier que vos propres événements' }, { status: 403 });
+		}
+
 		const updateSizeError = galleryTotalSizeError(fd);
 		if (updateSizeError) return updateSizeError;
 
@@ -470,7 +492,14 @@ export const EvenementController = {
 	async delete(req: BunRequest, params: Record<string, string>): Promise<Response> {
 		const id = idOrError(params);
 		if (id instanceof Response) return id;
-		if (!await evenementService.getById(id)) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+		const existingItem = await evenementService.getById(id);
+		if (!existingItem) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
+
+		// Vérification ownership : seul l'admin ou le créateur peut supprimer
+		if (req.user?.role !== 'admin' && req.user?.id !== existingItem.utilisateurId) {
+			return Response.json({ error: 'ACCES_REFUSE', message: 'Vous ne pouvez supprimer que vos propres événements' }, { status: 403 });
+		}
+
 		const ok = await evenementService.delete(id);
 		if (!ok) return Response.json({ error: 'EVENEMENT_INTROUVABLE', message: 'Événement non trouvé' }, { status: 404 });
 		removeEventUploadDir(id);

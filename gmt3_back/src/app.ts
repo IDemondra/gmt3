@@ -11,9 +11,11 @@ import { journalAudit } from './models/schema.js';
 import type { BunRequest, RouteHandler } from './types/http.js';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+import { checkRateLimit } from './utils/rateLimiter.js';
 
 const STATIC_UPLOADS_ROOT = resolve(import.meta.dir, '..', 'uploads');
 const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const UPLOAD_REQUEST_LIMITS: Array<{ matches: (method: string, path: string) => boolean; bytes: number }> = [
 	{ matches: (method, path) => method === 'POST' && path === '/api/avis', bytes: 6 * 1024 * 1024 },
 	{ matches: (method, path) => method === 'POST' && path === '/api/evenements', bytes: 46 * 1024 * 1024 },
@@ -21,17 +23,13 @@ const UPLOAD_REQUEST_LIMITS: Array<{ matches: (method: string, path: string) => 
 	{ matches: (method, path) => method === 'POST' && /^\/api\/evenements\/\d+\/photos$/.test(path), bytes: 41 * 1024 * 1024 },
 ];
 
-// In-memory rate limiter: max 10 login attempts per IP per 15 minutes
-const loginAttempts = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 10;
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
-const publicAttempts = new Map<string, { count: number; resetAt: number }>();
-const PUBLIC_RATE_LIMIT_MAX = 20;
 const COOKIE_AUTH_PATHS = new Set([
 	'/api/utilisateurs/login',
 	'/api/utilisateurs/refresh',
 	'/api/utilisateurs/logout',
 ]);
+
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 
 function isOptionalAuthRoute(method: string, pathname: string): boolean {
 	if (method === 'POST' && pathname === '/api/reservations') return true;
@@ -49,28 +47,10 @@ function isCrossSiteRequest(req: Request, allowedOrigins: Set<string>, requireOr
 		|| (origin !== null && !allowedOrigins.has(origin));
 }
 
-function checkLoginRateLimit(ip: string): boolean {
-	const now = Date.now();
-	const entry = loginAttempts.get(ip);
-	if (!entry || now > entry.resetAt) {
-		loginAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-		return true;
-	}
-	if (entry.count >= RATE_LIMIT_MAX) return false;
-	entry.count++;
-	return true;
-}
-
-function checkPublicRateLimit(ip: string): boolean {
-	const now = Date.now();
-	const entry = publicAttempts.get(ip);
-	if (!entry || now > entry.resetAt) {
-		publicAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-		return true;
-	}
-	if (entry.count >= PUBLIC_RATE_LIMIT_MAX) return false;
-	entry.count++;
-	return true;
+function getClientIp(req: Request): string {
+	return req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim()
+		?? req.headers.get('X-Real-IP')
+		?? 'unknown';
 }
 
 const allRoutes: Record<string, Record<string, RouteHandler>> = {
@@ -177,12 +157,25 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	const requestOrigin = req.headers.get('Origin') || '';
 	const allowedOrigin = ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : '';
 
-	const corsHeaders = {
-		'Access-Control-Allow-Origin': allowedOrigin || 'null',
-		'Access-Control-Allow-Credentials': 'true',
-		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-		'Vary': 'Origin',
+	const corsHeaders = allowedOrigin
+		? {
+				'Access-Control-Allow-Origin': allowedOrigin,
+				'Access-Control-Allow-Credentials': 'true',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+				'Vary': 'Origin',
+			}
+		: {
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+			};
+	
+	const securityHeaders = {
+		'X-Content-Type-Options': 'nosniff',
+		'X-Frame-Options': 'DENY',
+		'X-XSS-Protection': '1; mode=block',
+		'Referrer-Policy': 'strict-origin-when-cross-origin',
+		'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
 	};
 
 	if (pathname.startsWith('/uploads/')) {
@@ -190,37 +183,43 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 		try {
 			relativePath = decodeURIComponent(pathname.slice('/uploads/'.length));
 		} catch {
-			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: { ...corsHeaders, ...securityHeaders } });
 		}
 		const filePath = resolve(STATIC_UPLOADS_ROOT, relativePath);
 		const extension = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
 		if ((!filePath.startsWith(`${STATIC_UPLOADS_ROOT}${process.platform === 'win32' ? '\\' : '/'}`) && filePath !== STATIC_UPLOADS_ROOT)
 			|| !ALLOWED_UPLOAD_EXTENSIONS.has(extension) || !existsSync(filePath)) {
-			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: { ...corsHeaders, ...securityHeaders } });
 		}
 
+		// Validate MIME type matches extension
 		const file = Bun.file(filePath);
+		const mimeType = file.type;
+		if (mimeType && !ALLOWED_MIME_TYPES.has(mimeType)) {
+			return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: { ...corsHeaders, ...securityHeaders } });
+		}
+
 		return new Response(Bun.file(filePath), {
-			headers: { ...corsHeaders, 'Content-Type': file.type || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline' },
+			headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': mimeType || 'application/octet-stream', 'Content-Disposition': 'inline' },
 		});
 	}
 
 	// ── CORS preflight ──
 	if (req.method === 'OPTIONS') {
-		return new Response(null, { headers: corsHeaders });
+		return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
 	}
 
 	// ── Route matching ──
 	const matched = matchRoute(req.method, pathname, allRoutes);
 
 	if (!matched) {
-		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: corsHeaders });
+		return Response.json({ error: 'NOT_FOUND' }, { status: 404, headers: { ...corsHeaders, ...securityHeaders } });
 	}
 
 	if (req.method === 'POST' && COOKIE_AUTH_PATHS.has(pathname)) {
 		const requireOrigin = pathname === '/api/utilisateurs/refresh' || pathname === '/api/utilisateurs/logout';
 		if (isCrossSiteRequest(req, ALLOWED_ORIGINS, requireOrigin)) {
-			return Response.json({ error: 'ORIGINE_REFUSEE' }, { status: 403, headers: corsHeaders });
+			return Response.json({ error: 'ORIGINE_REFUSEE' }, { status: 403, headers: { ...corsHeaders, ...securityHeaders } });
 		}
 	}
 
@@ -232,26 +231,42 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	const uploadLimit = UPLOAD_REQUEST_LIMITS.find(({ matches }) => matches(req.method, pathname))?.bytes;
 	const contentLength = Number(req.headers.get('Content-Length'));
 	if (uploadLimit && Number.isFinite(contentLength) && contentLength > uploadLimit) {
-		return Response.json({ error: 'FICHIER_TROP_LOURD', message: 'Requête multipart trop volumineuse' }, { status: 413, headers: corsHeaders });
+		return Response.json({ error: 'FICHIER_TROP_LOURD', message: 'Requête multipart trop volumineuse' }, { status: 413, headers: { ...corsHeaders, ...securityHeaders } });
 	}
 
 	// ── Login rate limiting ──
 	if (req.method === 'POST' && pathname === '/api/utilisateurs/login') {
-		const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP') ?? 'unknown';
-		if (!checkLoginRateLimit(ip)) {
-			return Response.json({ error: 'TROP_DE_TENTATIVES', message: 'Trop de tentatives. Réessayez dans 15 minutes.' }, { status: 429, headers: corsHeaders });
+		const ip = getClientIp(req);
+		const result = await checkRateLimit(ip, 'login', 10);
+		if (!result.allowed) {
+			return Response.json({ error: 'TROP_DE_TENTATIVES', message: 'Trop de tentatives. Réessayez dans 15 minutes.' }, { status: 429, headers: { ...corsHeaders, ...securityHeaders } });
+		}
+	}
+	// Rate limit user creation (admin only but extra protection)
+	if (req.method === 'POST' && pathname === '/api/utilisateurs') {
+		const ip = getClientIp(req);
+		const result = await checkRateLimit(ip, 'create_user', 5);
+		if (!result.allowed) {
+			return Response.json({ error: 'TROP_DE_TENTATIVES', message: 'Trop de tentatives de création.' }, { status: 429, headers: { ...corsHeaders, ...securityHeaders } });
 		}
 	}
 	if (req.method === 'POST' && (pathname === '/api/reservations' || pathname === '/api/avis')) {
-		const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP') ?? 'unknown';
-		if (!checkPublicRateLimit(ip)) return Response.json({ error: 'TROP_DE_TENTATIVES' }, { status: 429, headers: corsHeaders });
+		const ip = getClientIp(req);
+		const result = await checkRateLimit(ip, 'public', 20);
+		if (!result.allowed) return Response.json({ error: 'TROP_DE_TENTATIVES' }, { status: 429, headers: { ...corsHeaders, ...securityHeaders } });
+	}
+	// Rate limit token refresh (prevent brute-force on refresh tokens)
+	if (req.method === 'POST' && pathname === '/api/utilisateurs/refresh') {
+		const ip = getClientIp(req);
+		const result = await checkRateLimit(ip, 'refresh', 20);
+		if (!result.allowed) return Response.json({ error: 'TROP_DE_TENTATIVES' }, { status: 429, headers: { ...corsHeaders, ...securityHeaders } });
 	}
 
 	// ── Auth guard ──
 	if (matched.isProtected || matched.isAdminOnly) {
 		const authResult = await authMiddleware(req);
 		if (authResult) {
-			for (const [key, value] of Object.entries(corsHeaders)) authResult.headers.set(key, value);
+			for (const [key, value] of Object.entries({ ...corsHeaders, ...securityHeaders })) authResult.headers.set(key, value);
 			return authResult;
 		}
 	}
@@ -260,7 +275,7 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 	if (matched.isAdminOnly) {
 		const role = (req as any).user?.role;
 		if (role !== 'admin') {
-			return Response.json({ error: 'ACCES_REFUSE', message: 'Réservé aux administrateurs' }, { status: 403, headers: corsHeaders });
+			return Response.json({ error: 'ACCES_REFUSE', message: 'Réservé aux administrateurs' }, { status: 403, headers: { ...corsHeaders, ...securityHeaders } });
 		}
 	}
 
@@ -271,12 +286,12 @@ export async function handleRequest(req: BunRequest): Promise<Response> {
 			const ip = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? req.headers.get('X-Real-IP');
 			await db.insert(journalAudit).values({ utilisateurId: req.user.id, action: req.method, ressource: pathname, adresseIp: ip ?? null, dateCreation: new Date().toISOString() });
 		}
-		for (const [key, value] of Object.entries(corsHeaders)) {
+		for (const [key, value] of Object.entries({ ...corsHeaders, ...securityHeaders })) {
 			response.headers.set(key, value);
 		}
 		return response;
 	} catch (err) {
 		console.error('[ERREUR]', err);
-		return Response.json({ error: 'ERREUR_INTERNE' }, { status: 500, headers: corsHeaders });
+		return Response.json({ error: 'ERREUR_INTERNE' }, { status: 500, headers: { ...corsHeaders, ...securityHeaders } });
 	}
 }

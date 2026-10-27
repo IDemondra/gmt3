@@ -37,6 +37,7 @@ export const evenements = sqliteTable('evenements', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	publicCode: text('public_code', { length: 10 }).notNull().unique(),
 	typeEvenementId: integer('type_evenement_id').default(1).notNull().references(() => typesEvenement.id, { onDelete: 'restrict' }),
+	utilisateurId: integer('utilisateur_id').references(() => utilisateurs.id, { onDelete: 'set null' }),
 	titre: text('titre', { length: 150 }).notNull(),
 	description: text('description'),
 	dateEvenement: text('date_evenement').notNull(),
@@ -102,3 +103,15 @@ export const journalAudit = sqliteTable('journal_audit', {
 	adresseIp: text('adresse_ip', { length: 64 }),
 	dateCreation: text('date_creation').notNull(),
 }, (table) => [index('journal_audit_user_date_idx').on(table.utilisateurId, table.dateCreation)]);
+
+// ── Rate Limiter (persistent) ──
+export const rateLimits = sqliteTable('rate_limits', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	identifier: text('identifier', { length: 255 }).notNull(),
+	endpoint: text('endpoint', { length: 255 }).notNull(),
+	count: integer('count').default(1).notNull(),
+	resetAt: integer('reset_at').notNull(),
+}, (table) => [
+	index('rate_limits_identifier_endpoint_idx').on(table.identifier, table.endpoint),
+	index('rate_limits_reset_idx').on(table.resetAt),
+]);
